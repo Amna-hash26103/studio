@@ -38,7 +38,7 @@ const features = [
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-20 items-center justify-between px-4 md:px-6">
+      <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold tracking-tight">FEMMORA</span>
@@ -71,7 +71,7 @@ export default function LandingPage() {
         </section>
 
         <section className="bg-secondary">
-          <div className="px-4 py-16 md:px-6 md:py-24">
+          <div className="container mx-auto px-4 py-16 md:px-6 md:py-24">
             <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">
                 {heroImage && (
@@ -100,7 +100,7 @@ export default function LandingPage() {
         </section>
 
         <section className="px-4 py-16 md:px-6 md:py-24">
-          <div className="mx-auto mb-12 max-w-2xl text-center">
+          <div className="container mx-auto mb-12 max-w-2xl text-center">
             <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
               Features Designed for You
             </h2>
@@ -109,7 +109,7 @@ export default function LandingPage() {
               growth, all in one place.
             </p>
           </div>
-          <div className="mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
               <Card key={feature.title} className="text-center">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6">
@@ -126,7 +126,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="bg-muted">
-        <div className="flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
