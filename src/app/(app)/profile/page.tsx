@@ -32,7 +32,7 @@ const galleryImages = [
 
 export default function ProfilePage() {
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-2xl space-y-12">
       <Card className="overflow-hidden">
         <div className="relative h-48 w-full">
             {user.cover && <Image src={user.cover.imageUrl} alt="Cover image" data-ai-hint={user.cover.imageHint} fill className="object-cover" />}
