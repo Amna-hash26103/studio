@@ -18,14 +18,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Bell,
-  Bot,
-  Briefcase,
-  Home,
+  HeartPulse,
   LayoutDashboard,
   LogOut,
   MessageSquare,
+  Salad,
   Search,
   Settings,
+  Smile,
   User,
 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -42,7 +42,9 @@ import {
 
 const navItems = [
   { href: '/feed', icon: <LayoutDashboard />, label: 'Feed' },
-  { href: '/chatbot', icon: <Bot />, label: 'Wellness AI' },
+  { href: '/healthcare', icon: <HeartPulse />, label: 'Healthcare' },
+  { href: '/emotional-health', icon: <Smile />, label: 'Emotional Health' },
+  { href: '/diet', icon: <Salad />, label: 'Diet' },
   { href: '/messages', icon: <MessageSquare />, label: 'Messages' },
   { href: '/profile', icon: <User />, label: 'Profile' },
 ];
@@ -151,7 +153,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNav = (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background md:hidden">
-      <div className="grid h-16 grid-cols-4 items-center">
+      <div className="grid h-16 grid-cols-6 items-center">
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -163,7 +165,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }`}
           >
             {item.icon}
-            <span>{item.label}</span>
+            <span className="truncate">{item.label}</span>
           </Link>
         ))}
       </div>
