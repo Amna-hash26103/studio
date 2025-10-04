@@ -106,6 +106,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="md:hidden">
         <SidebarTrigger />
       </div>
+      <div className="hidden md:block">
+        <SidebarTrigger />
+      </div>
       <div className="w-full flex-1">
         <form>
           <div className="relative">
@@ -174,10 +177,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Sidebar collapsible="icon">{sidebarContent}</Sidebar>
         <SidebarInset>
           {headerContent}
-          <main className="flex-1 p-4 md:p-6 lg:p-8">
+          <main className="flex-1 p-4 pb-20 md:p-6 lg:p-8">
             {children}
           </main>
-          {isMobile && <div className="h-16" />} 
         </SidebarInset>
         {isMobile && mobileNav}
       </div>
