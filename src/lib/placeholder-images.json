@@ -1,3 +1,82 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A diverse group of women collaborating and smiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1728655947843-fdbf6fdfbe51?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlbXBvd2VyZWQlMjB3b21lbiUyMGNvbW11bml0eXxlbnwwfHx8fDE3NTk2MDE2OTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "empowered women community"
+    },
+    {
+      "id": "health-avatar",
+      "description": "Avatar for health chatbot, an energetic woman in workout gear.",
+      "imageUrl": "https://images.unsplash.com/photo-1599186994830-731640234cda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmaXRuZXNzJTIwd29tYW4lMjBpbGx1c3RyYXRpb258ZW58MHx8fHwxNzU5NjAxNjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fitness woman illustration"
+    },
+    {
+      "id": "emotional-avatar",
+      "description": "Avatar for emotional health chatbot, a calm woman meditating.",
+      "imageUrl": "https://images.unsplash.com/photo-1657584905470-ac4ef76ee2b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjYWxtJTIwd29tYW4lMjBpbGx1c3RyYXRpb258ZW58MHx8fHwxNzU5NjAxNjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "calm woman illustration"
+    },
+    {
+      "id": "nutrition-avatar",
+      "description": "Avatar for nutrition chatbot, a friendly woman with fresh vegetables.",
+      "imageUrl": "https://images.unsplash.com/photo-1696575812898-33d8d75c5e1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBjb29raW5nJTIwaWxsdXN0cmF0aW9ufGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman cooking illustration"
+    },
+    {
+      "id": "feed-post-1",
+      "description": "A woman working on her laptop in a cozy cafe.",
+      "imageUrl": "https://images.unsplash.com/photo-1647154936646-2ada256c1a48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjB3b3JraW5nJTIwbGFwdG9wfGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman working laptop"
+    },
+    {
+      "id": "feed-post-2",
+      "description": "Two friends having a conversation over coffee.",
+      "imageUrl": "https://images.unsplash.com/photo-1753351055728-23df89f9d273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmcmllbmRzJTIwdGFsa2luZyUyMGNhZmV8ZW58MHx8fHwxNzU5NjAxNjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "friends talking cafe"
+    },
+    {
+      "id": "feed-post-3",
+      "description": "A woman practicing yoga at sunrise.",
+      "imageUrl": "https://images.unsplash.com/photo-1653393342554-b48f44935014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx5b2dhJTIwc3VucmlzZXxlbnwwfHx8fDE3NTk1OTUyMzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yoga sunrise"
+    },
+    {
+      "id": "project-image-1",
+      "description": "A team of women brainstorming in a startup meeting.",
+      "imageUrl": "https://images.unsplash.com/photo-1702047129200-89734f555f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFydHVwJTIwbWVldGluZ3xlbnwwfHx8fDE3NTk2MDE2OTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "startup meeting"
+    },
+    {
+      "id": "project-image-2",
+      "description": "An artist painting in her studio.",
+      "imageUrl": "https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnRpc3QlMjBzdHVkaW98ZW58MHx8fHwxNzU5NTQ2MTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artist studio"
+    },
+    {
+      "id": "user-avatar-1",
+      "description": "Profile picture of a user named Jane Doe.",
+      "imageUrl": "https://images.unsplash.com/photo-1598625873873-52f9aefd7d9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzU5NTQ4MjA5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman smiling"
+    },
+    {
+      "id": "user-avatar-2",
+      "description": "Profile picture of a user named Sarah Smith.",
+      "imageUrl": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1OTUyMDY3NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman portrait"
+    },
+    {
+      "id": "user-avatar-3",
+      "description": "Profile picture of a user named Emily White.",
+      "imageUrl": "https://images.unsplash.com/photo-1695470667338-e7e8608ff048?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc1OTU3ODk3NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person face"
+    },
+    {
+      "id": "user-profile-cover",
+      "description": "A cover image for a user profile page, showing a serene landscape.",
+      "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b869cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "serene landscape"
+    }
+  ]
 }
