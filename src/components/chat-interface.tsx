@@ -53,7 +53,7 @@ export function ChatInterface() {
     health: [
       {
         role: 'assistant',
-        content: "Hi! I'm your Health & Workout assistant. How can I help you get moving today?",
+        content: "Hi! I'm your Healthcare assistant. How can I help you today?",
       },
     ],
     emotionalWellbeing: [
@@ -65,7 +65,7 @@ export function ChatInterface() {
     nutrition: [
       {
         role: 'assistant',
-        content: "Hey there! I'm your Diet & Nutrition guide. Ask me anything about healthy eating!",
+        content: "Hey there! I'm your Diet guide. Ask me anything about healthy eating!",
       },
     ],
   });
@@ -121,9 +121,9 @@ export function ChatInterface() {
       onValueChange={(value) => setActiveTab(value as Topic)}
     >
       <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="health">Health & Workout</TabsTrigger>
+        <TabsTrigger value="health">Healthcare</TabsTrigger>
         <TabsTrigger value="emotionalWellbeing">Emotional Health</TabsTrigger>
-        <TabsTrigger value="nutrition">Diet & Nutrition</TabsTrigger>
+        <TabsTrigger value="nutrition">Diet</TabsTrigger>
       </TabsList>
       <TabsContent value={activeTab}>
         <Card>

@@ -43,7 +43,6 @@ import {
 const navItems = [
   { href: '/feed', icon: <LayoutDashboard />, label: 'Feed' },
   { href: '/chatbot', icon: <Bot />, label: 'Wellness AI' },
-  { href: '/projects', icon: <Briefcase />, label: 'Projects' },
   { href: '/messages', icon: <MessageSquare />, label: 'Messages' },
   { href: '/profile', icon: <User />, label: 'Profile' },
 ];
@@ -152,7 +151,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNav = (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background md:hidden">
-      <div className="grid h-16 grid-cols-5 items-center">
+      <div className="grid h-16 grid-cols-4 items-center">
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -177,7 +176,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Sidebar collapsible="icon">{sidebarContent}</Sidebar>
         <SidebarInset>
           {headerContent}
-          <main className="flex-1 p-4 pb-20 md:p-6 lg:p-8">
+          <main className="flex-1 p-4 pb-20 md:p-6 lg:p-8 md:pb-8">
             {children}
           </main>
         </SidebarInset>
