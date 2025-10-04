@@ -2,14 +2,16 @@ import { ChatInterface } from '@/components/chat-interface';
 
 export default function DietPage() {
   return (
-    <div>
-      <div className="mb-6">
+    <div className="flex flex-col h-screen">
+      <div className="mb-6 p-4">
         <h1 className="font-headline text-3xl font-bold">Diet AI</h1>
         <p className="text-muted-foreground">
           Your personal guide for nutrition and healthy eating.
         </p>
       </div>
-      <ChatInterface topic="nutrition" />
+      <div className="flex-1">
+        <ChatInterface topic="nutrition" />
+      </div>
     </div>
   );
 }
