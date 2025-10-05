@@ -30,6 +30,7 @@ import {
 import { setDoc, doc, getFirestore } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
 
 const formSchema = z.object({
   displayName: z.string().min(2, {
@@ -82,6 +83,9 @@ export default function SignupPage() {
       };
 
       await setDoc(doc(firestore, 'users', user.uid), userProfile);
+
+      // Trigger the welcome email flow (non-blocking)
+      sendWelcomeEmail({ name: values.displayName, email: values.email });
 
       toast({
         title: 'Account Created!',
