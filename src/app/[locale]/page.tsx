@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Play, Pause, Loader2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Play, Pause, Loader2, Volume2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -188,15 +188,17 @@ export default function LandingPage() {
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {t('mainHeading')}
             </h1>
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => handlePlayPause('hero-section', textContent['hero-section'])}
-                disabled={isLoading && activeSection !== 'hero-section'}
-                aria-label="Read hero section aloud"
-              >
-                {isLoading && activeSection === 'hero-section' ? <Loader2 className="h-6 w-6 animate-spin" /> : (isPlaying && activeSection === 'hero-section' ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />)}
-            </Button>
+            {locale === 'en' && (
+              <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => handlePlayPause('hero-section', textContent['hero-section'])}
+                  disabled={isLoading && activeSection !== 'hero-section'}
+                  aria-label="Read hero section aloud"
+                >
+                  {isLoading && activeSection === 'hero-section' ? <Loader2 className="h-6 w-6 animate-spin" /> : (isPlaying && activeSection === 'hero-section' ? <Pause className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />)}
+              </Button>
+            )}
           </div>
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
@@ -228,15 +230,17 @@ export default function LandingPage() {
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                     {t('thriveHeading')}
                     </h2>
-                     <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        onClick={() => handlePlayPause('thrive-section', textContent['thrive-section'])}
-                        disabled={isLoading && activeSection !== 'thrive-section'}
-                        aria-label="Read thrive section aloud"
-                      >
-                        {isLoading && activeSection === 'thrive-section' ? <Loader2 className="h-6 w-6 animate-spin" /> : (isPlaying && activeSection === 'thrive-section' ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />)}
-                    </Button>
+                     {locale === 'en' && (
+                      <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handlePlayPause('thrive-section', textContent['thrive-section'])}
+                          disabled={isLoading && activeSection !== 'thrive-section'}
+                          aria-label="Read thrive section aloud"
+                        >
+                          {isLoading && activeSection === 'thrive-section' ? <Loader2 className="h-6 w-6 animate-spin" /> : (isPlaying && activeSection === 'thrive-section' ? <Pause className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />)}
+                      </Button>
+                     )}
                 </div>
                 <p className="text-muted-foreground md:text-lg">
                   {t('thriveParagraph')}
@@ -253,15 +257,17 @@ export default function LandingPage() {
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                 {t('featuresHeading')}
                 </h2>
-                 <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => handlePlayPause('features-intro', textContent['features-intro'])}
-                    disabled={isLoading && activeSection !== 'features-intro'}
-                    aria-label="Read features intro aloud"
-                  >
-                    {isLoading && activeSection === 'features-intro' ? <Loader2 className="h-6 w-6 animate-spin" /> : (isPlaying && activeSection === 'features-intro' ? <Pause className="h-6 w-6" /> : <Play className="h-6 w-6" />)}
-                </Button>
+                 {locale === 'en' && (
+                  <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handlePlayPause('features-intro', textContent['features-intro'])}
+                      disabled={isLoading && activeSection !== 'features-intro'}
+                      aria-label="Read features intro aloud"
+                    >
+                      {isLoading && activeSection === 'features-intro' ? <Loader2 className="h-6 w-6 animate-spin" /> : (isPlaying && activeSection === 'features-intro' ? <Pause className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />)}
+                  </Button>
+                 )}
             </div>
             <p className="mt-4 text-muted-foreground md:text-lg">
               {t('featuresSubHeading')}
