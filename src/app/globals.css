@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 26 100% 96%; /* Lighter & More Vibrant: #fff5ef from #fef4ec */
+    --background: 26 100% 97%;
     --foreground: 352 45% 20%;
-    --card: 26 100% 98%; /* Lighter & More Vibrant */
+    --card: 26 100% 99%;
     --card-foreground: 352 45% 20%;
-    --popover: 26 100% 98%; /* Lighter & More Vibrant */
+    --popover: 26 100% 99%;
     --popover-foreground: 352 45% 20%;
-    --primary: 352 70% 55%; /* More Vibrant: #d95a6a from #b83a49 */
+    --primary: 352 75% 60%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 26 60% 95%; /* Lighter & More Vibrant */
+    --secondary: 26 70% 96%;
     --secondary-foreground: 352 45% 20%;
-    --muted: 26 50% 94%; /* Lighter & More Vibrant */
-    --muted-foreground: 352 25% 50%;
-    --accent: 6 90% 80%; /* More Vibrant: #f9b8b3 from #f59c94 */
-    --accent-foreground: 352 50% 10%;
+    --muted: 26 60% 95%;
+    --muted-foreground: 352 25% 55%;
+    --accent: 6 95% 82%;
+    --accent-foreground: 352 50% 15%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 26 40% 92%; /* Lighter & More Vibrant */
-    --input: 26 40% 94%; /* Lighter & More Vibrant */
-    --ring: 352 70% 55%;
+    --border: 26 50% 94%;
+    --input: 26 50% 96%;
+    --ring: 352 75% 60%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -30,14 +30,14 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
     
-    --sidebar-background: 26 100% 95%; /* Lighter & More Vibrant */
+    --sidebar-background: 26 100% 96%;
     --sidebar-foreground: 352 45% 20%;
-    --sidebar-primary: 352 70% 55%;
+    --sidebar-primary: 352 75% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 26 60% 93%; /* Lighter & More Vibrant */
+    --sidebar-accent: 26 70% 94%;
     --sidebar-accent-foreground: 352 45% 20%;
-    --sidebar-border: 26 40% 90%; /* Lighter & More Vibrant */
-    --sidebar-ring: 352 70% 55%;
+    --sidebar-border: 26 50% 92%;
+    --sidebar-ring: 352 75% 60%;
   }
 
   .dark {
