@@ -67,40 +67,45 @@ export default function LandingPage() {
   }, [audioQueue, isProcessing]);
 
   useEffect(() => {
-    processQueue();
-  }, [audioQueue, processQueue]);
+    if (!isProcessing && audioQueue.length > 0) {
+      processQueue();
+    }
+  }, [audioQueue, isProcessing, processQueue]);
 
   const handlePlaySound = useCallback((sectionId: string, text: string) => {
-    // If the section is already in the queue or being processed, do nothing.
     if (isProcessing && activeSection === sectionId) {
-        // Optional: Implement pausing logic here if desired
         if (audioRef.current) {
             audioRef.current.pause();
-            setAudioQueue([]); // Clear queue on pause
+            // Clear the queue and reset state to stop everything
+            setAudioQueue([]); 
             setIsProcessing(false);
             setActiveSection(null);
         }
-    } else if (!audioQueue.some(item => item.sectionId === sectionId) && !isProcessing) {
-       // For simplicity, we clear the queue and add the new item.
-       // This makes the latest click take priority.
-       setAudioQueue([ { sectionId, text } ]);
+    } else {
+       // Add to queue only if it's not already there
+       if (!audioQueue.some(item => item.sectionId === sectionId)) {
+           setAudioQueue((prev) => [...prev, { sectionId, text }]);
+       }
     }
   }, [isProcessing, activeSection, audioQueue]);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isLoadingThis = isProcessing && activeSection === sectionId;
-    const isPlayingThis = isProcessing && activeSection === sectionId && audioRef.current && !audioRef.current.paused;
+    const isThisItemInQueue = audioQueue.some(item => item.sectionId === sectionId);
+    const isThisItemActive = isProcessing && activeSection === sectionId;
+    const isPlayingThis = isThisItemActive && audioRef.current && !audioRef.current.paused;
+
+    const isDisabled = isProcessing && !isThisItemActive;
 
     return (
       <Button
         variant="ghost"
         size="icon"
         onClick={() => handlePlaySound(sectionId, text)}
-        disabled={isProcessing && activeSection !== sectionId}
+        disabled={isDisabled}
         className="ml-2 h-6 w-6"
         aria-label={`Read section aloud`}
       >
-        {isLoadingThis ? (isPlayingThis ? <Pause className="h-4 w-4" /> : <Loader2 className="h-4 w-4 animate-spin" />) : <Volume2 className="h-4 w-4" />}
+        {isThisItemActive ? (isPlayingThis ? <Pause className="h-4 w-4" /> : <Loader2 className="h-4 w-4 animate-spin" />) : ( isThisItemInQueue ? <Loader2 className="h-4 w-4 animate-spin" /> : <Volume2 className="h-4 w-4" />)}
       </Button>
     );
   };
