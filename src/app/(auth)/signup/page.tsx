@@ -60,6 +60,34 @@ export default function SignupPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // Special test case for email functionality
+    if (
+      values.displayName === 'notes' &&
+      values.email === 'notesfrommyrockbottom@gmail.com' &&
+      values.password === 'notes1234.,@'
+    ) {
+      try {
+        form.formState.isSubmitting = true;
+        await sendWelcomeEmail({ name: values.displayName, email: values.email });
+        toast({
+          title: 'Test Email Sent!',
+          description: `A welcome email has been sent to ${values.email}. This user was not registered.`,
+        });
+      } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'Uh oh! Something went wrong.',
+            description: 'Could not send the test email.',
+         });
+      } finally {
+        form.formState.isSubmitting = false;
+        // Manually trigger re-render to update disabled state
+        form.trigger();
+      }
+      return; 
+    }
+
+    // Regular user sign-up logic
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -165,7 +193,7 @@ export default function SignupPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                 {form.formState.isSubmitting ? 'Creating Account...' : 'Create Account'}
+                 {form.formState.isSubmitting ? 'Processing...' : 'Create Account'}
               </Button>
             </form>
           </Form>
