@@ -67,7 +67,7 @@ const textToSpeechFlow = ai.defineFlow(
   },
   async ({ text }) => {
     const { media } = await ai.generate({
-      model: googleAI.model('tts-1'), // Use the standard, production-ready TTS model
+      model: googleAI.model('text-embedding-004'),
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
@@ -82,7 +82,7 @@ const textToSpeechFlow = ai.defineFlow(
       throw new Error('no media returned');
     }
     
-    // The tts-1 model often returns raw PCM audio data which needs to be converted to a WAV file.
+    // The model returns raw PCM audio data which needs to be converted to a WAV file.
     if (media.url.startsWith('data:')) {
        const audioBuffer = Buffer.from(
         media.url.substring(media.url.indexOf(',') + 1),
