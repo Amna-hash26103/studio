@@ -17,28 +17,28 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-// Placeholder for your audio files.
-// You will need to record and place your audio files in the /public/audio directory.
+// This object maps the section IDs to the actual audio files.
+// You will need to record and place your audio files in the corresponding paths.
 const audioSources: Record<string, Record<string, string>> = {
   en: {
-    'hero-section': '/audio/en/placeholder.mp3',
-    'thrive-section': '/audio/en/placeholder.mp3',
-    'features-intro': '/audio/en/placeholder.mp3',
+    'hero-section': '/audio/en/hero-section.mp3',
+    'thrive-section': '/audio/en/thrive-section.mp3',
+    'features-intro': '/audio/en/features-intro.mp3',
   },
   ur: {
-    'hero-section': '/audio/ur/placeholder.mp3',
-    'thrive-section': '/audio/ur/placeholder.mp3',
-    'features-intro': '/audio/ur/placeholder.mp3',
+    'hero-section': '/audio/ur/hero-section.mp3',
+    'thrive-section': '/audio/ur/thrive-section.mp3',
+    'features-intro': '/audio/ur/features-intro.mp3',
   },
   ps: {
-    'hero-section': '/audio/ps/placeholder.mp3',
-    'thrive-section': '/audio/ps/placeholder.mp3',
-    'features-intro': '/audio/ps/placeholder.mp3',
+    'hero-section': '/audio/ps/hero-section.mp3',
+    'thrive-section': '/audio/ps/thrive-section.mp3',
+    'features-intro': '/audio/ps/features-intro.mp3',
   },
   pa: {
-    'hero-section': '/audio/pa/placeholder.mp3',
-    'thrive-section': '/audio/pa/placeholder.mp3',
-    'features-intro': '/audio/pa/placeholder.mp3',
+    'hero-section': '/audio/pa/hero-section.mp3',
+    'thrive-section': '/audio/pa/thrive-section.mp3',
+    'features-intro': '/audio/pa/features-intro.mp3',
   },
 };
 
@@ -206,6 +206,7 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
+        {/* Section ID: hero-section */}
         <section className="px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
           <div className="flex items-center justify-center">
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
@@ -223,6 +224,7 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Section ID: thrive-section */}
         <section className="bg-secondary">
           <div className="container mx-auto px-4 py-16 md:px-6 md:py-24">
             <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
@@ -252,6 +254,7 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Section ID: features-intro */}
         <section className="px-4 py-16 md:px-6 md:py-24">
           <div className="container mx-auto mb-12 max-w-2xl text-center">
             <div className="flex items-center justify-center">
