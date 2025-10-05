@@ -68,6 +68,12 @@ export default function LandingPage() {
               <DropdownMenuItem asChild>
                 <Link href="/ur" locale="ur">اردو</Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/ps" locale="ps">پښتو</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/pa" locale="pa">ਪੰਜਾਬੀ</Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
