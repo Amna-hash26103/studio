@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed, Circle } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations } from 'next-intl';
 import {
@@ -101,24 +101,34 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <Users className="h-8 w-8 text-primary" />,
-      title: t('featureSupportiveCommunityTitle'),
-      description: t('featureSupportiveCommunityDescription'),
-    },
-    {
-      icon: <Bot className="h-8 w-8 text-primary" />,
-      title: t('featureAIWellnessTitle'),
-      description: t('featureAIWellnessDescription'),
-    },
-    {
-      icon: <Lightbulb className="h-8 w-8 text-primary" />,
-      title: t('featureProjectCollaborationTitle'),
-      description: t('featureProjectCollaborationDescription'),
+      icon: <Smile className="h-8 w-8 text-primary" />,
+      title: t('featureSoulSpaceTitle'),
+      description: t('featureSoulSpaceDescription'),
     },
     {
       icon: <HeartHandshake className="h-8 w-8 text-primary" />,
-      title: t('featureHolisticWellbeingTitle'),
-      description: t('featureHolisticWellbeingDescription'),
+      title: t('featureHerHealthTitle'),
+      description: t('featureHerHealthDescription'),
+    },
+    {
+      icon: <UtensilsCrossed className="h-8 w-8 text-primary" />,
+      title: t('featureNourishTitle'),
+      description: t('featureNourishDescription'),
+    },
+    {
+      icon: <Activity className="h-8 w-8 text-primary" />,
+      title: t('featureEvolveTitle'),
+      description: t('featureEvolveDescription'),
+    },
+    {
+      icon: <Circle className="h-8 w-8 text-primary" />,
+      title: t('featureCircleTitle'),
+      description: t('featureCircleDescription'),
+    },
+    {
+      icon: <BrainCircuit className="h-8 w-8 text-primary" />,
+      title: t('featureFEMMindTitle'),
+      description: t('featureFEMMindDescription'),
     },
   ];
 
@@ -184,9 +194,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative px-4 pt-16 pb-4 text-center md:px-6 md:pt-24 lg:pt-32">
+        <section className="relative px-4 pt-12 text-center md:px-6 md:pt-16">
           <div className="container mx-auto text-center">
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                   {t('mainHeading')}
                 </h1>
@@ -203,8 +213,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-secondary">
-          <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
+        <section className="bg-secondary py-12">
+          <div className="container mx-auto px-4 md:px-6">
             <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">
                 {heroImage && (
@@ -232,7 +242,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative px-4 py-16 md:px-6 md:py-24">
+        <section className="relative px-4 py-16 md:px-6 md:py-20">
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -244,7 +254,7 @@ export default function LandingPage() {
               {t('featuresSubHeading')}
             </p>
           </div>
-          <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
               <Card key={index} className="z-10 bg-background/80 backdrop-blur-sm">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
