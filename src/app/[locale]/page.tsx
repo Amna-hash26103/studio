@@ -194,7 +194,7 @@ export default function LandingPage() {
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex justify-center">
             <Button size="lg" asChild>
               <Link href="/signup">{t('joinButton')}</Link>
             </Button>
