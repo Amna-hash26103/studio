@@ -4,9 +4,9 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,35 +19,51 @@ const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
+  const locale = useLocale();
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // Stop speech when the component unmounts or the user navigates away
   useEffect(() => {
-    const cleanup = () => {
+    const loadVoices = () => {
+      const availableVoices = window.speechSynthesis.getVoices();
+      if (availableVoices.length > 0) {
+        setVoices(availableVoices);
+      }
+    };
+
+    // Load voices initially
+    loadVoices();
+
+    // Voices list might load asynchronously, so listen for the event
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    // Cleanup
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
       if (window.speechSynthesis.speaking) {
         window.speechSynthesis.cancel();
       }
     };
-    window.addEventListener('beforeunload', cleanup);
-    return () => {
-      cleanup();
-      window.removeEventListener('beforeunload', cleanup);
-    };
   }, []);
 
-
   const handlePlay = useCallback((sectionId: string, text: string) => {
-    // If another section is already playing, stop it first
     if (window.speechSynthesis.speaking) {
       window.speechSynthesis.cancel();
     }
     
-    // Create and configure the utterance
     const utterance = new SpeechSynthesisUtterance(text);
     utteranceRef.current = utterance;
+
+    // Find a voice that matches the current locale
+    const voice = voices.find(v => v.lang.startsWith(locale));
+    if (voice) {
+      utterance.voice = voice;
+    } else {
+      console.warn(`No voice found for locale: ${locale}. Using default.`);
+    }
 
     utterance.onstart = () => {
       setIsPlaying(true);
@@ -68,10 +84,10 @@ export default function LandingPage() {
     };
 
     window.speechSynthesis.speak(utterance);
-  }, []);
+  }, [voices, locale]);
 
   const handlePause = () => {
-    window.speechSynthesis.cancel(); // Use cancel to stop immediately
+    window.speechSynthesis.cancel();
     setIsPlaying(false);
     setActiveSection(null);
   };
