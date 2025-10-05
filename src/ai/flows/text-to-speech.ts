@@ -11,15 +11,15 @@ import { googleAI } from '@genkit-ai/google-genai';
 import { z } from 'genkit';
 import wav from 'wav';
 
+export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
 const TextToSpeechInputSchema = z.object({
   text: z.string().describe('The text to convert to speech.'),
 });
-export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
 
+export type TextToSpeechOutput = z.infer<typeof TextToSpeechOutputSchema>;
 const TextToSpeechOutputSchema = z.object({
   audio: z.string().describe('The audio data as a base64 encoded data URI.'),
 });
-export type TextToSpeechOutput = z.infer<typeof TextToSpeechOutputSchema>;
 
 async function toWav(
   pcmData: Buffer,
@@ -61,7 +61,7 @@ const textToSpeechFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Algenib' },
+            prebuiltVoiceConfig: { voiceName: 'Vega' },
           },
         },
       },
