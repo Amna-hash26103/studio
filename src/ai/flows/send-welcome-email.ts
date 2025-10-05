@@ -60,13 +60,21 @@ const sendWelcomeEmailFlow = ai.defineFlow(
     const resend = new Resend(process.env.RESEND_API_KEY);
     
     try {
-      await resend.emails.send({
+      console.log(`Attempting to send email to ${input.email}...`);
+      const { data, error } = await resend.emails.send({
         from: 'FEMMORA <onboarding@resend.dev>', // You will need to verify a domain with Resend to use a custom from address
         to: input.email,
         subject: `Welcome to FEMMORA, ${input.name}!`,
         html: emailBody,
       });
-      console.log(`Welcome email sent to ${input.email}`);
+
+      if (error) {
+        console.error('Resend API Error:', error);
+        throw new Error(`Resend failed: ${error.message}`);
+      }
+
+      console.log('Resend API Success:', data);
+      console.log(`Welcome email successfully sent to ${input.email}`);
     } catch (error) {
       console.error('Error sending welcome email:', error);
       // Re-throw the error so it can be caught by the calling function
