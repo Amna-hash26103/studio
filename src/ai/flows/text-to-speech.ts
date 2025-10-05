@@ -66,9 +66,8 @@ const textToSpeechFlow = ai.defineFlow(
     outputSchema: TextToSpeechOutputSchema,
   },
   async ({ text }) => {
-    // Note: Using a standard, high-quality TTS model to avoid preview model rate limits.
     const { media } = await ai.generate({
-      model: googleAI.model('tts-1-hd'), 
+      model: googleAI.model('gemini-2.5-flash-preview-tts'),
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
@@ -84,7 +83,6 @@ const textToSpeechFlow = ai.defineFlow(
       throw new Error('No media was returned from the text-to-speech model.');
     }
     
-    // The model returns raw PCM audio data which needs to be converted to a WAV file.
     if (media.url.startsWith('data:')) {
        const audioBuffer = Buffer.from(
         media.url.substring(media.url.indexOf(',') + 1),
@@ -96,7 +94,6 @@ const textToSpeechFlow = ai.defineFlow(
       };
     }
     
-    // This case should be rare but handles if the model returns a non-data URI.
     throw new Error('Unsupported media format from TTS model.');
   }
 );

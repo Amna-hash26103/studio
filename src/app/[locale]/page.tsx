@@ -21,78 +21,95 @@ const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   
-  const [activeAudio, setActiveAudio] = useState<string | null>(null);
-  const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const playAudio = useCallback(async (sectionId: string, text: string) => {
-    // If another audio is loading, do nothing.
-    if (isLoadingAudio && isLoadingAudio !== sectionId) return;
+    // If something is already playing or loading, do nothing.
+    if (isLoading || isPlaying) return;
 
-    // If the clicked audio is already playing, pause it.
-    if (activeAudio === sectionId && audioRef.current) {
-      audioRef.current.pause();
-      setActiveAudio(null);
-      return;
-    }
-
-    // Stop any currently playing audio before starting a new one.
+    // Stop any currently playing audio if a new section is clicked.
     if (audioRef.current) {
       audioRef.current.pause();
+      audioRef.current = null;
     }
     
-    setIsLoadingAudio(sectionId);
-    setActiveAudio(null);
+    setIsLoading(true);
+    setActiveSection(sectionId);
 
     try {
       const response = await textToSpeech({ text });
       const audio = new Audio(response.audioDataUri);
       audioRef.current = audio;
-
+      
       audio.onplaying = () => {
-        setActiveAudio(sectionId);
+        setIsLoading(false);
+        setIsPlaying(true);
       };
 
       audio.onended = () => {
-        setActiveAudio(null);
+        setIsPlaying(false);
+        setActiveSection(null);
         audioRef.current = null;
       };
       
       audio.onerror = (e) => {
         console.error("Error playing audio:", e);
-        setActiveAudio(null);
+        setIsLoading(false);
+        setIsPlaying(false);
+        setActiveSection(null);
         audioRef.current = null;
+        alert("Sorry, there was an issue playing the audio.");
       }
 
       await audio.play();
 
     } catch (error) {
-      console.error('Error generating or playing audio:', error);
-      alert("Sorry, there was an issue generating the audio. Please try again later.");
-    } finally {
-      setIsLoadingAudio(null);
+      console.error('Error generating audio:', error);
+      alert("Sorry, there was an issue generating the audio. You may have hit a rate limit. Please wait a moment and try again.");
+      setIsLoading(false);
+      setActiveSection(null);
     }
-  }, [isLoadingAudio, activeAudio]);
+  }, [isLoading, isPlaying]);
+
+  const pauseAudio = () => {
+    if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+        setActiveSection(null);
+    }
+  }
 
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isLoading = isLoadingAudio === sectionId;
-    const isPlaying = activeAudio === sectionId;
+    const isLoadingThis = isLoading && activeSection === sectionId;
+    const isPlayingThis = isPlaying && activeSection === sectionId;
+
+    const handleClick = () => {
+      if (isPlayingThis) {
+        pauseAudio();
+      } else {
+        playAudio(sectionId, text);
+      }
+    }
 
     let icon = <Volume2 className="h-4 w-4" />;
-    if (isLoading) {
+    if (isLoadingThis) {
       icon = <Loader2 className="h-4 w-4 animate-spin" />;
-    } else if (isPlaying) {
+    } else if (isPlayingThis) {
       icon = <Pause className="h-4 w-4" />;
     }
 
-    const isDisabled = !!isLoadingAudio && !isLoading;
+    // Disable button if any audio is loading or playing, but it's not THIS button's audio.
+    const isDisabled = (isLoading || isPlaying) && !isLoadingThis && !isPlayingThis;
 
     return (
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => playAudio(sectionId, text)}
+        onClick={handleClick}
         disabled={isDisabled}
         className="ml-2 h-6 w-6"
         aria-label={`Read section aloud`}
