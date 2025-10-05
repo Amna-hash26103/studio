@@ -1,10 +1,11 @@
+
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Loader2, Pause } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Speech } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -13,6 +14,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useState, useEffect } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -23,6 +31,7 @@ export default function LandingPage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
   useEffect(() => {
     const handleVoicesChanged = () => {
@@ -49,11 +58,17 @@ export default function LandingPage() {
 
     const utterance = new SpeechSynthesisUtterance(text);
 
-    // Try to find a voice for the current locale
-    const voiceForLocale = voices.find(voice => voice.lang.startsWith(locale));
-    if (voiceForLocale) {
-      utterance.voice = voiceForLocale;
+    // Use the selected voice if available, otherwise try to find one for the current locale
+    const selectedVoice = voices.find(voice => voice.voiceURI === selectedVoiceURI);
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    } else {
+      const voiceForLocale = voices.find(voice => voice.lang.startsWith(locale));
+      if (voiceForLocale) {
+        utterance.voice = voiceForLocale;
+      }
     }
+
 
     utterance.onstart = () => {
       setIsSpeaking(true);
@@ -124,13 +139,30 @@ export default function LandingPage() {
           <FemmoraLogo className="h-14 w-14 text-primary" />
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2">
           <Button variant="ghost" asChild>
             <Link href="/login">{t('login')}</Link>
           </Button>
           <Button asChild>
             <Link href="/signup">{t('signup')}</Link>
           </Button>
+          
+           {voices.length > 0 && (
+             <Select onValueChange={setSelectedVoiceURI}>
+                <SelectTrigger className="w-auto gap-2 border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0">
+                  <Speech className="h-5 w-5" />
+                  <SelectValue placeholder="Voice" />
+                </SelectTrigger>
+                <SelectContent>
+                  {voices.map((voice) => (
+                    <SelectItem key={voice.voiceURI} value={voice.voiceURI}>
+                      {voice.name} ({voice.lang})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+           )}
+
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -266,3 +298,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
