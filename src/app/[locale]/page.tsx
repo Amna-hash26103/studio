@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -13,123 +13,79 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useState, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { cn } from '@/lib/utils';
+
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const [isLanguageSupported, setIsLanguageSupported] = useState(false);
 
-  useEffect(() => {
-    const checkVoiceSupport = () => {
-      if (typeof window === 'undefined' || !window.speechSynthesis) {
-        setIsLanguageSupported(false);
-        return;
-      }
-      
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        const hasSupport = voices.some(voice => voice.lang.startsWith(locale));
-        setIsLanguageSupported(hasSupport);
-      } else {
-        // Voices might not be loaded yet. Listen for the event.
-        window.speechSynthesis.onvoiceschanged = () => {
-           const updatedVoices = window.speechSynthesis.getVoices();
-           const hasSupport = updatedVoices.some(voice => voice.lang.startsWith(locale));
-           setIsLanguageSupported(hasSupport);
-        };
-      }
-    };
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [loadingSection, setLoadingSection] = useState<string | null>(null);
+  const [playingSection, setPlayingSection] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    checkVoiceSupport();
-
-    // Stop speech synthesis on component unmount
-    return () => {
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.onvoiceschanged = null; // Clean up listener
-    };
-  }, [locale]);
-
-  const handlePlaySound = (textId: string, text: string) => {
-    if (!isLanguageSupported) return;
-
-    if (isSpeaking && speakingId === textId) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-      setSpeakingId(null);
+  const handlePlaySound = useCallback(async (sectionId: string, text: string) => {
+    if (playingSection === sectionId) {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+      setPlayingSection(null);
       return;
     }
+
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     
-    window.speechSynthesis.cancel(); // Stop any previous speech
+    setLoadingSection(sectionId);
+    setIsPlaying(false);
+    setPlayingSection(null);
+    
+    try {
+      const response = await textToSpeech({ text });
+      const audio = new Audio(response.audioDataUri);
+      audioRef.current = audio;
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = locale;
+      audio.play();
+      setIsPlaying(true);
+      setPlayingSection(sectionId);
 
-    // Try to find a female voice for the current locale
-    const voices = window.speechSynthesis.getVoices();
-    const femaleVoice = voices.find(voice => 
-      voice.lang.startsWith(locale) && 
-      voice.name.toLowerCase().includes('female')
+      audio.onended = () => {
+        setIsPlaying(false);
+        setPlayingSection(null);
+        audioRef.current = null;
+      };
+    } catch (error) {
+      console.error('Error generating or playing audio:', error);
+      // You could show a toast notification here to the user
+    } finally {
+      setLoadingSection(null);
+    }
+  }, [playingSection]);
+
+  const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
+    const isLoading = loadingSection === sectionId;
+    const isPlayingThis = playingSection === sectionId;
+
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => handlePlaySound(sectionId, text)}
+        disabled={isLoading}
+        className="ml-2 h-6 w-6"
+        aria-label={`Read section aloud`}
+      >
+        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (isPlayingThis ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />)}
+      </Button>
     );
-    
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
-    }
-    // If no female voice, browser will use its default for the language.
-
-    utterance.onstart = () => {
-      setIsSpeaking(true);
-      setSpeakingId(textId);
-    };
-
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      setSpeakingId(null);
-    };
-    
-    utterance.onerror = (event) => {
-        setIsSpeaking(false);
-        setSpeakingId(null);
-        console.error("An error occurred during speech synthesis:", event.error);
-    }
-
-    window.speechSynthesis.speak(utterance);
   };
 
-  const AudioButton = ({ textId, text }: { textId: string, text: string }) => (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => handlePlaySound(textId, text)}
-              disabled={!isLanguageSupported}
-              className="ml-2 h-6 w-6"
-              aria-label={`Read section aloud`}
-            >
-              {isSpeaking && speakingId === textId ? (
-                <Pause className="h-4 w-4" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-        </TooltipTrigger>
-        {!isLanguageSupported && (
-          <TooltipContent>
-            <p>No voice available for this language in your browser.</p>
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
-  );
 
   const features = [
     {
@@ -203,7 +159,7 @@ export default function LandingPage() {
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {t('mainHeading')}
             </h1>
-            <AudioButton textId='hero-section' text={`${t('mainHeading')}. ${t('subHeading')}`} />
+            <AudioButton sectionId='hero-section' text={`${t('mainHeading')}. ${t('subHeading')}`} />
           </div>
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
@@ -234,7 +190,7 @@ export default function LandingPage() {
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                     {t('thriveHeading')}
                     </h2>
-                    <AudioButton textId='thrive-section' text={`${t('thriveHeading')}. ${t('thriveParagraph')}`} />
+                    <AudioButton sectionId='thrive-section' text={`${t('thriveHeading')}. ${t('thriveParagraph')}`} />
                 </div>
                 <p className="text-muted-foreground md:text-lg">
                   {t('thriveParagraph')}
@@ -251,7 +207,7 @@ export default function LandingPage() {
                 {t('featuresHeading')}
                 </h2>
                 <AudioButton 
-                    textId='features-intro' 
+                    sectionId='features-intro' 
                     text={`${t('featuresHeading')}. ${t('featuresSubHeading')}. ${features.map(f => `${f.title}. ${f.description}`).join(' ')}`}
                 />
             </div>
