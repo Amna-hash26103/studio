@@ -14,11 +14,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-// Locales supported by our new TTS API route
-const supportedTtsLocales = ['en', 'ur', 'pa'];
+// Locales supported by our TTS flow
+const supportedTtsLocales = ['en', 'ur', 'pa', 'ps'];
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
@@ -47,22 +48,13 @@ export default function LandingPage() {
     setActiveSection(sectionId);
 
     try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, locale }),
-      });
+      const response = await textToSpeech({ text });
 
-      if (!response.ok) {
-        // Log the detailed error from the API route for easier debugging
-        const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
-        console.error('TTS API responded with an error:', response.status, errorBody);
-        throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
+      if (!response.audio) {
+        throw new Error('Failed to fetch audio: No audio data returned');
       }
 
-      const { audio: audioSrc } = await response.json();
-      
-      const newAudio = new Audio(audioSrc);
+      const newAudio = new Audio(response.audio);
       audioRef.current = newAudio;
 
       newAudio.onplay = () => {
@@ -90,7 +82,7 @@ export default function LandingPage() {
       setIsLoading(false);
       setActiveSection(null);
     }
-  }, [locale, isPlaying, activeSection]);
+  }, [isPlaying, activeSection]);
 
   // Cleanup audio on component unmount
   useEffect(() => {
