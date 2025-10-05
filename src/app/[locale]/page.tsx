@@ -22,17 +22,10 @@ export default function LandingPage() {
   const locale = useLocale();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
-    const handleVoicesChanged = () => {
-      setVoices(window.speechSynthesis.getVoices());
-    };
-    window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
-    // Initial load
-    handleVoicesChanged(); 
+    // Stop speech synthesis on component unmount
     return () => {
-      window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
       window.speechSynthesis.cancel();
     };
   }, []);
@@ -48,22 +41,20 @@ export default function LandingPage() {
     window.speechSynthesis.cancel(); // Stop any previous speech
 
     const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Set the language of the utterance
+    utterance.lang = locale;
 
-    // Find a female voice for the current locale, or fall back to any voice for the locale
+    // Let the browser pick the best available voice for the language
+    const voices = window.speechSynthesis.getVoices();
     const localeVoices = voices.filter(voice => voice.lang.startsWith(locale));
     let selectedVoice = localeVoices.find(voice => voice.name.toLowerCase().includes('female'));
     if (!selectedVoice) {
-      selectedVoice = localeVoices.find(voice => voice.name.includes('Zira') || voice.name.includes('Samantha'));
+      selectedVoice = localeVoices[0];
     }
-    if (!selectedVoice) {
-        selectedVoice = localeVoices[0];
-    }
-    
     if (selectedVoice) {
-      utterance.voice = selectedVoice;
+        utterance.voice = selectedVoice;
     }
-    
-    utterance.lang = locale;
 
     utterance.onstart = () => {
       setIsSpeaking(true);
@@ -75,10 +66,10 @@ export default function LandingPage() {
       setSpeakingId(null);
     };
     
-    utterance.onerror = () => {
+    utterance.onerror = (event) => {
         setIsSpeaking(false);
         setSpeakingId(null);
-        console.error("An error occurred during speech synthesis.");
+        console.error("An error occurred during speech synthesis:", event.error);
     }
 
     window.speechSynthesis.speak(utterance);
