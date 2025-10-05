@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -183,7 +184,7 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative overflow-hidden px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
+        <section className="relative px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
            <div className="flex items-center justify-center gap-4">
               <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                 {t('mainHeading')}
@@ -193,7 +194,7 @@ export default function LandingPage() {
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-8">
             <Button size="lg" asChild>
               <Link href="/signup">{t('joinButton')}</Link>
             </Button>
@@ -229,7 +230,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative overflow-hidden px-4 py-16 md:px-6 md:py-24">
+        <section className="relative px-4 py-16 md:px-6 md:py-24">
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
