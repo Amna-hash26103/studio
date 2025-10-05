@@ -184,20 +184,22 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
-           <div className="flex items-center justify-center gap-4">
-              <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                {t('mainHeading')}
-              </h1>
-              {renderSpeakerButton('hero')}
-          </div>
-          <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
-            {t('subHeading')}
-          </p>
-          <div className="mt-8 flex justify-center">
-            <Button size="lg" asChild>
-              <Link href="/signup">{t('joinButton')}</Link>
-            </Button>
+        <section className="relative px-4 pt-16 pb-8 text-center md:px-6 md:pt-24 md:pb-12 lg:pt-32 lg:pb-16">
+          <div className="container mx-auto text-center">
+            <div className="flex items-center justify-center gap-4">
+                <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+                  {t('mainHeading')}
+                </h1>
+                {renderSpeakerButton('hero')}
+            </div>
+            <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
+              {t('subHeading')}
+            </p>
+            <div className="mt-8 flex justify-center">
+              <Button size="lg" asChild>
+                <Link href="/signup">{t('joinButton')}</Link>
+              </Button>
+            </div>
           </div>
         </section>
 
