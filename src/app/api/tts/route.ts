@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const languageCode = languageCodeMapping[locale] || 'en-US';
 
     // Use voice names that are confirmed to be female for the respective languages.
-    // Standard-C or Standard-D are often female voices.
+    // Standard-C or Standard-D are often female voices. For Pashto, A is female.
     const voiceNameMapping: Record<string, string> = {
         en: 'en-US-Standard-C',
         ur: 'ur-PK-Standard-C',
@@ -72,4 +72,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message || 'An unknown error occurred' }, { status: 500 });
   }
 }
-
