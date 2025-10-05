@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -24,12 +24,21 @@ export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [isCooldown, setIsCooldown] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const cooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Cleanup timer on component unmount
+    return () => {
+      if (cooldownTimerRef.current) {
+        clearTimeout(cooldownTimerRef.current);
+      }
+    };
+  }, []);
 
   const handlePlaySound = useCallback(async (sectionId: string, text: string) => {
-    // If something is already playing or generating, do nothing.
-    if (isGenerating || isPlaying) {
-      // Optional: If the currently playing section is clicked, pause it.
+    if (isGenerating || isPlaying || isCooldown) {
       if (isPlaying && activeSection === sectionId) {
         audioRef.current?.pause();
         setIsPlaying(false);
@@ -38,7 +47,6 @@ export default function LandingPage() {
       return;
     }
 
-    // Stop any currently playing audio before starting a new one.
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -59,6 +67,12 @@ export default function LandingPage() {
         setIsPlaying(false);
         setActiveSection(null);
         audioRef.current = null;
+        
+        // Start cooldown
+        setIsCooldown(true);
+        cooldownTimerRef.current = setTimeout(() => {
+          setIsCooldown(false);
+        }, 60000); // 60-second cooldown
       };
     } catch (error) {
       console.error('Error generating or playing audio:', error);
@@ -66,19 +80,21 @@ export default function LandingPage() {
       setActiveSection(null);
       setIsGenerating(false);
     }
-  }, [isPlaying, isGenerating, activeSection]);
+  }, [isPlaying, isGenerating, activeSection, isCooldown]);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
     const isLoadingThis = isGenerating && activeSection === sectionId;
     const isPlayingThis = isPlaying && activeSection === sectionId;
-    const isDisabled = (isGenerating || isPlaying) && activeSection !== sectionId;
+    
+    // Disable if this button is cooling down, or if another button is generating/playing.
+    const isDisabled = isCooldown || (isGenerating || isPlaying) && activeSection !== sectionId;
 
     return (
       <Button
         variant="ghost"
         size="icon"
         onClick={() => handlePlaySound(sectionId, text)}
-        disabled={isLoadingThis || isDisabled}
+        disabled={isDisabled || isLoadingThis}
         className="ml-2 h-6 w-6"
         aria-label={`Read section aloud`}
       >
