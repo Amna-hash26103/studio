@@ -4,7 +4,7 @@
  * @fileOverview A flow for sending a welcome email to new users.
  *
  * - sendWelcomeEmail - A function that generates and "sends" a welcome email.
- * - SendWelcomeEmailInput - The input type for the sendWelcomeEmail function.
+ * - SendWelcomeEmailInput - The input type for the sendWelcomeeEmail function.
  */
 
 import { ai } from '@/ai/genkit';
@@ -47,7 +47,7 @@ const sendWelcomeEmailFlow = ai.defineFlow(
     outputSchema: z.void(),
   },
   async (input) => {
-    const { output: emailBody } = await welcomeEmailPrompt(input);
+    const { text: emailBody } = await welcomeEmailPrompt(input);
     
     if (!process.env.RESEND_API_KEY) {
       console.log('--- RESEND_API_KEY not found. Skipping email send. ---');
