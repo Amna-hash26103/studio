@@ -24,7 +24,8 @@ export default function ProfilePage() {
 
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
+    // Correctly reference the profile sub-document
+    return doc(firestore, 'users', user.uid, 'profile', user.uid);
   }, [firestore, user]);
 
   const { data: userProfile, isLoading } = useDoc(userProfileRef);
@@ -83,7 +84,6 @@ export default function ProfilePage() {
             <p className="mt-4 max-w-2xl">{userProfile.bio || "No bio yet."}</p>
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 {userProfile.location && <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {userProfile.location}</div>}
-                {/* <div className="flex items-center gap-1.5"><LinkIcon className="h-4 w-4" /> <a href="#" className="hover:underline">{user.website}</a></div> */}
                 {user.metadata.creationTime && <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Joined {new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>}
             </div>
              <div className="mt-4 flex gap-6">

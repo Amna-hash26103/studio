@@ -2,8 +2,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { z } from 'zod';
+import googleServices from '@/app/google-services.json';
 
-const client = new TextToSpeechClient();
+// Initialize the client with credentials.
+// This is crucial for authentication with Google Cloud services.
+const client = new TextToSpeechClient({
+  projectId: googleServices.project_info.project_id,
+  // The library will automatically use the service account associated with
+  // the App Hosting environment.
+});
 
 const requestSchema = z.object({
   text: z.string().min(1),
@@ -49,12 +56,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Failed to synthesize speech' }, { status: 500 });
     }
 
-    // Convert the audio content to a base64 string to send as JSON
-    const audioBase64 = Buffer.from(audioContent).toString('base64');
+    // Convert the audio content (Uint8Array) to a base64 string to send as JSON
+    const audioBase64 = Buffer.from(audioContent as Uint8Array).toString('base64');
 
     return NextResponse.json({ audio: `data:audio/mp3;base64,${audioBase64}` });
   } catch (error) {
     console.error('Error in TTS API route:', error);
-    return NextResponse.json({ error: 'An internal server error occurred' }, { status: 500 });
+    // Forward the actual error message for better debugging
+    const errorMessage = error instanceof Error ? error.message : 'An internal server error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
