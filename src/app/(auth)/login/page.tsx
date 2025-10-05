@@ -73,7 +73,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mb-4 inline-block">
-            <FemmoraLogo className="mx-auto h-12 w-12 text-primary" />
+            <FemmoraLogo className="mx-auto h-20 w-20 text-primary" />
           </Link>
           <CardTitle className="font-headline text-2xl">
             Welcome Back
@@ -128,21 +128,7 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            <Button variant="outline">Google</Button>
-            <Button variant="outline">Apple</Button>
-            <Button variant="outline">Facebook</Button>
-          </div>
+
           <div className="mt-6 text-center text-sm">
             Don't have an account?{' '}
             <Link href="/signup" className="font-semibold text-primary">
