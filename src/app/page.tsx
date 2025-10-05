@@ -41,7 +41,7 @@ export default function LandingPage() {
       <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-12 w-12 text-primary" />
-          <span className="text-xl font-bold tracking-tight">FEMMORA</span>
+          <span className="text-xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-4">
           <Button variant="ghost" asChild>
