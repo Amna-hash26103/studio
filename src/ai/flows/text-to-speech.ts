@@ -66,9 +66,9 @@ const textToSpeechFlow = ai.defineFlow(
     outputSchema: TextToSpeechOutputSchema,
   },
   async ({ text }) => {
-    // Note: Using a standard TTS model to avoid preview model rate limits.
+    // Note: Using a standard, high-quality TTS model to avoid preview model rate limits.
     const { media } = await ai.generate({
-      model: googleAI.model('tts-1'), 
+      model: googleAI.model('tts-1-hd'), 
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
