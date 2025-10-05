@@ -58,13 +58,13 @@ export default function LandingPage() {
         audioRef.current = null;
       };
       
-      audio.onerror = () => {
-        console.error("Error playing audio.");
+      audio.onerror = (e) => {
+        console.error("Error playing audio:", e);
         setActiveAudio(null);
         audioRef.current = null;
       }
 
-      audio.play();
+      await audio.play();
 
     } catch (error) {
       console.error('Error generating or playing audio:', error);
