@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TextToSpeechClient } from '@google-cloud/text-to-speech';
-import services from '@/app/google-services.json';
+import textToSpeech from '@google-cloud/text-to-speech';
+import { Readable } from 'stream';
+import credentials from '../../google-services.json';
 
-// Map locales to Google's voice codes.
-// You can find more voices here: https://cloud.google.com/text-to-speech/docs/voices
-const localeToVoice: Record<string, { languageCode: string; name: string }> = {
-  en: { languageCode: 'en-US', name: 'en-US-Standard-A' },
-  ur: { languageCode: 'ur-PK', name: 'ur-PK-Standard-A' },
-  ps: { languageCode: 'ps-AF', name: 'ps-AF-Standard-A' },
-  pa: { languageCode: 'pa-IN', name: 'pa-IN-Standard-A' },
-};
-
-// Initialize the client, telling it which project to use.
-// In a deployed environment (like Firebase App Hosting), it will automatically
-// find the necessary authentication credentials.
-const ttsClient = new TextToSpeechClient({
-    projectId: services.project_info.project_id,
+// Initialize the client with the project ID from the credentials file
+const client = new textToSpeech.TextToSpeechClient({
+  projectId: credentials.project_info.project_id,
 });
 
+
+async function streamToBuffer(stream: Readable): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on('data', (chunk) => chunks.push(chunk));
+    stream.on('error', reject);
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -27,36 +26,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing text or locale' }, { status: 400 });
     }
 
-    const voice = localeToVoice[locale];
-    if (!voice) {
-      return NextResponse.json({ error: `Unsupported locale: ${locale}` }, { status: 400 });
+    const languageCodeMapping: Record<string, string> = {
+      en: 'en-US',
+      ur: 'ur-PK',
+      ps: 'ps-AF',
+      pa: 'pa-IN',
+    };
+
+    const languageCode = languageCodeMapping[locale] || 'en-US';
+
+    const voiceNameMapping: Record<string, string> = {
+        en: 'en-US-Standard-A',
+        ur: 'ur-PK-Standard-A',
+        ps: 'ps-AF-Standard-A',
+        pa: 'pa-IN-Standard-A',
     }
 
+
     const request = {
-      input: { text },
-      voice: {
-        languageCode: voice.languageCode,
-        name: voice.name,
+      input: { text: text },
+      voice: { 
+        languageCode: languageCode,
+        name: voiceNameMapping[locale],
+        ssmlGender: 'FEMALE' as const 
       },
       audioConfig: { audioEncoding: 'MP3' as const },
     };
 
-    const [response] = await ttsClient.synthesizeSpeech(request);
-
-    const audioContent = response.audioContent;
+    // Performs the text-to-speech request
+    const [response] = await client.synthesizeSpeech(request);
     
-    if (!audioContent) {
-      return NextResponse.json({ error: 'No audio content in response' }, { status: 500 });
+    if (!response.audioContent) {
+      return NextResponse.json({ error: 'Failed to generate audio content.' }, { status: 500 });
     }
 
-    // Convert Uint8Array to a Buffer, then to a Base64 string for transport over JSON
-    const audioBase64 = Buffer.from(audioContent as Uint8Array).toString('base64');
-    const audioSrc = `data:audio/mp3;base64,${audioBase64}`;
-    
-    return NextResponse.json({ audio: audioSrc });
+    // Return the audio content as a base64 string
+    const audioBase64 = Buffer.from(response.audioContent).toString('base64');
+    return NextResponse.json({ audioContent: audioBase64 });
 
   } catch (error: any) {
-    console.error('Error calling Google TTS API:', error);
-    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
+    console.error('ERROR in TTS route:', error);
+    return NextResponse.json({ error: error.message || 'An unknown error occurred' }, { status: 500 });
   }
 }

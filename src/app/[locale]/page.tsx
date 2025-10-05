@@ -24,75 +24,80 @@ export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const handlePlayPause = useCallback(async (sectionId: string, textToRead: string) => {
-    if (activeSection === sectionId && isPlaying) {
-      audioRef.current?.pause();
-      setIsPlaying(false);
+  const handlePlayPause = useCallback((sectionId: string, textToRead: string) => {
+    const synth = window.speechSynthesis;
+    if (!synth) {
+      alert("Your browser does not support text-to-speech.");
       return;
     }
 
-    if (isLoading) return;
+    // If clicking the same button that is currently playing, stop it.
+    if (activeSection === sectionId && isPlaying) {
+      synth.cancel();
+      setIsPlaying(false);
+      setActiveSection(null);
+      return;
+    }
 
+    // If any other audio is playing, stop it before starting new audio.
+    if (synth.speaking) {
+      synth.cancel();
+    }
+    
     setIsLoading(true);
     setActiveSection(sectionId);
 
-    try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: textToRead, locale }),
-      });
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utteranceRef.current = utterance;
 
-      if (!response.ok) {
-        // Log the detailed error from the API route for easier debugging
-        const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
-        console.error('TTS API responded with an error:', response.status, errorBody);
-        throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
-      }
-
-      const { audio: audioSrc } = await response.json();
+    // This function finds voices and speaks. It's needed because getVoices() can be asynchronous.
+    const getVoicesAndSpeak = () => {
+      let voices = synth.getVoices();
       
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+      // Try to find a voice that matches the current locale (e.g., 'en-US', 'ur-PK')
+      const voiceForLocale = voices.find(voice => voice.lang.startsWith(locale));
+      utterance.voice = voiceForLocale || voices[0]; // Fallback to the first available voice
       
-      const newAudio = new Audio(audioSrc);
-      audioRef.current = newAudio;
-
-      newAudio.oncanplaythrough = () => {
-        newAudio.play();
+      utterance.onstart = () => {
         setIsLoading(false);
         setIsPlaying(true);
       };
 
-      newAudio.onended = () => {
+      utterance.onend = () => {
         setIsPlaying(false);
         setActiveSection(null);
+        utteranceRef.current = null;
       };
-      
-      newAudio.onerror = (e) => {
-        console.error('Error playing audio:', e);
-        alert(`Could not play audio. There was an unexpected error.`);
+
+      utterance.onerror = (e) => {
+        console.error('SpeechSynthesisUtterance error', e);
+        alert('An error occurred during speech synthesis. The selected voice may not be supported for this language on your device.');
         setIsLoading(false);
         setIsPlaying(false);
         setActiveSection(null);
       };
+      
+      synth.speak(utterance);
+    };
 
-    } catch (error: any) {
-      console.error('Error in handlePlayPause:', error);
-      alert(error.message || 'Failed to generate audio. Please try again later.');
-      setIsLoading(false);
-      setActiveSection(null);
+    // The 'voiceschanged' event fires when the voice list is ready.
+    if (synth.getVoices().length > 0) {
+      getVoicesAndSpeak();
+    } else {
+      synth.onvoiceschanged = getVoicesAndSpeak;
     }
-  }, [activeSection, isPlaying, isLoading, locale]);
 
+  }, [activeSection, isPlaying, locale]);
+
+
+  // Cleanup function to cancel speech synthesis when the component unmounts.
   useEffect(() => {
+    const synth = window.speechSynthesis;
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
+      if (synth && synth.speaking) {
+        synth.cancel();
       }
     };
   }, []);
