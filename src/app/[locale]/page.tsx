@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { HeartHandshake, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed, Circle } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed, Circle } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations } from 'next-intl';
 import {
@@ -121,7 +121,7 @@ export default function LandingPage() {
       description: t('featureEvolveDescription'),
     },
     {
-      icon: <Circle className="h-8 w-8 text-primary" />,
+      icon: <Users className="h-8 w-8 text-primary" />,
       title: t('featureCircleTitle'),
       description: t('featureCircleDescription'),
     },
@@ -194,7 +194,7 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative px-4 pt-12 text-center md:px-6">
+        <section className="relative px-4 pt-12 pb-12 text-center md:px-6">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
@@ -213,7 +213,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-secondary py-12">
+        <section className="bg-secondary py-8">
           <div className="container mx-auto px-4 md:px-6">
             <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">
