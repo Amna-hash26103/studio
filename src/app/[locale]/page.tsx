@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Speech } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -13,13 +13,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useState, useEffect } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -30,7 +23,6 @@ export default function LandingPage() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string | null>(null);
 
   useEffect(() => {
     const handleVoicesChanged = () => {
@@ -57,17 +49,21 @@ export default function LandingPage() {
 
     const utterance = new SpeechSynthesisUtterance(text);
 
-    // Use the selected voice if available, otherwise try to find one for the current locale
-    const selectedVoice = voices.find(voice => voice.voiceURI === selectedVoiceURI);
+    // Find a female voice for the current locale, or fall back to any voice for the locale
+    const localeVoices = voices.filter(voice => voice.lang.startsWith(locale));
+    let selectedVoice = localeVoices.find(voice => voice.name.toLowerCase().includes('female'));
+    if (!selectedVoice) {
+      selectedVoice = localeVoices.find(voice => voice.name.includes('Zira') || voice.name.includes('Samantha'));
+    }
+    if (!selectedVoice) {
+        selectedVoice = localeVoices[0];
+    }
+    
     if (selectedVoice) {
       utterance.voice = selectedVoice;
-    } else {
-      const voiceForLocale = voices.find(voice => voice.lang.startsWith(locale));
-      if (voiceForLocale) {
-        utterance.voice = voiceForLocale;
-      }
     }
-
+    
+    utterance.lang = locale;
 
     utterance.onstart = () => {
       setIsSpeaking(true);
@@ -145,22 +141,6 @@ export default function LandingPage() {
           <Button asChild>
             <Link href="/signup">{t('signup')}</Link>
           </Button>
-          
-           {voices.length > 0 && (
-             <Select onValueChange={setSelectedVoiceURI}>
-                <SelectTrigger className="w-auto gap-2 border-0 bg-transparent shadow-none focus:ring-0 focus:ring-offset-0">
-                  <Speech className="h-5 w-5" />
-                  <SelectValue placeholder="Voice" />
-                </SelectTrigger>
-                <SelectContent>
-                  {voices.map((voice) => (
-                    <SelectItem key={voice.voiceURI} value={voice.voiceURI}>
-                      {voice.name} ({voice.lang})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-           )}
 
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
