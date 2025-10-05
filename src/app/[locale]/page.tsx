@@ -54,7 +54,10 @@ export default function LandingPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch audio');
+        // Log the detailed error from the API route for easier debugging
+        const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+        console.error('TTS API responded with an error:', response.status, errorBody);
+        throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
       }
 
       const { audio: audioSrc } = await response.json();
