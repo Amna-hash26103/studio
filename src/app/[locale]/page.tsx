@@ -13,114 +13,86 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-type QueueItem = {
-  sectionId: string;
-  text: string;
-};
-
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   
-  const [audioQueue, setAudioQueue] = useState<QueueItem[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [activeAudio, setActiveAudio] = useState<string | null>(null);
+  const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const processQueue = useCallback(async () => {
-    if (audioQueue.length === 0) {
-      setIsProcessing(false);
-      setActiveSection(null);
+  const playAudio = useCallback(async (sectionId: string, text: string) => {
+    // If another audio is loading, do nothing.
+    if (isLoadingAudio && isLoadingAudio !== sectionId) return;
+
+    // If the clicked audio is already playing, pause it.
+    if (activeAudio === sectionId && audioRef.current) {
+      audioRef.current.pause();
+      setActiveAudio(null);
       return;
     }
-    
-    if (isProcessing) return;
 
-    setIsProcessing(true);
-    const item = audioQueue[0];
-    setActiveSection(item.sectionId);
+    // Stop any currently playing audio before starting a new one.
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    
+    setIsLoadingAudio(sectionId);
+    setActiveAudio(null);
 
     try {
-      const response = await textToSpeech({ text: item.text });
+      const response = await textToSpeech({ text });
       const audio = new Audio(response.audioDataUri);
       audioRef.current = audio;
 
-      audio.play();
+      audio.onplaying = () => {
+        setActiveAudio(sectionId);
+      };
 
       audio.onended = () => {
-        // Wait 5 seconds before processing next item
-        setTimeout(() => {
-          setAudioQueue((prev) => prev.slice(1));
-          setIsProcessing(false); // Allow next item to be processed
-        }, 5000); 
+        setActiveAudio(null);
+        audioRef.current = null;
       };
       
       audio.onerror = () => {
         console.error("Error playing audio.");
-         setTimeout(() => {
-          setAudioQueue((prev) => prev.slice(1));
-          setIsProcessing(false);
-        }, 5000);
+        setActiveAudio(null);
+        audioRef.current = null;
       }
+
+      audio.play();
 
     } catch (error) {
       console.error('Error generating or playing audio:', error);
-      // If error, clear queue and reset state after a delay
-       setTimeout(() => {
-          setAudioQueue([]);
-          setActiveSection(null);
-          setIsProcessing(false);
-        }, 5000);
+      alert("Sorry, there was an issue generating the audio. Please try again later.");
+    } finally {
+      setIsLoadingAudio(null);
     }
-  }, [audioQueue, isProcessing]);
+  }, [isLoadingAudio, activeAudio]);
 
-  useEffect(() => {
-    if (audioQueue.length > 0 && !isProcessing) {
-      processQueue();
-    }
-  }, [audioQueue, isProcessing, processQueue]);
-
-  const handlePlaySound = useCallback((sectionId: string, text: string) => {
-    // If this section is currently active and playing, pause it and clear the queue.
-    if (isProcessing && activeSection === sectionId && audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.onended = null; // Prevent the onended callback from firing
-        setAudioQueue([]); 
-        setIsProcessing(false);
-        setActiveSection(null);
-    } else {
-       // Add to queue only if it's not already there
-       if (!audioQueue.some(item => item.sectionId === sectionId)) {
-           setAudioQueue((prev) => [...prev, { sectionId, text }]);
-       }
-    }
-  }, [isProcessing, activeSection, audioQueue]);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isInQueue = audioQueue.some(item => item.sectionId === sectionId);
-    const isActive = activeSection === sectionId;
+    const isLoading = isLoadingAudio === sectionId;
+    const isPlaying = activeAudio === sectionId;
 
     let icon = <Volume2 className="h-4 w-4" />;
-    if (isActive) {
-        icon = audioRef.current && !audioRef.current.paused 
-            ? <Pause className="h-4 w-4" /> 
-            : <Loader2 className="h-4 w-4 animate-spin" />;
-    } else if (isInQueue) {
-        icon = <Loader2 className="h-4 w-4 animate-spin" />;
+    if (isLoading) {
+      icon = <Loader2 className="h-4 w-4 animate-spin" />;
+    } else if (isPlaying) {
+      icon = <Pause className="h-4 w-4" />;
     }
 
-    // A button is disabled if processing is happening for *another* section.
-    const isDisabled = isProcessing && !isActive;
+    const isDisabled = !!isLoadingAudio && !isLoading;
 
     return (
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => handlePlaySound(sectionId, text)}
+        onClick={() => playAudio(sectionId, text)}
         disabled={isDisabled}
         className="ml-2 h-6 w-6"
         aria-label={`Read section aloud`}
