@@ -9,6 +9,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { Resend } from 'resend';
 
 const SendWelcomeEmailInputSchema = z.object({
   name: z.string().describe('The name of the new user.'),
@@ -31,7 +32,7 @@ const welcomeEmailPrompt = ai.definePrompt({
     3.  Mention some key features like the supportive community, AI wellness assistants, and project collaboration.
     4.  End with an encouraging and friendly closing.
 
-    Generate only the body of the email. The subject line will be "Welcome to FEMMORA, {{{name}}}!".
+    Generate only the body of the email, formatted as simple HTML. The subject line will be "Welcome to FEMMORA, {{{name}}}!".
   `,
 });
 
@@ -47,26 +48,29 @@ const sendWelcomeEmailFlow = ai.defineFlow(
   },
   async (input) => {
     const { output: emailBody } = await welcomeEmailPrompt(input);
+    
+    if (!process.env.RESEND_API_KEY) {
+      console.log('--- RESEND_API_KEY not found. Skipping email send. ---');
+      console.log('--- Email Body ---');
+      console.log(emailBody);
+      console.log('--------------------');
+      return;
+    }
 
-    // In a real application, you would integrate an email sending service here.
-    // For example, using a service like Resend, SendGrid, or Nodemailer.
-    // Since we can't do that here, we'll just log it to the console.
-    console.log('--- Sending Welcome Email ---');
-    console.log(`To: ${input.email}`);
-    console.log(`Subject: Welcome to FEMMORA, ${input.name}!`);
-    console.log('Body:');
-    console.log(emailBody);
-    console.log('-----------------------------');
-
-    // Example of what an integration might look like:
-    //
-    // import { Resend } from 'resend';
-    // const resend = new Resend(process.env.RESEND_API_KEY);
-    // await resend.emails.send({
-    //   from: 'FEMMORA <welcome@femmora.com>',
-    //   to: input.email,
-    //   subject: `Welcome to FEMMORA, ${input.name}!`,
-    //   html: emailBody,
-    // });
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    try {
+      await resend.emails.send({
+        from: 'FEMMORA <onboarding@resend.dev>', // You will need to verify a domain with Resend to use a custom from address
+        to: input.email,
+        subject: `Welcome to FEMMORA, ${input.name}!`,
+        html: emailBody,
+      });
+      console.log(`Welcome email sent to ${input.email}`);
+    } catch (error) {
+      console.error('Error sending welcome email:', error);
+      // It's often a good idea to not let this error block the user's sign-up flow.
+      // We log it for debugging, but we don't re-throw it.
+    }
   }
 );
