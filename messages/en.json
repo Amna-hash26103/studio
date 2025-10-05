@@ -1,0 +1,25 @@
+
+{
+  "LandingPage": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "mainHeading": "Empower Your Journey. Together.",
+    "subHeading": "FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.",
+    "joinButton": "Join the Community",
+    "thriveHeading": "A Space to Thrive",
+    "thriveParagraph": "At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.",
+    "featuresHeading": "Features Designed for You",
+    "featuresSubHeading": "Everything you need to support your personal and professional growth, all in one place.",
+    "featureSupportiveCommunityTitle": "Supportive Community",
+    "featureSupportiveCommunityDescription": "Connect with like-minded women in a safe and empowering space. Share your journey and grow together.",
+    "featureAIWellnessTitle": "AI-Powered Wellness",
+    "featureAIWellnessDescription": "Get personalized advice on health, nutrition, and emotional well-being from our friendly AI assistants.",
+    "featureProjectCollaborationTitle": "Project Collaboration",
+    "featureProjectCollaborationDescription": "Showcase your creative and professional projects, find collaborators, and get inspired by others.",
+    "featureHolisticWellbeingTitle": "Holistic Well-being",
+    "featureHolisticWellbeingDescription": "Track your wellness journey, celebrate achievements, and build healthy habits for a balanced life.",
+    "footerPrivacy": "Privacy",
+    "footerTerms": "Terms",
+    "footerContact": "Contact"
+  }
+}
