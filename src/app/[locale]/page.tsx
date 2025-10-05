@@ -14,12 +14,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-// Locales supported by our TTS flow
-const supportedTtsLocales = ['en', 'ur', 'pa', 'ps'];
+// Locales supported by our TTS service
+const supportedTtsLocales = ['en', 'ur', 'ps', 'pa'];
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
@@ -48,13 +47,26 @@ export default function LandingPage() {
     setActiveSection(sectionId);
 
     try {
-      const response = await textToSpeech({ text });
+      const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, locale }),
+      });
 
-      if (!response.audio) {
-        throw new Error('Failed to fetch audio: No audio data returned');
+      if (!response.ok) {
+        // Log the detailed error from the API route for easier debugging
+        const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+        console.error('TTS API responded with an error:', response.status, errorBody);
+        throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
       }
 
-      const newAudio = new Audio(response.audio);
+      const { audio: audioSrc } = await response.json();
+      
+      if (!audioSrc) {
+        throw new Error('No audio source returned from API');
+      }
+
+      const newAudio = new Audio(audioSrc);
       audioRef.current = newAudio;
 
       newAudio.onplay = () => {
@@ -68,8 +80,8 @@ export default function LandingPage() {
         audioRef.current = null;
       };
       
-      newAudio.onerror = () => {
-        console.error('Error playing audio');
+      newAudio.onerror = (e) => {
+        console.error('Error playing audio:', e);
         setIsLoading(false);
         setIsPlaying(false);
         setActiveSection(null);
@@ -81,8 +93,9 @@ export default function LandingPage() {
       console.error('Error in TTS process:', error);
       setIsLoading(false);
       setActiveSection(null);
+      // Optionally, show a toast to the user
     }
-  }, [isPlaying, activeSection]);
+  }, [isPlaying, activeSection, locale]);
 
   // Cleanup audio on component unmount
   useEffect(() => {
