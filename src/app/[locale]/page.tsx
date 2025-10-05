@@ -25,6 +25,24 @@ export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  useEffect(() => {
+    const loadVoices = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
+    // Voices are loaded asynchronously
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    // Cleanup speechSynthesis on component unmount
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   const audioContent = {
     hero: `${t('mainHeading')} ${t('subHeading')}`,
@@ -49,7 +67,21 @@ export default function LandingPage() {
     
     const textToSpeak = audioContent[section];
     const newUtterance = new SpeechSynthesisUtterance(textToSpeak);
-    newUtterance.lang = locale;
+    
+    // Find and set a female voice
+    const femaleVoice = voices.find(
+      (voice) => voice.lang.startsWith('en') && voice.name.includes('Female')
+    );
+    
+    if (femaleVoice) {
+      newUtterance.voice = femaleVoice;
+    } else {
+      // Fallback for browsers that don't specify gender in the name
+      const enVoice = voices.find(v => v.lang.startsWith('en'));
+      if (enVoice) newUtterance.voice = enVoice;
+    }
+
+    newUtterance.lang = 'en-US';
 
     newUtterance.onstart = () => {
         setIsLoading(null);
@@ -70,15 +102,6 @@ export default function LandingPage() {
     utteranceRef.current = newUtterance;
     window.speechSynthesis.speak(newUtterance);
   };
-
-  useEffect(() => {
-    // Cleanup speechSynthesis on component unmount
-    return () => {
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
 
   const features = [
     {
@@ -106,12 +129,8 @@ export default function LandingPage() {
   const renderSpeakerButton = (section: keyof typeof audioContent) => {
     if (locale !== 'en') return null;
 
-    let Icon = Speaker;
-    if (isPlaying === section) {
-      Icon = Speaker; // Or some 'stop' icon if you prefer
-    } else if (isLoading === section) {
-      Icon = Loader2;
-    }
+    const Icon = isLoading === section ? Loader2 : Speaker;
+    const isSpinning = isLoading === section || isPlaying === section;
     
     return (
       <Button
@@ -121,7 +140,7 @@ export default function LandingPage() {
         className="ml-2"
         aria-label={`Read ${section.replace('-', ' ')} aloud`}
       >
-        <Icon className={`h-5 w-5 ${isLoading === section ? 'animate-spin' : ''}`} />
+        <Icon className={`h-5 w-5 ${isSpinning ? 'animate-pulse' : ''}`} />
       </Button>
     );
   }
