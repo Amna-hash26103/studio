@@ -17,8 +17,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-const audioSections = ['hero-section', 'thrive-section', 'features-intro'];
-
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
@@ -27,7 +25,6 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
 
   const handlePlayPause = useCallback(async (sectionId: string, textToRead: string) => {
     if (activeSection === sectionId && isPlaying) {
@@ -49,6 +46,7 @@ export default function LandingPage() {
       });
 
       if (!response.ok) {
+        // Log the detailed error from the API route for easier debugging
         const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
         console.error('TTS API responded with an error:', response.status, errorBody);
         throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
@@ -82,14 +80,13 @@ export default function LandingPage() {
         setActiveSection(null);
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in handlePlayPause:', error);
-      alert('Failed to generate audio. Please try again later.');
+      alert(error.message || 'Failed to generate audio. Please try again later.');
       setIsLoading(false);
       setActiveSection(null);
     }
   }, [activeSection, isPlaying, isLoading, locale]);
-
 
   useEffect(() => {
     return () => {
@@ -99,7 +96,6 @@ export default function LandingPage() {
       }
     };
   }, []);
-
 
   const features = [
     {
