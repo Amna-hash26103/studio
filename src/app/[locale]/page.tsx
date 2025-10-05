@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { FemmoraLogo } from '@/components/icons';
+import { FemmoraLogo, BohoShapeOne, BohoShapeTwo } from '@/components/icons';
 import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations } from 'next-intl';
@@ -146,7 +146,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-hidden">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-14 w-14 text-primary" />
@@ -188,7 +188,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
+        <section className="relative px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
+           <BohoShapeOne className="absolute top-10 -left-48 h-auto w-[40rem] text-primary opacity-10" />
+           <BohoShapeTwo className="absolute bottom-0 -right-48 h-auto w-[40rem] text-accent opacity-60" />
            <div className="flex items-center justify-center gap-4">
               <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                 {t('mainHeading')}
@@ -234,7 +236,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="px-4 py-16 md:px-6 md:py-24">
+        <section className="relative px-4 py-16 md:px-6 md:py-24">
+          <BohoShapeOne className="absolute -bottom-24 -left-32 h-auto w-[30rem] -rotate-45 text-accent opacity-40" />
+           <BohoShapeTwo className="absolute -top-24 -right-32 h-auto w-[30rem] rotate-45 text-primary opacity-15" />
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -248,7 +252,7 @@ export default function LandingPage() {
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
-              <Card key={index}>
+              <Card key={index} className="z-10 bg-background/80 backdrop-blur-sm">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                   {feature.icon}
                   <h3 className="text-xl font-bold">{feature.title}</h3>
