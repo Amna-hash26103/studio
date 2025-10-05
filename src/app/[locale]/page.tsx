@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -17,93 +17,108 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
+// Locales supported by our new TTS API route
+const supportedTtsLocales = ['en', 'ur', 'pa'];
+
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
 
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handlePlayPause = useCallback((sectionId: string, text: string, lang: string) => {
-    const synth = window.speechSynthesis;
-    if (!synth) return;
-
-    // If this section is currently playing, stop it.
+  const handlePlayPause = useCallback(async (sectionId: string, text: string) => {
+    // If this section is playing, stop it.
     if (isPlaying && activeSection === sectionId) {
-      synth.cancel();
+      audioRef.current?.pause();
       setIsPlaying(false);
       setActiveSection(null);
       return;
     }
-    
-    // If another section is playing, stop it before starting the new one.
-    if (synth.speaking) {
-        synth.cancel();
+
+    // If something else is playing, stop that first.
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
 
-    const voices = synth.getVoices();
-    // Prioritize voices that exactly match the language-country code (e.g., "en-US")
-    let voice = voices.find((v) => v.lang === lang);
-    // If not found, try finding a voice that matches the language only (e.g., "en")
-    if (!voice) {
-      voice = voices.find((v) => v.lang.startsWith(lang.split('-')[0]));
-    }
+    setIsLoading(true);
+    setActiveSection(sectionId);
 
-    const newUtterance = new SpeechSynthesisUtterance(text);
-    if (voice) {
-      newUtterance.voice = voice;
-    }
-    newUtterance.lang = lang; // Set the lang property for best results
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, locale }),
+      });
 
-    utteranceRef.current = newUtterance;
-    
-    newUtterance.onstart = () => {
-      setIsPlaying(true);
-      setActiveSection(sectionId);
-    };
+      if (!response.ok) {
+        throw new Error('Failed to fetch audio');
+      }
 
-    newUtterance.onend = () => {
-      setIsPlaying(false);
+      const { audio: audioSrc } = await response.json();
+      
+      const newAudio = new Audio(audioSrc);
+      audioRef.current = newAudio;
+
+      newAudio.onplay = () => {
+        setIsLoading(false);
+        setIsPlaying(true);
+      };
+
+      newAudio.onended = () => {
+        setIsPlaying(false);
+        setActiveSection(null);
+        audioRef.current = null;
+      };
+      
+      newAudio.onerror = () => {
+        console.error('Error playing audio');
+        setIsLoading(false);
+        setIsPlaying(false);
+        setActiveSection(null);
+      };
+
+      await newAudio.play();
+
+    } catch (error) {
+      console.error('Error in TTS process:', error);
+      setIsLoading(false);
       setActiveSection(null);
-      utteranceRef.current = null;
-    };
-    
-    newUtterance.onerror = () => {
-      setIsPlaying(false);
-      setActiveSection(null);
-      utteranceRef.current = null;
-    };
+    }
+  }, [locale, isPlaying, activeSection]);
 
-    synth.speak(newUtterance);
-  }, [isPlaying, activeSection]);
-
-
-  // Effect to ensure voices are loaded, especially on some browsers like Chrome
+  // Cleanup audio on component unmount
   useEffect(() => {
-    const synth = window.speechSynthesis;
-    if (synth.getVoices().length === 0) {
-      synth.onvoiceschanged = () => {};
-    }
-    // Cleanup function to cancel any ongoing speech when the component unmounts
     return () => {
-      if (synth && synth.speaking) {
-        synth.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
     };
   }, []);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
+    // Hide button if the locale is not supported by our TTS service
+    if (!supportedTtsLocales.includes(locale)) {
+      return null;
+    }
+
+    const isCurrentSectionLoading = isLoading && activeSection === sectionId;
+    const isCurrentSectionPlaying = isPlaying && activeSection === sectionId;
+    const isOtherSectionActive = (isLoading || isPlaying) && activeSection !== sectionId;
+
     return (
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => handlePlayPause(sectionId, text, locale)}
-        disabled={isPlaying && activeSection !== sectionId}
+        onClick={() => handlePlayPause(sectionId, text)}
+        disabled={isCurrentSectionLoading || isOtherSectionActive}
         className="ml-2 h-6 w-6"
-        aria-label={isPlaying && activeSection === sectionId ? 'Pause reading' : 'Read section aloud'}
+        aria-label={isCurrentSectionPlaying ? 'Pause reading' : 'Read section aloud'}
       >
-        {isPlaying && activeSection === sectionId ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+        {isCurrentSectionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isCurrentSectionPlaying ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </Button>
     );
   };
