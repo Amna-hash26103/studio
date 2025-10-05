@@ -9,7 +9,7 @@
     {
       "id": "hero-1",
       "description": "A crowd of women marching with a banner that says WOMAN.",
-      "imageUrl": "https://i.imgur.com/K5A4n4h.png",
+      "imageUrl": "https://i.postimg.cc/MZCdKkrZ/digital-art-8m-women-strike-movement.jpg",
       "imageHint": "women marching"
     },
     {
@@ -81,7 +81,7 @@
     {
       "id": "user-profile-cover",
       "description": "A cover image for a user profile page, showing a serene landscape.",
-      "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b6cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b6cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "serene landscape"
     }
   ]
