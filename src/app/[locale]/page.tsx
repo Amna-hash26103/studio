@@ -15,36 +15,36 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useCallback } from 'react';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
-import { cn } from '@/lib/utils';
-
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
-  const locale = useLocale();
-
+  
   const [isPlaying, setIsPlaying] = useState(false);
-  const [loadingSection, setLoadingSection] = useState<string | null>(null);
-  const [playingSection, setPlayingSection] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handlePlaySound = useCallback(async (sectionId: string, text: string) => {
-    if (playingSection === sectionId) {
-      audioRef.current?.pause();
-      setIsPlaying(false);
-      setPlayingSection(null);
+    // If something is already playing or generating, do nothing.
+    if (isGenerating || isPlaying) {
+      // Optional: If the currently playing section is clicked, pause it.
+      if (isPlaying && activeSection === sectionId) {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+        setActiveSection(null);
+      }
       return;
     }
 
-    // Stop any currently playing audio
+    // Stop any currently playing audio before starting a new one.
     if (audioRef.current) {
       audioRef.current.pause();
     }
     
-    setLoadingSection(sectionId);
-    setIsPlaying(false);
-    setPlayingSection(null);
+    setIsGenerating(true);
+    setActiveSection(sectionId);
     
     try {
       const response = await textToSpeech({ text });
@@ -53,35 +53,36 @@ export default function LandingPage() {
 
       audio.play();
       setIsPlaying(true);
-      setPlayingSection(sectionId);
+      setIsGenerating(false);
 
       audio.onended = () => {
         setIsPlaying(false);
-        setPlayingSection(null);
+        setActiveSection(null);
         audioRef.current = null;
       };
     } catch (error) {
       console.error('Error generating or playing audio:', error);
-      // You could show a toast notification here to the user
-    } finally {
-      setLoadingSection(null);
+      setIsPlaying(false);
+      setActiveSection(null);
+      setIsGenerating(false);
     }
-  }, [playingSection]);
+  }, [isPlaying, isGenerating, activeSection]);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isLoading = loadingSection === sectionId;
-    const isPlayingThis = playingSection === sectionId;
+    const isLoadingThis = isGenerating && activeSection === sectionId;
+    const isPlayingThis = isPlaying && activeSection === sectionId;
+    const isDisabled = (isGenerating || isPlaying) && activeSection !== sectionId;
 
     return (
       <Button
         variant="ghost"
         size="icon"
         onClick={() => handlePlaySound(sectionId, text)}
-        disabled={isLoading}
+        disabled={isLoadingThis || isDisabled}
         className="ml-2 h-6 w-6"
         aria-label={`Read section aloud`}
       >
-        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (isPlayingThis ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />)}
+        {isLoadingThis ? <Loader2 className="h-4 w-4 animate-spin" /> : (isPlayingThis ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />)}
       </Button>
     );
   };
@@ -113,6 +114,11 @@ export default function LandingPage() {
       description: t('featureHolisticWellbeingDescription'),
     },
   ];
+  
+  const heroText = `${t('mainHeading')}. ${t('subHeading')}`;
+  const thriveText = `${t('thriveHeading')}. ${t('thriveParagraph')}`;
+  const featuresText = `${t('featuresHeading')}. ${t('featuresSubHeading')}. ${features.map(f => `${f.title}. ${f.description}`).join(' ')}`;
+
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -159,7 +165,7 @@ export default function LandingPage() {
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {t('mainHeading')}
             </h1>
-            <AudioButton sectionId='hero-section' text={`${t('mainHeading')}. ${t('subHeading')}`} />
+            <AudioButton sectionId='hero-section' text={heroText} />
           </div>
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
@@ -190,7 +196,7 @@ export default function LandingPage() {
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                     {t('thriveHeading')}
                     </h2>
-                    <AudioButton sectionId='thrive-section' text={`${t('thriveHeading')}. ${t('thriveParagraph')}`} />
+                    <AudioButton sectionId='thrive-section' text={thriveText} />
                 </div>
                 <p className="text-muted-foreground md:text-lg">
                   {t('thriveParagraph')}
@@ -208,7 +214,7 @@ export default function LandingPage() {
                 </h2>
                 <AudioButton 
                     sectionId='features-intro' 
-                    text={`${t('featuresHeading')}. ${t('featuresSubHeading')}. ${features.map(f => `${f.title}. ${f.description}`).join(' ')}`}
+                    text={featuresText}
                 />
             </div>
             <p className="mt-4 text-muted-foreground md:text-lg">
