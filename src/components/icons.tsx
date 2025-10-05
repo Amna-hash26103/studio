@@ -32,18 +32,33 @@ export function FloralShapeOne(props: SVGProps<SVGSVGElement>) {
       <path
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
-        d="M100,100 C50,50 50,150 100,100 M100,100 C150,50 150,150 100,100 M50,50 C25,75 75,125 100,100 M150,50 C175,75 125,125 100,100 M50,150 C25,125 75,75 100,100 M150,150 C175,125 125,75 100,100"
+        strokeWidth="1"
+        d="M 100,100 a 25,25 0 1,1 50,0 a 25,25 0 1,1 -50,0 M 100,100 a 25,25 0 1,0 50,0 a 25,25 0 1,0 -50,0 M 100,100 C 125,75 75,75 100,100 M 100,100 C 75,125 125,125 100,100 M 50,100 A 50,50 0 0,1 150,100"
       >
-        <animateTransform
+         <animateTransform
           attributeName="transform"
           type="rotate"
           from="0 100 100"
           to="360 100 100"
-          dur="10s"
+          dur="45s"
           repeatCount="indefinite"
         />
       </path>
+       <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+        d="M 50,50 C 75,25 125,75 100,100 M 150,50 C 125,25 75,75 100,100 M 50,150 C 75,175 125,125 100,100 M 150,150 C 125,175 75,125 100,100"
+      >
+        <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="360 100 100"
+            to="0 100 100"
+            dur="60s"
+            repeatCount="indefinite"
+          />
+       </path>
     </svg>
   );
 }
@@ -58,20 +73,14 @@ export function FloralShapeTwo(props: SVGProps<SVGSVGElement>) {
       <path
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
-        d="M 20,80 C 40,20 80,20 80,80"
+        strokeWidth="0.8"
+        d="M 20,80 C 40,20 80,20 80,80 M 50,50 C 20,20 80,80 50,50 M 50,50 C 20,80 80,20 50,50"
       />
       <path
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
-        d="M 20,80 C 0,60 40,60 50,50"
-      />
-      <path
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        d="M 80,80 C 100,60 60,60 50,50"
+        strokeWidth="0.8"
+        d="M 20,20 C 40,80 80,80 80,20 M 50,50 C 20,80 80,20 50,50 M 50,50 C 20,20 80,80 50,50"
       />
     </svg>
   );

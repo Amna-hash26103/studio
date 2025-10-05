@@ -184,7 +184,7 @@ export default function LandingPage() {
 
       <main className="flex-1">
         <section className="relative overflow-hidden px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
-           <FloralShapeOne className="absolute top-10 -left-48 -z-10 h-auto w-[40rem] text-primary opacity-10" />
+           <FloralShapeOne className="absolute top-10 -left-48 -z-10 h-auto w-[40rem] text-primary opacity-20" />
            <FloralShapeTwo className="absolute bottom-0 -right-48 -z-10 h-auto w-[40rem] text-accent opacity-20" />
            <div className="flex items-center justify-center gap-4">
               <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
@@ -232,8 +232,8 @@ export default function LandingPage() {
         </section>
 
         <section className="relative overflow-hidden px-4 py-16 md:px-6 md:py-24">
-          <FloralShapeOne className="absolute -bottom-24 -left-32 -z-10 h-auto w-[30rem] -rotate-45 text-accent opacity-15" />
-           <FloralShapeTwo className="absolute -top-24 -right-32 -z-10 h-auto w-[30rem] rotate-45 text-primary opacity-5" />
+          <FloralShapeOne className="absolute -bottom-24 -left-32 -z-10 h-auto w-[30rem] -rotate-45 text-accent opacity-25" />
+           <FloralShapeTwo className="absolute -top-24 -right-32 -z-10 h-auto w-[30rem] rotate-45 text-primary opacity-10" />
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
