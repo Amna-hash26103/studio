@@ -4,24 +4,24 @@
 
 @layer base {
   :root {
-    --background: 26 92% 93%; /* #fee8da */
+    --background: 26 92% 95%; /* Lighter: #fef4ec from #fee8da */
     --foreground: 352 40% 25%;
-    --card: 26 92% 95%;
+    --card: 26 92% 97%; /* Lighter */
     --card-foreground: 352 40% 25%;
-    --popover: 26 92% 95%;
+    --popover: 26 92% 97%; /* Lighter */
     --popover-foreground: 352 40% 25%;
     --primary: 352 52% 47%; /* #b83a49 */
     --primary-foreground: 26 92% 98%;
-    --secondary: 26 50% 90%;
+    --secondary: 26 50% 94%; /* Lighter */
     --secondary-foreground: 352 40% 25%;
-    --muted: 26 40% 88%;
+    --muted: 26 40% 92%; /* Lighter */
     --muted-foreground: 352 20% 45%;
     --accent: 6 88% 77%; /* #f59c94 */
     --accent-foreground: 352 40% 15%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 26 30% 85%;
-    --input: 26, 30%, 87%;
+    --border: 26 30% 90%; /* Lighter */
+    --input: 26 30% 92%; /* Lighter */
     --ring: 352 52% 47%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -30,13 +30,13 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
     
-    --sidebar-background: 26 92% 91%;
+    --sidebar-background: 26 92% 93%; /* Lighter */
     --sidebar-foreground: 352 40% 25%;
     --sidebar-primary: 352 52% 47%;
     --sidebar-primary-foreground: 26 92% 98%;
-    --sidebar-accent: 26 50% 90%;
+    --sidebar-accent: 26 50% 92%; /* Lighter */
     --sidebar-accent-foreground: 352 40% 25%;
-    --sidebar-border: 26 30% 85%;
+    --sidebar-border: 26 30% 88%; /* Lighter */
     --sidebar-ring: 352 52% 47%;
   }
 
@@ -51,7 +51,7 @@
     --primary-foreground: 352 40% 10%;
     --secondary: 352 52% 47%; /* #b83a49 */
     --secondary-foreground: 26 80% 90%;
-    --muted: 26 30% 25%; /* from #d6b69f */
+    --muted: 26 30% 25%;
     --muted-foreground: 26 30% 65%;
     --accent: 352 52% 35%;
     --accent-foreground: 26 80% 90%;
