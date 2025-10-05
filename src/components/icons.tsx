@@ -1,24 +1,23 @@
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { cn } from '@/lib/utils';
 import type { SVGProps } from 'react';
 
+const logoImage = PlaceHolderImages.find((img) => img.id === 'logo');
+
 export function FemmoraLogo(props: SVGProps<SVGSVGElement>) {
+  if (!logoImage) {
+    return null;
+  }
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10" />
-      <path d="M12 2a10 10 0 1 0 10 10" />
-      <path d="M12 2v20" />
-      <path d="M22 12h-5" />
-      <path d="M7 12H2" />
-      <path d="M12 7V2" />
-      <path d="M12 22v-5" />
-    </svg>
+    <div className={cn("relative", props.className)}>
+        <Image
+          src={logoImage.imageUrl}
+          alt={logoImage.description}
+          data-ai-hint={logoImage.imageHint}
+          width={100}
+          height={100}
+        />
+    </div>
   );
 }
