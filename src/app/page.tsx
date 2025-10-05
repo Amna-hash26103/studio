@@ -40,7 +40,7 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-0">
-          <FemmoraLogo className="h-13 w-13 text-primary" />
+          <FemmoraLogo className="h-10 w-10 text-primary" />
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-4">
