@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Speaker, Loader2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations } from 'next-intl';
 import {
@@ -70,7 +70,7 @@ export default function LandingPage() {
     
     // Find and set a female voice
     const femaleVoice = voices.find(
-      (voice) => voice.lang.startsWith('en') && voice.name.includes('Female')
+      (voice) => voice.lang.startsWith('en') && (voice.name.includes('Female') || voice.name.includes('Woman') || voice.gender === 'female')
     );
     
     if (femaleVoice) {
@@ -129,7 +129,7 @@ export default function LandingPage() {
   const renderSpeakerButton = (section: keyof typeof audioContent) => {
     if (locale !== 'en') return null;
 
-    const Icon = isLoading === section ? Loader2 : Speaker;
+    const Icon = Volume2;
     const isSpinning = isLoading === section || isPlaying === section;
     
     return (
@@ -140,7 +140,7 @@ export default function LandingPage() {
         className="ml-2"
         aria-label={`Read ${section.replace('-', ' ')} aloud`}
       >
-        <Icon className={`h-5 w-5 ${isSpinning ? 'animate-pulse' : ''}`} />
+        <Icon className={`h-6 w-6 ${isSpinning ? 'animate-pulse' : ''}`} />
       </Button>
     );
   }
