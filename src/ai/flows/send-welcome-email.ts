@@ -69,8 +69,9 @@ const sendWelcomeEmailFlow = ai.defineFlow(
       console.log(`Welcome email sent to ${input.email}`);
     } catch (error) {
       console.error('Error sending welcome email:', error);
-      // It's often a good idea to not let this error block the user's sign-up flow.
-      // We log it for debugging, but we don't re-throw it.
+      // Re-throw the error so it can be caught by the calling function
+      // and displayed to the user.
+      throw error;
     }
   }
 );

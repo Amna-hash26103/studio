@@ -72,11 +72,11 @@ export default function SignupPage() {
           title: 'Test Email Sent!',
           description: `A welcome email has been sent to ${values.email}. This user was not registered.`,
         });
-      } catch (error) {
+      } catch (error: any) {
          toast({
             variant: 'destructive',
             title: 'Uh oh! Something went wrong.',
-            description: 'Could not send the test email.',
+            description: error.message || 'Could not send the test email.',
          });
       }
       return; 
