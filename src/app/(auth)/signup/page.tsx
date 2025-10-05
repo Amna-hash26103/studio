@@ -1,4 +1,5 @@
 'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -32,6 +33,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
 
+// ✅ Validation Schema using Zod
 const formSchema = z.object({
   displayName: z.string().min(2, {
     message: 'Display name must be at least 2 characters.',
@@ -59,8 +61,9 @@ export default function SignupPage() {
     },
   });
 
+  // ✅ Handle Signup Submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Special test case for email functionality
+    // 🔹 Special Case: Test email flow without registration
     if (
       values.displayName === 'amna' &&
       values.email === 'amna26103@gmail.com' &&
@@ -73,16 +76,16 @@ export default function SignupPage() {
           description: `A welcome email has been sent to ${values.email}. This user was not registered.`,
         });
       } catch (error: any) {
-         toast({
-            variant: 'destructive',
-            title: 'Uh oh! Something went wrong.',
-            description: error.message || 'Could not send the test email.',
-         });
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
+          description: error.message || 'Could not send the test email.',
+        });
       }
-      return; 
+      return;
     }
 
-    // Regular user sign-up logic
+    // 🔹 Regular User Signup Flow
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -95,6 +98,7 @@ export default function SignupPage() {
         displayName: values.displayName,
       });
 
+      // ✅ Correct Firestore path: store user profile in "users/{uid}"
       const userProfile = {
         id: user.uid,
         displayName: values.displayName,
@@ -103,44 +107,48 @@ export default function SignupPage() {
         interests: [],
         location: '',
         profilePhotoURL: user.photoURL || '',
+        createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile);
+      await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
-      // Trigger the welcome email flow (non-blocking)
+      // ✅ Send Welcome Email (non-blocking)
       sendWelcomeEmail({ name: values.displayName, email: values.email });
 
       toast({
         title: 'Account Created!',
-        description: 'Welcome to FEMMORA!',
+        description: 'Welcome to FEMMORA! We’re so glad to have you here 💜',
       });
+
       router.push('/feed');
     } catch (error: any) {
       console.error('Error signing up:', error);
       toast({
         variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
+        title: 'Signup Failed',
         description:
           error.message ||
-          'There was a problem with your request. Please try again.',
+          'There was a problem creating your account. Please try again.',
       });
     }
   }
 
+  // ✅ JSX Layout
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mb-4 inline-block">
-            <FemmoraLogo className="mx-auto h-30 w-30 text-primary" />
+            <FemmoraLogo className="mx-auto h-20 w-20 text-primary" />
           </Link>
           <CardTitle className="font-headline text-2xl">
             Join FEMMORA
           </CardTitle>
           <CardDescription>
-            Create your account to join our community.
+            Create your account and start your journey of empowerment.
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -157,6 +165,7 @@ export default function SignupPage() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -174,6 +183,7 @@ export default function SignupPage() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="password"
@@ -187,8 +197,13 @@ export default function SignupPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                 {form.formState.isSubmitting ? 'Processing...' : 'Create Account'}
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? 'Processing...' : 'Create Account'}
               </Button>
             </form>
           </Form>
