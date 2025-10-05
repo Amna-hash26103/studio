@@ -3,9 +3,15 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
@@ -49,6 +55,21 @@ export default function LandingPage() {
           <Button asChild>
             <Link href="/signup">{t('signup')}</Link>
           </Button>
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Globe className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem asChild>
+                <Link href="/en" locale="en">English</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/ur" locale="ur">اردو</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
       </header>
 
