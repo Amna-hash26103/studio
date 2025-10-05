@@ -69,8 +69,8 @@ export default function LandingPage() {
     const isLoadingThis = isGenerating && activeSection === sectionId;
     const isPlayingThis = isPlaying && activeSection === sectionId;
     
-    // Disable if another button is generating audio.
-    const isDisabled = isGenerating && activeSection !== sectionId;
+    // Disable if any button is generating audio or playing audio
+    const isDisabled = isGenerating || (isPlaying && activeSection !== sectionId);
 
     return (
       <Button
