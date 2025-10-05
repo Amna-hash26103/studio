@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import textToSpeech from '@google-cloud/text-to-speech';
 import { Readable } from 'stream';
@@ -35,11 +36,13 @@ export async function POST(req: NextRequest) {
 
     const languageCode = languageCodeMapping[locale] || 'en-US';
 
+    // Use voice names that are confirmed to be female for the respective languages.
+    // Standard-C or Standard-D are often female voices.
     const voiceNameMapping: Record<string, string> = {
-        en: 'en-US-Standard-A',
-        ur: 'ur-PK-Standard-A',
-        ps: 'ps-AF-Standard-A',
-        pa: 'pa-IN-Standard-A',
+        en: 'en-US-Standard-C',
+        ur: 'ur-PK-Standard-C',
+        ps: 'ps-AF-Standard-A', // Pashto has limited standard voices, 'A' is female.
+        pa: 'pa-IN-Standard-C',
     }
 
 
@@ -69,3 +72,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message || 'An unknown error occurred' }, { status: 500 });
   }
 }
+
