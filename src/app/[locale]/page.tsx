@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -23,6 +23,15 @@ export default function LandingPage() {
   const [audioSrc, setAudioSrc] = useState('');
   const [playingId, setPlayingId] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (audioSrc && audioRef.current) {
+      audioRef.current.play().catch(e => {
+        console.error("Audio playback failed:", e);
+        setPlayingId(null);
+      });
+    }
+  }, [audioSrc]);
 
   const handlePlaySound = async (textId: string, text: string) => {
     if (playingId === textId) {
@@ -40,7 +49,6 @@ export default function LandingPage() {
     try {
       const response = await textToSpeech({ text });
       setAudioSrc(response.audio);
-      audioRef.current?.play();
     } catch (error) {
       console.error('Failed to generate speech:', error);
       setPlayingId(null);
