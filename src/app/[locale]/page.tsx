@@ -17,8 +17,31 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-// Locales supported by our TTS service
-const supportedTtsLocales = ['en', 'ur', 'ps', 'pa'];
+// Placeholder for your audio files.
+// You will need to record and place your audio files in the /public/audio directory.
+const audioSources: Record<string, Record<string, string>> = {
+  en: {
+    'hero-section': '/audio/en/placeholder.mp3',
+    'thrive-section': '/audio/en/placeholder.mp3',
+    'features-intro': '/audio/en/placeholder.mp3',
+  },
+  ur: {
+    'hero-section': '/audio/ur/placeholder.mp3',
+    'thrive-section': '/audio/ur/placeholder.mp3',
+    'features-intro': '/audio/ur/placeholder.mp3',
+  },
+  ps: {
+    'hero-section': '/audio/ps/placeholder.mp3',
+    'thrive-section': '/audio/ps/placeholder.mp3',
+    'features-intro': '/audio/ps/placeholder.mp3',
+  },
+  pa: {
+    'hero-section': '/audio/pa/placeholder.mp3',
+    'thrive-section': '/audio/pa/placeholder.mp3',
+    'features-intro': '/audio/pa/placeholder.mp3',
+  },
+};
+
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
@@ -29,73 +52,58 @@ export default function LandingPage() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handlePlayPause = useCallback(async (sectionId: string, text: string) => {
-    // If this section is playing, stop it.
+  const handlePlayPause = useCallback((sectionId: string) => {
+    const audioSrc = audioSources[locale]?.[sectionId];
+
+    if (!audioSrc) {
+      console.warn(`No audio source for section ${sectionId} in locale ${locale}`);
+      return;
+    }
+
+    // If this section is currently playing, pause it.
     if (isPlaying && activeSection === sectionId) {
       audioRef.current?.pause();
       setIsPlaying(false);
       setActiveSection(null);
       return;
     }
-
-    // If something else is playing, stop that first.
+    
+    // If another audio is playing, stop it before starting the new one.
     if (audioRef.current) {
-      audioRef.current.pause();
+        audioRef.current.pause();
     }
 
-    setIsLoading(true);
+    const newAudio = new Audio(audioSrc);
+    audioRef.current = newAudio;
     setActiveSection(sectionId);
+    setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, locale }),
-      });
-
-      if (!response.ok) {
-        // Log the detailed error from the API route for easier debugging
-        const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
-        console.error('TTS API responded with an error:', response.status, errorBody);
-        throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
-      }
-
-      const { audio: audioSrc } = await response.json();
-      
-      if (!audioSrc) {
-        throw new Error('No audio source returned from API');
-      }
-
-      const newAudio = new Audio(audioSrc);
-      audioRef.current = newAudio;
-
-      newAudio.onplay = () => {
+    newAudio.oncanplay = () => {
         setIsLoading(false);
-        setIsPlaying(true);
-      };
+        newAudio.play();
+    };
 
-      newAudio.onended = () => {
-        setIsPlaying(false);
-        setActiveSection(null);
-        audioRef.current = null;
-      };
-      
-      newAudio.onerror = (e) => {
-        console.error('Error playing audio:', e);
-        setIsLoading(false);
-        setIsPlaying(false);
-        setActiveSection(null);
-      };
-
-      await newAudio.play();
-
-    } catch (error) {
-      console.error('Error in TTS process:', error);
+    newAudio.onplay = () => {
       setIsLoading(false);
+      setIsPlaying(true);
+    };
+
+    newAudio.onended = () => {
+      setIsPlaying(false);
       setActiveSection(null);
-      // Optionally, show a toast to the user
-    }
+      audioRef.current = null;
+    };
+    
+    newAudio.onerror = (e) => {
+      console.error('Error playing audio:', e);
+      alert(`Could not play audio. Please ensure the file exists at: ${audioSrc}`);
+      setIsLoading(false);
+      setIsPlaying(false);
+      setActiveSection(null);
+    };
+
   }, [isPlaying, activeSection, locale]);
+
 
   // Cleanup audio on component unmount
   useEffect(() => {
@@ -107,9 +115,9 @@ export default function LandingPage() {
     };
   }, []);
 
-  const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    // Hide button if the locale is not supported by our TTS service
-    if (!supportedTtsLocales.includes(locale)) {
+  const AudioButton = ({ sectionId }: { sectionId: string }) => {
+    const isAudioAvailable = !!audioSources[locale]?.[sectionId];
+    if (!isAudioAvailable) {
       return null;
     }
 
@@ -121,8 +129,8 @@ export default function LandingPage() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => handlePlayPause(sectionId, text)}
-        disabled={isCurrentSectionLoading || isOtherSectionActive}
+        onClick={() => handlePlayPause(sectionId)}
+        disabled={isOtherSectionActive}
         className="ml-2 h-6 w-6"
         aria-label={isCurrentSectionPlaying ? 'Pause reading' : 'Read section aloud'}
       >
@@ -157,10 +165,6 @@ export default function LandingPage() {
       description: t('featureHolisticWellbeingDescription'),
     },
   ];
-  
-  const heroText = `${t('mainHeading')}. ${t('subHeading')}`;
-  const thriveText = `${t('thriveHeading')}. ${t('thriveParagraph')}`;
-  const featuresText = `${t('featuresHeading')}. ${t('featuresSubHeading')}. ${features.map(f => `${f.title}. ${f.description}`).join(' ')}`;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -207,7 +211,7 @@ export default function LandingPage() {
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {t('mainHeading')}
             </h1>
-            <AudioButton sectionId='hero-section' text={heroText} />
+            <AudioButton sectionId='hero-section' />
           </div>
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
@@ -238,7 +242,7 @@ export default function LandingPage() {
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                     {t('thriveHeading')}
                     </h2>
-                    <AudioButton sectionId='thrive-section' text={thriveText} />
+                    <AudioButton sectionId='thrive-section' />
                 </div>
                 <p className="text-muted-foreground md:text-lg">
                   {t('thriveParagraph')}
@@ -256,7 +260,6 @@ export default function LandingPage() {
                 </h2>
                 <AudioButton 
                     sectionId='features-intro' 
-                    text={featuresText}
                 />
             </div>
             <p className="mt-4 text-muted-foreground md:text-lg">
