@@ -184,7 +184,7 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative px-4 pt-16 pb-8 text-center md:px-6 md:pt-24 md:pb-12 lg:pt-32 lg:pb-16">
+        <section className="relative px-4 pt-16 pb-4 text-center md:px-6 md:pt-24 lg:pt-32">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center gap-4">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
@@ -204,7 +204,7 @@ export default function LandingPage() {
         </section>
 
         <section className="bg-secondary">
-          <div className="container mx-auto px-4 py-16 md:px-6 md:py-24">
+          <div className="container mx-auto px-4 py-8 md:px-6 md:py-12">
             <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
               <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">
                 {heroImage && (
