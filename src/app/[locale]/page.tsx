@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -17,127 +17,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
-// This object maps the section IDs to the actual audio files.
-// You will need to record and place your audio files in the corresponding paths.
-const audioSources: Record<string, Record<string, string>> = {
-  en: {
-    'hero-section': '/audio/en/hero-section.mp3',
-    'thrive-section': '/audio/en/thrive-section.mp3',
-    'features-intro': '/audio/en/features-intro.mp3',
-  },
-  ur: {
-    'hero-section': '/audio/ur/hero-section.mp3',
-    'thrive-section': '/audio/ur/thrive-section.mp3',
-    'features-intro': '/audio/ur/features-intro.mp3',
-  },
-  ps: {
-    'hero-section': '/audio/ps/hero-section.mp3',
-    'thrive-section': '/audio/ps/thrive-section.mp3',
-    'features-intro': '/audio/ps/features-intro.mp3',
-  },
-  pa: {
-    'hero-section': '/audio/pa/hero-section.mp3',
-    'thrive-section': '/audio/pa/thrive-section.mp3',
-    'features-intro': '/audio/pa/features-intro.mp3',
-  },
-};
-
-
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
-
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const handlePlayPause = useCallback((sectionId: string) => {
-    const audioSrc = audioSources[locale]?.[sectionId];
-
-    if (!audioSrc) {
-      console.warn(`No audio source for section ${sectionId} in locale ${locale}`);
-      return;
-    }
-
-    // If this section is currently playing, pause it.
-    if (isPlaying && activeSection === sectionId) {
-      audioRef.current?.pause();
-      setIsPlaying(false);
-      setActiveSection(null);
-      return;
-    }
-    
-    // If another audio is playing, stop it before starting the new one.
-    if (audioRef.current) {
-        audioRef.current.pause();
-    }
-
-    const newAudio = new Audio(audioSrc);
-    audioRef.current = newAudio;
-    setActiveSection(sectionId);
-    setIsLoading(true);
-
-    newAudio.oncanplay = () => {
-        setIsLoading(false);
-        newAudio.play();
-    };
-
-    newAudio.onplay = () => {
-      setIsLoading(false);
-      setIsPlaying(true);
-    };
-
-    newAudio.onended = () => {
-      setIsPlaying(false);
-      setActiveSection(null);
-      audioRef.current = null;
-    };
-    
-    newAudio.onerror = (e) => {
-      console.error('Error playing audio:', e);
-      alert(`Could not play audio. Please ensure the file exists at: ${audioSrc}`);
-      setIsLoading(false);
-      setIsPlaying(false);
-      setActiveSection(null);
-    };
-
-  }, [isPlaying, activeSection, locale]);
-
-
-  // Cleanup audio on component unmount
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
-  const AudioButton = ({ sectionId }: { sectionId: string }) => {
-    const isAudioAvailable = !!audioSources[locale]?.[sectionId];
-    if (!isAudioAvailable) {
-      return null;
-    }
-
-    const isCurrentSectionLoading = isLoading && activeSection === sectionId;
-    const isCurrentSectionPlaying = isPlaying && activeSection === sectionId;
-    const isOtherSectionActive = (isLoading || isPlaying) && activeSection !== sectionId;
-
-    return (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handlePlayPause(sectionId)}
-        disabled={isOtherSectionActive}
-        className="ml-2 h-6 w-6"
-        aria-label={isCurrentSectionPlaying ? 'Pause reading' : 'Read section aloud'}
-      >
-        {isCurrentSectionLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : isCurrentSectionPlaying ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-      </Button>
-    );
-  };
 
   const features = [
     {
@@ -212,7 +94,6 @@ export default function LandingPage() {
             <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
               {t('mainHeading')}
             </h1>
-            <AudioButton sectionId='hero-section' />
           </div>
           <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
@@ -244,7 +125,6 @@ export default function LandingPage() {
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                     {t('thriveHeading')}
                     </h2>
-                    <AudioButton sectionId='thrive-section' />
                 </div>
                 <p className="text-muted-foreground md:text-lg">
                   {t('thriveParagraph')}
@@ -261,9 +141,6 @@ export default function LandingPage() {
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                 {t('featuresHeading')}
                 </h2>
-                <AudioButton 
-                    sectionId='features-intro' 
-                />
             </div>
             <p className="mt-4 text-muted-foreground md:text-lg">
               {t('featuresSubHeading')}
