@@ -69,7 +69,7 @@ export default function SignupPage() {
       try {
         await sendWelcomeEmail({ name: values.displayName, email: values.email });
         toast({
-          title: 'Test Email Sent!',
+          title: 'Email Sent!',
           description: `A welcome email has been sent to ${values.email}. This user was not registered.`,
         });
       } catch (error: any) {
@@ -132,7 +132,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mb-4 inline-block">
-            <FemmoraLogo className="mx-auto h-20 w-20 text-primary" />
+            <FemmoraLogo className="mx-auto h-30 w-30 text-primary" />
           </Link>
           <CardTitle className="font-headline text-2xl">
             Join FEMMORA
