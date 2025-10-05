@@ -61,7 +61,7 @@ export default function LandingPage() {
       size="icon"
       onClick={() => handlePlaySound(textId, text)}
       className="ml-2 h-6 w-6"
-      aria-label={`Read '${text}' aloud`}
+      aria-label={`Read section aloud`}
     >
       {playingId === textId ? (
         <Loader2 className="h-4 w-4 animate-spin" />
@@ -146,13 +146,14 @@ export default function LandingPage() {
 
       <main className="flex-1">
         <section className="px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
-          <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl flex items-center justify-center">
-            {t('mainHeading')}
-            <AudioButton textId='mainHeading' text={t('mainHeading')} />
-          </h1>
-          <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl flex items-center justify-center">
+          <div className="flex items-center justify-center">
+            <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+              {t('mainHeading')}
+            </h1>
+            <AudioButton textId='hero-section' text={`${t('mainHeading')}. ${t('subHeading')}`} />
+          </div>
+          <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
             {t('subHeading')}
-            <AudioButton textId='subHeading' text={t('subHeading')} />
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
@@ -176,13 +177,14 @@ export default function LandingPage() {
                 )}
               </div>
               <div className="space-y-4">
-                <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl flex items-center">
-                  {t('thriveHeading')}
-                  <AudioButton textId='thriveHeading' text={t('thriveHeading')} />
-                </h2>
-                <p className="text-muted-foreground md:text-lg flex items-center">
+                 <div className="flex items-center">
+                    <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
+                    {t('thriveHeading')}
+                    </h2>
+                    <AudioButton textId='thrive-section' text={`${t('thriveHeading')}. ${t('thriveParagraph')}`} />
+                </div>
+                <p className="text-muted-foreground md:text-lg">
                   {t('thriveParagraph')}
-                  <AudioButton textId='thriveParagraph' text={t('thriveParagraph')} />
                 </p>
               </div>
             </div>
@@ -191,13 +193,14 @@ export default function LandingPage() {
 
         <section className="px-4 py-16 md:px-6 md:py-24">
           <div className="container mx-auto mb-12 max-w-2xl text-center">
-            <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl flex items-center justify-center">
-              {t('featuresHeading')}
-              <AudioButton textId='featuresHeading' text={t('featuresHeading')} />
-            </h2>
-            <p className="mt-4 text-muted-foreground md:text-lg flex items-center justify-center">
+            <div className="flex items-center justify-center">
+                <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
+                {t('featuresHeading')}
+                </h2>
+                <AudioButton textId='features-intro' text={`${t('featuresHeading')}. ${t('featuresSubHeading')}`} />
+            </div>
+            <p className="mt-4 text-muted-foreground md:text-lg">
               {t('featuresSubHeading')}
-              <AudioButton textId='featuresSubHeading' text={t('featuresSubHeading')} />
             </p>
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
@@ -205,10 +208,12 @@ export default function LandingPage() {
               <Card key={feature.id} className="text-center">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6">
                   {feature.icon}
-                  <h3 className="text-xl font-bold flex items-center">{feature.title} <AudioButton textId={`${feature.id}-title`} text={feature.title} /></h3>
-                  <p className="text-muted-foreground flex items-center">
+                  <div className="flex items-center">
+                    <h3 className="text-xl font-bold">{feature.title}</h3>
+                    <AudioButton textId={feature.id} text={`${feature.title}. ${feature.description}`} />
+                  </div>
+                  <p className="text-muted-foreground">
                     {feature.description}
-                     <AudioButton textId={`${feature.id}-desc`} text={feature.description} />
                   </p>
                 </CardContent>
               </Card>
