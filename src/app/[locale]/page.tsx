@@ -69,7 +69,6 @@ export default function LandingPage() {
     const isLoadingThis = isGenerating && activeSection === sectionId;
     const isPlayingThis = isPlaying && activeSection === sectionId;
     
-    // Disable if any button is generating audio or playing audio
     const isDisabled = isGenerating || (isPlaying && activeSection !== sectionId);
 
     return (
@@ -77,7 +76,7 @@ export default function LandingPage() {
         variant="ghost"
         size="icon"
         onClick={() => handlePlaySound(sectionId, text)}
-        disabled={isDisabled || isLoadingThis}
+        disabled={isDisabled}
         className="ml-2 h-6 w-6"
         aria-label={`Read section aloud`}
       >
