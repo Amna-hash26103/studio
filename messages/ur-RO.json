@@ -1,0 +1,25 @@
+
+{
+  "LandingPage": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "mainHeading": "Apne Safar ko Taqatwar Banayein. Sath Mil Kar.",
+    "subHeading": "FEMMORA khawateen ke liye jurrne, baat cheet karne aur taraqqi karne ki ek panahga hai. Aap ke liye banai gayi jagah mein behtari, takhleeqi salahiyat aur community ko explore karein.",
+    "joinButton": "Community Mein Shamil Hon",
+    "thriveHeading": "Taraqqi Karne Ki Jagah",
+    "thriveParagraph": "FEMMORA mein, hum ijtemai taqat par yaqeen rakhte hain. Hamara platform sirf ek app nahi hai; yeh har aurat ki behtari aur kamyabi ke munfarid safar ka jashn manane aur uski himayat karne ke liye ek tehreek hai.",
+    "featuresHeading": "Aap Ke Liye Banai Gayi Khususiyat",
+    "featuresSubHeading": "Aap ko apni zaati aur peshawarana taraqqi ke liye jis cheez ki zaroorat hai, sab ek jagah par.",
+    "featureSupportiveCommunityTitle": "Madadgar Community",
+    "featureSupportiveCommunityDescription": "Ek mehfooz aur taqatwar jagah mein hum-khayal khawateen se rabta karein. Apna safar share karein aur sath mil kar taraqqi karein.",
+    "featureAIWellnessTitle": "AI Se Chalne Wali Behtari",
+    "featureAIWellnessDescription": "Hamare dostana AI assistants se sehat, ghizaiyat aur jazbati behtari ke bare mein zaati mashware hasil karein.",
+    "featureProjectCollaborationTitle": "Project Mein Taawun",
+    "featureProjectCollaborationDescription": "Apne takhleeqi aur peshawarana projects ki numaish karein, saathi talash karein, aur doosron se प्रेरणा hasil karein.",
+    "featureHolisticWellbeingTitle": "Majmuai Sehat Mandi",
+    "featureHolisticWellbeingDescription": "Apni sehat mandi ke safar ko track karein, kamyabiyon ka jashn manayein, aur ek mutawazin zindagi ke liye sehat mand adatein banayein.",
+    "footerPrivacy": "Privacy",
+    "footerTerms": "Terms",
+    "footerContact": "Contact"
+  }
+}

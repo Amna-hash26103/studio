@@ -1,23 +1,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import textToSpeech from '@google-cloud/text-to-speech';
-import { Readable } from 'stream';
 import credentials from '../../google-services.json';
 
 // Initialize the client with the project ID from the credentials file
 const client = new textToSpeech.TextToSpeechClient({
   projectId: credentials.project_info.project_id,
 });
-
-
-async function streamToBuffer(stream: Readable): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    stream.on('data', (chunk) => chunks.push(chunk));
-    stream.on('error', reject);
-    stream.on('end', () => resolve(Buffer.concat(chunks)));
-  });
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,6 +19,7 @@ export async function POST(req: NextRequest) {
     const languageCodeMapping: Record<string, string> = {
       en: 'en-US',
       ur: 'ur-PK',
+      'ur-RO': 'ur-PK', // Roman Urdu uses the Urdu voice
       ps: 'ps-AF',
       pa: 'pa-IN',
     };
@@ -37,20 +27,21 @@ export async function POST(req: NextRequest) {
     const languageCode = languageCodeMapping[locale] || 'en-US';
 
     // Use voice names that are confirmed to be female for the respective languages.
-    // Standard-C or Standard-D are often female voices. For Pashto, A is female.
     const voiceNameMapping: Record<string, string> = {
         en: 'en-US-Standard-C',
         ur: 'ur-PK-Standard-C',
+        'ur-RO': 'ur-PK-Standard-C',
         ps: 'ps-AF-Standard-A', // Pashto has limited standard voices, 'A' is female.
         pa: 'pa-IN-Standard-C',
     }
 
+    const voiceName = voiceNameMapping[locale] || voiceNameMapping['en'];
 
     const request = {
       input: { text: text },
       voice: { 
         languageCode: languageCode,
-        name: voiceNameMapping[locale],
+        name: voiceName,
         ssmlGender: 'FEMALE' as const 
       },
       audioConfig: { audioEncoding: 'MP3' as const },

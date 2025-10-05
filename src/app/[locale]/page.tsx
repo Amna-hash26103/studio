@@ -24,80 +24,84 @@ export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handlePlayPause = useCallback((sectionId: string, textToRead: string) => {
-    const synth = window.speechSynthesis;
-    if (!synth) {
-      alert("Your browser does not support text-to-speech.");
-      return;
-    }
-
+  const handlePlayPause = useCallback(async (sectionId: string, textToRead: string) => {
     // If clicking the same button that is currently playing, stop it.
-    if (activeSection === sectionId && isPlaying) {
-      synth.cancel();
+    if (audioRef.current && activeSection === sectionId && isPlaying) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
       setIsPlaying(false);
       setActiveSection(null);
       return;
     }
 
-    // If any other audio is playing, stop it before starting new audio.
-    if (synth.speaking) {
-      synth.cancel();
+    // If other audio is playing, stop it.
+    if (audioRef.current) {
+      audioRef.current.pause();
     }
-    
+
     setIsLoading(true);
     setActiveSection(sectionId);
 
-    const utterance = new SpeechSynthesisUtterance(textToRead);
-    utteranceRef.current = utterance;
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textToRead, locale }),
+      });
 
-    // This function finds voices and speaks. It's needed because getVoices() can be asynchronous.
-    const getVoicesAndSpeak = () => {
-      let voices = synth.getVoices();
+      if (!response.ok) {
+        // Log the detailed error from the API route for easier debugging
+        const errorBody = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+        console.error('TTS API responded with an error:', response.status, errorBody);
+        throw new Error(`Failed to fetch audio: ${errorBody.error || 'Unknown server error'}`);
+      }
+
+      const { audioContent } = await response.json();
+      if (!audioContent) {
+        throw new Error('No audio content received from server.');
+      }
       
-      // Try to find a voice that matches the current locale (e.g., 'en-US', 'ur-PK')
-      const voiceForLocale = voices.find(voice => voice.lang.startsWith(locale));
-      utterance.voice = voiceForLocale || voices[0]; // Fallback to the first available voice
-      
-      utterance.onstart = () => {
+      const audioSrc = `data:audio/mp3;base64,${audioContent}`;
+      const newAudio = new Audio(audioSrc);
+      audioRef.current = newAudio;
+
+      newAudio.oncanplaythrough = () => {
         setIsLoading(false);
         setIsPlaying(true);
+        newAudio.play();
       };
-
-      utterance.onend = () => {
+      
+      newAudio.onended = () => {
         setIsPlaying(false);
         setActiveSection(null);
-        utteranceRef.current = null;
       };
 
-      utterance.onerror = (e) => {
-        console.error('SpeechSynthesisUtterance error', e);
-        alert('An error occurred during speech synthesis. The selected voice may not be supported for this language on your device.');
+      newAudio.onerror = (e) => {
+        console.error('Audio playback error:', e);
+        alert('An error occurred while trying to play the audio.');
         setIsLoading(false);
         setIsPlaying(false);
         setActiveSection(null);
       };
       
-      synth.speak(utterance);
-    };
-
-    // The 'voiceschanged' event fires when the voice list is ready.
-    if (synth.getVoices().length > 0) {
-      getVoicesAndSpeak();
-    } else {
-      synth.onvoiceschanged = getVoicesAndSpeak;
+    } catch (error) {
+      console.error('Error in handlePlayPause:', error);
+      alert((error as Error).message);
+      setIsLoading(false);
+      setIsPlaying(false);
+      setActiveSection(null);
     }
-
   }, [activeSection, isPlaying, locale]);
 
 
-  // Cleanup function to cancel speech synthesis when the component unmounts.
+  // Cleanup function to stop audio when the component unmounts.
   useEffect(() => {
-    const synth = window.speechSynthesis;
     return () => {
-      if (synth && synth.speaking) {
-        synth.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
     };
   }, []);
@@ -162,6 +166,9 @@ export default function LandingPage() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/ur" locale="ur">اردو</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/ur-RO" locale="ur-RO">Roman Urdu</Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href="/ps" locale="ps">پښتو</Link>
