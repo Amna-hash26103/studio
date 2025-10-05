@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed, Circle } from 'lucide-react';
+import { HeartHandshake, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed, Circle } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations } from 'next-intl';
 import {
@@ -194,7 +194,7 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative px-4 pt-12 text-center md:px-6 md:pt-16">
+        <section className="relative px-4 pt-12 text-center md:px-6">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
@@ -256,7 +256,7 @@ export default function LandingPage() {
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
-              <Card key={index} className="z-10 bg-background/80 backdrop-blur-sm">
+              <Card key={index} className="bg-card shadow-md transition-shadow hover:shadow-lg">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
                   {feature.icon}
                   <h3 className="text-xl font-bold">{feature.title}</h3>
