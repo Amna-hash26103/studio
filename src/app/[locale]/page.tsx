@@ -13,8 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useRef, useCallback } from 'react';
-import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
@@ -22,97 +21,87 @@ export default function LandingPage() {
   const t = useTranslations('LandingPage');
   
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const playAudio = useCallback(async (sectionId: string, text: string) => {
-    // If something is already playing or loading, do nothing.
-    if (isLoading || isPlaying) return;
+  // Stop speech when the component unmounts or the user navigates away
+  useEffect(() => {
+    const cleanup = () => {
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+    };
+    window.addEventListener('beforeunload', cleanup);
+    return () => {
+      cleanup();
+      window.removeEventListener('beforeunload', cleanup);
+    };
+  }, []);
 
-    // Stop any currently playing audio if a new section is clicked.
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
+
+  const handlePlay = useCallback((sectionId: string, text: string) => {
+    // If another section is already playing, stop it first
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
     }
     
-    setIsLoading(true);
-    setActiveSection(sectionId);
+    // Create and configure the utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    utteranceRef.current = utterance;
 
-    try {
-      const response = await textToSpeech({ text });
-      const audio = new Audio(response.audioDataUri);
-      audioRef.current = audio;
-      
-      audio.onplaying = () => {
-        setIsLoading(false);
-        setIsPlaying(true);
-      };
+    utterance.onstart = () => {
+      setIsPlaying(true);
+      setActiveSection(sectionId);
+    };
 
-      audio.onended = () => {
-        setIsPlaying(false);
-        setActiveSection(null);
-        audioRef.current = null;
-      };
-      
-      audio.onerror = (e) => {
-        console.error("Error playing audio:", e);
-        setIsLoading(false);
-        setIsPlaying(false);
-        setActiveSection(null);
-        audioRef.current = null;
-        alert("Sorry, there was an issue playing the audio.");
-      }
-
-      await audio.play();
-
-    } catch (error) {
-      console.error('Error generating audio:', error);
-      alert("Sorry, there was an issue generating the audio. You may have hit a rate limit. Please wait a moment and try again.");
-      setIsLoading(false);
+    utterance.onend = () => {
+      setIsPlaying(false);
       setActiveSection(null);
-    }
-  }, [isLoading, isPlaying]);
+      utteranceRef.current = null;
+    };
+    
+    utterance.onerror = (e) => {
+      console.error("Speech synthesis error:", e);
+      setIsPlaying(false);
+      setActiveSection(null);
+      utteranceRef.current = null;
+    };
 
-  const pauseAudio = () => {
-    if (audioRef.current) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-        setActiveSection(null);
-    }
-  }
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  const handlePause = () => {
+    window.speechSynthesis.cancel(); // Use cancel to stop immediately
+    setIsPlaying(false);
+    setActiveSection(null);
+  };
 
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isLoadingThis = isLoading && activeSection === sectionId;
     const isPlayingThis = isPlaying && activeSection === sectionId;
+    const isOtherPlaying = isPlaying && !isPlayingThis;
 
     const handleClick = () => {
       if (isPlayingThis) {
-        pauseAudio();
+        handlePause();
       } else {
-        playAudio(sectionId, text);
+        handlePlay(sectionId, text);
       }
     }
 
     let icon = <Volume2 className="h-4 w-4" />;
-    if (isLoadingThis) {
-      icon = <Loader2 className="h-4 w-4 animate-spin" />;
-    } else if (isPlayingThis) {
+    if (isPlayingThis) {
       icon = <Pause className="h-4 w-4" />;
     }
-
-    // Disable button if any audio is loading or playing, but it's not THIS button's audio.
-    const isDisabled = (isLoading || isPlaying) && !isLoadingThis && !isPlayingThis;
 
     return (
       <Button
         variant="ghost"
         size="icon"
         onClick={handleClick}
-        disabled={isDisabled}
+        disabled={isOtherPlaying}
         className="ml-2 h-6 w-6"
-        aria-label={`Read section aloud`}
+        aria-label={isPlayingThis ? 'Pause reading' : 'Read section aloud'}
       >
         {icon}
       </Button>
