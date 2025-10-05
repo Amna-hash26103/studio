@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
 import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,29 +24,23 @@ export default function LandingPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [isCooldown, setIsCooldown] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const cooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    // Cleanup timer on component unmount
-    return () => {
-      if (cooldownTimerRef.current) {
-        clearTimeout(cooldownTimerRef.current);
-      }
-    };
-  }, []);
 
   const handlePlaySound = useCallback(async (sectionId: string, text: string) => {
-    if (isGenerating || isPlaying || isCooldown) {
-      if (isPlaying && activeSection === sectionId) {
-        audioRef.current?.pause();
-        setIsPlaying(false);
-        setActiveSection(null);
-      }
+    // If we click the currently playing button, pause it.
+    if (isPlaying && activeSection === sectionId) {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+      setActiveSection(null);
       return;
     }
 
+    // If another sound is generating or playing, do nothing.
+    if (isGenerating || isPlaying) {
+      return;
+    }
+
+    // Stop any previously playing audio
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -67,12 +61,6 @@ export default function LandingPage() {
         setIsPlaying(false);
         setActiveSection(null);
         audioRef.current = null;
-        
-        // Start cooldown
-        setIsCooldown(true);
-        cooldownTimerRef.current = setTimeout(() => {
-          setIsCooldown(false);
-        }, 60000); // 60-second cooldown
       };
     } catch (error) {
       console.error('Error generating or playing audio:', error);
@@ -80,14 +68,14 @@ export default function LandingPage() {
       setActiveSection(null);
       setIsGenerating(false);
     }
-  }, [isPlaying, isGenerating, activeSection, isCooldown]);
+  }, [isPlaying, isGenerating, activeSection]);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
     const isLoadingThis = isGenerating && activeSection === sectionId;
     const isPlayingThis = isPlaying && activeSection === sectionId;
     
-    // Disable if this button is cooling down, or if another button is generating/playing.
-    const isDisabled = isCooldown || (isGenerating || isPlaying) && activeSection !== sectionId;
+    // Disable if another button is generating/playing.
+    const isDisabled = (isGenerating || isPlaying) && activeSection !== sectionId;
 
     return (
       <Button
