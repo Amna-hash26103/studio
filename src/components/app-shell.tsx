@@ -15,7 +15,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FemmoraLogo } from './icons';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   HeartPulse,
@@ -39,6 +39,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { useAuth, useUser } from '@/firebase';
+import { signOut } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
   { href: '/feed', icon: <LayoutDashboard />, label: 'Feed' },
@@ -46,12 +49,33 @@ const navItems = [
   { href: '/emotional-health', icon: <Smile />, label: 'Emotional Health' },
   { href: '/diet', icon: <Salad />, label: 'Diet' },
   { href: '/messages', icon: <MessageSquare />, label: 'Messages' },
-  { href: '/profile', icon: <User />, label: 'Profile' },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const pathname = usePathname();
+  const { user } = useUser();
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+      router.push('/login');
+    } catch (error: any) {
+      console.error('Error signing out:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh!',
+        description: 'Could not log you out. Please try again.',
+      });
+    }
+  };
 
   const sidebarContent = (
     <>
@@ -77,6 +101,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+            <SidebarMenuItem>
+                 <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/profile')}
+                    tooltip={{ children: 'Profile' }}
+                >
+                    <Link href={`/profile`}>
+                        <User />
+                        <span>Profile</span>
+                    </Link>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-2">
@@ -90,11 +126,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={{ children: 'Log Out' }}>
-              <Link href="/">
-                <LogOut />
-                <span>Log Out</span>
-              </Link>
+            <SidebarMenuButton onClick={handleLogout} tooltip={{ children: 'Log Out' }}>
+              <LogOut />
+              <span>Log Out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -103,7 +137,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
 
   const headerContent = (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+    <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 md:px-6">
       <div className="md:hidden">
         <SidebarTrigger />
       </div>
@@ -129,23 +163,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-full">
             <Avatar className="h-8 w-8">
-              <AvatarImage src="https://picsum.photos/seed/user1/40/40" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarImage src={user?.photoURL || undefined} />
+              <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
             <span className="sr-only">User menu</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Jane Doe</DropdownMenuLabel>
+          <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/profile">Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/">Log Out</Link>
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
@@ -153,7 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNav = (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background md:hidden">
-      <div className="grid h-16 grid-cols-6 items-center">
+      <div className="grid h-16 grid-cols-5 items-center">
         {navItems.map((item) => (
           <Link
             key={item.href}
@@ -174,14 +206,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen w-full">
+      <div className="flex min-h-screen w-full">
         <Sidebar collapsible="icon">{sidebarContent}</Sidebar>
-        <SidebarInset>
-          {headerContent}
-          <main className="flex-1 p-4 pb-20 md:p-6 lg:p-8 md:pb-8">
-            {children}
-          </main>
-        </SidebarInset>
+        <div className="flex flex-1 flex-col">
+            {headerContent}
+            <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 lg:p-8 md:pb-8">
+                {children}
+            </main>
+        </div>
         {isMobile && mobileNav}
       </div>
     </SidebarProvider>

@@ -1,26 +1,14 @@
+'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Calendar, Edit, Link, MapPin } from 'lucide-react';
+import { Calendar, Edit, Link as LinkIcon, MapPin, User } from 'lucide-react';
 import Image from 'next/image';
-
-const user = {
-    name: 'Jane Doe',
-    handle: 'janedoe',
-    avatar: PlaceHolderImages.find(i => i.id === 'user-avatar-1'),
-    cover: PlaceHolderImages.find(i => i.id === 'user-profile-cover'),
-    bio: 'Digital artist & entrepreneur. Passionate about sustainability and empowering women in tech. Let\'s connect and create something amazing!',
-    joined: 'Joined April 2024',
-    location: 'San Francisco, CA',
-    website: 'janedoe.com',
-    stats: {
-        posts: 42,
-        followers: 1258,
-        following: 340
-    }
-}
+import { useUser, useDoc, useMemoFirebase, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const galleryImages = [
     PlaceHolderImages.find(i => i.id === 'feed-post-1'),
@@ -31,34 +19,77 @@ const galleryImages = [
 ]
 
 export default function ProfilePage() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const userProfileRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile, isLoading } = useDoc(userProfileRef);
+
+  const coverImage = PlaceHolderImages.find(i => i.id === 'user-profile-cover');
+
+  if (isLoading || !userProfile) {
+    return (
+        <div className="mx-auto max-w-2xl space-y-12">
+            <Card className="overflow-hidden">
+                <Skeleton className="h-48 w-full" />
+                <div className="p-6">
+                    <div className="relative -mt-20 flex items-end justify-between">
+                        <Skeleton className="h-32 w-32 rounded-full border-4 border-background" />
+                        <Skeleton className="h-10 w-32" />
+                    </div>
+                    <div className="mt-4 space-y-2">
+                        <Skeleton className="h-8 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                    </div>
+                    <Skeleton className="mt-4 h-16 w-full" />
+                     <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+                        <Skeleton className="h-4 w-40" />
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                    <div className="mt-4 flex gap-6">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="h-4 w-20" />
+                    </div>
+                </div>
+            </Card>
+        </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-2xl space-y-12">
       <Card className="overflow-hidden">
         <div className="relative h-48 w-full">
-            {user.cover && <Image src={user.cover.imageUrl} alt="Cover image" data-ai-hint={user.cover.imageHint} fill className="object-cover" />}
+            {coverImage && <Image src={coverImage.imageUrl} alt="Cover image" data-ai-hint={coverImage.imageHint} fill className="object-cover" />}
         </div>
         <div className="p-6">
             <div className="relative -mt-20 flex items-end justify-between">
                 <Avatar className="h-32 w-32 border-4 border-background">
-                    <AvatarImage src={user.avatar?.imageUrl} />
-                    <AvatarFallback>{user.name.slice(0,2)}</AvatarFallback>
+                    <AvatarImage src={userProfile.profilePhotoURL || undefined} />
+                    <AvatarFallback>{userProfile.displayName?.slice(0,2)}</AvatarFallback>
                 </Avatar>
                 <Button><Edit className="mr-2 h-4 w-4" />Edit Profile</Button>
             </div>
             <div className="mt-4">
-                <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-                <p className="text-sm text-muted-foreground">@{user.handle}</p>
+                <h1 className="font-headline text-3xl font-bold">{userProfile.displayName}</h1>
+                <p className="text-sm text-muted-foreground">@{userProfile.email.split('@')[0]}</p>
             </div>
-            <p className="mt-4 max-w-2xl">{user.bio}</p>
+            <p className="mt-4 max-w-2xl">{userProfile.bio || "No bio yet."}</p>
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {user.location}</div>
-                <div className="flex items-center gap-1.5"><Link className="h-4 w-4" /> <a href="#" className="hover:underline">{user.website}</a></div>
-                <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {user.joined}</div>
+                {userProfile.location && <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {userProfile.location}</div>}
+                {/* <div className="flex items-center gap-1.5"><LinkIcon className="h-4 w-4" /> <a href="#" className="hover:underline">{user.website}</a></div> */}
+                {user.metadata.creationTime && <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Joined {new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>}
             </div>
              <div className="mt-4 flex gap-6">
-                <div className="text-sm"><span className="font-bold">{user.stats.posts}</span> Posts</div>
-                <div className="text-sm"><span className="font-bold">{user.stats.followers}</span> Followers</div>
-                <div className="text-sm"><span className="font-bold">{user.stats.following}</span> Following</div>
+                <div className="text-sm"><span className="font-bold">{0}</span> Posts</div>
+                <div className="text-sm"><span className="font-bold">{0}</span> Followers</div>
+                <div className="text-sm"><span className="font-bold">{0}</span> Following</div>
             </div>
         </div>
       </Card>
