@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -14,99 +14,83 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { useToast } from '@/hooks/use-toast';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
+  const { toast } = useToast();
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  useEffect(() => {
-    const loadVoices = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      if (availableVoices.length > 0) {
-        setVoices(availableVoices);
+  const handlePlayPause = async (sectionId: string, text: string) => {
+    // If this section is currently playing, stop it.
+    if (isPlaying && activeSection === sectionId) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
       }
-    };
-
-    // Load voices initially
-    loadVoices();
-
-    // Voices list might load asynchronously, so listen for the event
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-
-    // Cleanup
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  const handlePlay = useCallback((sectionId: string, text: string) => {
-    if (window.speechSynthesis.speaking) {
-      window.speechSynthesis.cancel();
-    }
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utteranceRef.current = utterance;
-
-    // Find a voice that matches the current locale
-    const voice = voices.find(v => v.lang.startsWith(locale));
-    if (voice) {
-      utterance.voice = voice;
-    } else {
-      console.warn(`No voice found for locale: ${locale}. Using default.`);
-    }
-
-    utterance.onstart = () => {
-      setIsPlaying(true);
-      setActiveSection(sectionId);
-    };
-
-    utterance.onend = () => {
       setIsPlaying(false);
       setActiveSection(null);
-      utteranceRef.current = null;
-    };
-    
-    utterance.onerror = (e) => {
-      console.error("Speech synthesis error:", e);
+      return;
+    }
+
+    // If any audio is playing, do nothing.
+    if (isPlaying) return;
+
+    setActiveSection(sectionId);
+    setIsPlaying(true); // Set loading state for the clicked button
+
+    try {
+      const response = await textToSpeech({ text });
+      const audio = new Audio(response.audioDataUri);
+      audioRef.current = audio;
+
+      audio.play();
+
+      audio.onended = () => {
+        setIsPlaying(false);
+        setActiveSection(null);
+        audioRef.current = null;
+      };
+      
+      audio.onerror = () => {
+        toast({
+          variant: "destructive",
+          title: "Audio Error",
+          description: "Could not play the audio file.",
+        });
+        setIsPlaying(false);
+        setActiveSection(null);
+        audioRef.current = null;
+      };
+
+    } catch (error: any) {
+      console.error('Text-to-speech error:', error);
+      toast({
+        variant: "destructive",
+        title: "Text-to-Speech Failed",
+        description: error.message || "Could not generate audio. Please try again later.",
+      });
       setIsPlaying(false);
       setActiveSection(null);
-      utteranceRef.current = null;
-    };
-
-    window.speechSynthesis.speak(utterance);
-  }, [voices, locale]);
-
-  const handlePause = () => {
-    window.speechSynthesis.cancel();
-    setIsPlaying(false);
-    setActiveSection(null);
+    }
   };
 
-
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isPlayingThis = isPlaying && activeSection === sectionId;
-    const isOtherPlaying = isPlaying && !isPlayingThis;
-
-    const handleClick = () => {
-      if (isPlayingThis) {
-        handlePause();
-      } else {
-        handlePlay(sectionId, text);
-      }
-    }
-
+    const isLoadingThis = isPlaying && activeSection === sectionId;
+    
     let icon = <Volume2 className="h-4 w-4" />;
-    if (isPlayingThis) {
+    if (isLoadingThis) {
+      // Use a loader icon if this specific button is the one fetching/playing audio
+      icon = <Loader2 className="h-4 w-4 animate-spin" />;
+    } else if (isPlaying && activeSection !== sectionId) {
+      // If another button is playing, show a pause icon to indicate activity
       icon = <Pause className="h-4 w-4" />;
     }
 
@@ -114,16 +98,15 @@ export default function LandingPage() {
       <Button
         variant="ghost"
         size="icon"
-        onClick={handleClick}
-        disabled={isOtherPlaying}
+        onClick={() => handlePlayPause(sectionId, text)}
+        disabled={isPlaying && !isLoadingThis} // Disable if another section is playing
         className="ml-2 h-6 w-6"
-        aria-label={isPlayingThis ? 'Pause reading' : 'Read section aloud'}
+        aria-label={isLoadingThis ? 'Loading audio...' : 'Read section aloud'}
       >
         {icon}
       </Button>
     );
   };
-
 
   const features = [
     {
@@ -155,7 +138,6 @@ export default function LandingPage() {
   const heroText = `${t('mainHeading')}. ${t('subHeading')}`;
   const thriveText = `${t('thriveHeading')}. ${t('thriveParagraph')}`;
   const featuresText = `${t('featuresHeading')}. ${t('featuresSubHeading')}. ${features.map(f => `${f.title}. ${f.description}`).join(' ')}`;
-
 
   return (
     <div className="flex min-h-screen flex-col">
