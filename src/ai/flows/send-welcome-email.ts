@@ -32,7 +32,7 @@ const welcomeEmailPrompt = ai.definePrompt({
     3.  Mention some key features like the supportive community, AI wellness assistants, and project collaboration.
     4.  End with an encouraging and friendly closing.
 
-    Generate only the body of the email, formatted as simple HTML. The subject line will be "Welcome to FEMMORA, {{{name}}}!".
+    Generate only the raw body of the email, formatted as simple HTML. Do not include markdown formatting like \`\`\`html or surrounding quotes in your response. The subject line will be "Welcome to FEMMORA, {{{name}}}!".
   `,
 });
 
@@ -70,7 +70,9 @@ const sendWelcomeEmailFlow = ai.defineFlow(
 
       if (error) {
         console.error('Resend API Error:', error);
-        throw new Error(`Resend failed: ${error.message}`);
+        // Re-throw the error so it can be caught by the calling function
+        // and displayed to the user.
+        throw error;
       }
 
       console.log('Resend API Success:', data);
