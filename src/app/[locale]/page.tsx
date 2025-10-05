@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { textToSpeech } from '@/ai/flows/text-to-speech';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
