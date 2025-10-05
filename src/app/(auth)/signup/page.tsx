@@ -67,7 +67,6 @@ export default function SignupPage() {
       values.password === 'notes1234.,@'
     ) {
       try {
-        form.formState.isSubmitting = true;
         await sendWelcomeEmail({ name: values.displayName, email: values.email });
         toast({
           title: 'Test Email Sent!',
@@ -79,10 +78,6 @@ export default function SignupPage() {
             title: 'Uh oh! Something went wrong.',
             description: 'Could not send the test email.',
          });
-      } finally {
-        form.formState.isSubmitting = false;
-        // Manually trigger re-render to update disabled state
-        form.trigger();
       }
       return; 
     }
