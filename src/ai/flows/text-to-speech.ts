@@ -66,8 +66,9 @@ const textToSpeechFlow = ai.defineFlow(
     outputSchema: TextToSpeechOutputSchema,
   },
   async ({ text }) => {
+    // Note: Using a standard TTS model to avoid preview model rate limits.
     const { media } = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
+      model: googleAI.model('tts-1'), 
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
@@ -78,8 +79,9 @@ const textToSpeechFlow = ai.defineFlow(
       },
       prompt: text,
     });
+
     if (!media) {
-      throw new Error('no media returned');
+      throw new Error('No media was returned from the text-to-speech model.');
     }
     
     // The model returns raw PCM audio data which needs to be converted to a WAV file.
