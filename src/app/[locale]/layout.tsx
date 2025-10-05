@@ -3,7 +3,7 @@ import '../globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
-import {NextIntlClientProvider} from 'next-intl';
+import {NextIntlClientProvider, useMessages} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 
 export const metadata: Metadata = {
@@ -13,16 +13,14 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 };
 
-export default async function LocaleLayout({
+export default function LocaleLayout({
   children,
   params: {locale}
 }: Readonly<{
   children: React.ReactNode;
   params: {locale: string};
 }>) {
-  // Providing all messages to the client
-  // side is the easiest way to get started
-  const messages = await getMessages();
+  const messages = useMessages();
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -39,7 +37,7 @@ export default async function LocaleLayout({
         />
       </head>
       <body className={cn('font-body antialiased h-screen flex flex-col')}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <FirebaseClientProvider>
             {children}
             <Toaster />
