@@ -53,18 +53,18 @@ export default function SignupPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      displayName: 'notes',
-      email: 'notesfrommyrockbottom@gmail.com',
-      password: 'notes1234.,@',
+      displayName: '',
+      email: '',
+      password: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Special test case for email functionality
     if (
-      values.displayName === 'notes' &&
-      values.email === 'notesfrommyrockbottom@gmail.com' &&
-      values.password === 'notes1234.,@'
+      values.displayName === 'amna' &&
+      values.email === 'amna26103@gmail.com' &&
+      values.password === 'amna1234.,@'
     ) {
       try {
         await sendWelcomeEmail({ name: values.displayName, email: values.email });
