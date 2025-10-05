@@ -29,7 +29,7 @@ const welcomeEmailPrompt = ai.definePrompt({
     The email should:
     1.  Welcome them warmly to FEMMORA.
     2.  Briefly mention the app's purpose: a space to connect, grow, and thrive.
-    3.  Mention some key features like the supportive community, AI wellness assistants, and project collaboration.
+    3.  Mention some key features like the supportive community and AI wellness assistants.
     4.  End with an encouraging and friendly closing.
 
     Generate only the raw body of the email, formatted as simple HTML. Do not include markdown formatting like \`\`\`html or surrounding quotes in your response. The subject line will be "Welcome to FEMMORA, {{{name}}}!".
