@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "UserProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UserProfile",
+      "type": "object",
+      "description": "Represents a user's profile in the Femmora app.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user profile."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user's display name."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The user's phone number."
+        },
+        "profilePhotoURL": {
+          "type": "string",
+          "description": "URL of the user's profile photo.",
+          "format": "uri"
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short biography or description of the user."
+        },
+        "interests": {
+          "type": "array",
+          "description": "An array of the user's interests.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "location": {
+          "type": "string",
+          "description": "The user's location (optional)."
+        },
+        "projectIds": {
+          "type": "array",
+          "description": "References to Projects created by the user. (Relationship: UserProfile 1:N Project)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "displayName",
+        "email"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}/profile",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/backend/entities/UserProfile"
+          },
+          "description": "Stores user profile information. The 'userId' parameter corresponds to the Firebase Authentication UID. Enforces path-based ownership for private user data.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Stores project data owned by a specific user. Enforces path-based ownership. Includes denormalized 'ownerId' field for security rules, enabling authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Authentication UID of the project owner."
+            },
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the project."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/community_posts/{postId}",
+        "definition": {
+          "entityName": "CommunityPost",
+          "schema": {
+            "$ref": "#/backend/entities/CommunityPost"
+          },
+          "description": "Stores community posts accessible based on privacy settings. Includes a 'members' map (denormalized if subcollections are needed).",
+          "params": [
+            {
+              "name": "postId",
+              "description": "The unique identifier for the community post."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/chat_messages/{messageId}",
+        "definition": {
+          "entityName": "ChatMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ChatMessage"
+          },
+          "description": "Stores chat messages for direct messaging.  Access control is managed either by path-based ownership if direct messages are associated with user pairs, or by a denormalized 'members' map if group chats are supported.",
+          "params": [
+            {
+              "name": "messageId",
+              "description": "The unique identifier for the chat message."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to support user authentication and profile management, a community feed, AI-powered wellness chatbots, project collaboration, and media handling, aligning with FEMMORA's core objective. The structure emphasizes authorization independence by denormalizing authorization data where needed and segregating data based on access patterns to ensure secure `list` operations (QAPs). \n\n**Authorization Independence and QAPs:** User-specific data, such as profiles and projects, are stored under the `/users/{userId}` path, ensuring that security rules can be based solely on `request.auth.uid` for access control.  Collaborative data, such as community posts, use a membership map for managing access, with denormalization of this map into subcollections if needed to avoid `get()` calls in security rules. This approach ensures that document creation and updates are atomic.\n\n**Structural Segregation:** Different types of data are stored in separate collections based on their access requirements.  For example, user profiles are stored in `/users/{userId}/profile`, while community posts are stored in `/community_posts`, allowing for different security rules to be applied to each type of data.  \n\n**Access Modeling:** The design consistently uses path-based ownership for user-owned data and membership maps for collaborative data. This standardization simplifies security rule creation and maintenance."
+  }
+}
