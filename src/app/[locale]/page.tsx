@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause, Loader2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Pause } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -14,96 +14,96 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { textToSpeech } from '@/ai/flows/text-to-speech';
-import { useToast } from '@/hooks/use-toast';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
-  const { toast } = useToast();
-  
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const handlePlayPause = async (sectionId: string, text: string) => {
+  const handlePlayPause = useCallback((sectionId: string, text: string, lang: string) => {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
+
     // If this section is currently playing, stop it.
     if (isPlaying && activeSection === sectionId) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
+      synth.cancel();
       setIsPlaying(false);
       setActiveSection(null);
       return;
     }
+    
+    // If another section is playing, stop it before starting the new one.
+    if (synth.speaking) {
+        synth.cancel();
+    }
 
-    // If any audio is playing, do nothing.
-    if (isPlaying) return;
+    const voices = synth.getVoices();
+    // Prioritize voices that exactly match the language-country code (e.g., "en-US")
+    let voice = voices.find((v) => v.lang === lang);
+    // If not found, try finding a voice that matches the language only (e.g., "en")
+    if (!voice) {
+      voice = voices.find((v) => v.lang.startsWith(lang.split('-')[0]));
+    }
 
-    setActiveSection(sectionId);
-    setIsPlaying(true); // Set loading state for the clicked button
+    const newUtterance = new SpeechSynthesisUtterance(text);
+    if (voice) {
+      newUtterance.voice = voice;
+    }
+    newUtterance.lang = lang; // Set the lang property for best results
 
-    try {
-      const response = await textToSpeech({ text });
-      const audio = new Audio(response.audioDataUri);
-      audioRef.current = audio;
+    utteranceRef.current = newUtterance;
+    
+    newUtterance.onstart = () => {
+      setIsPlaying(true);
+      setActiveSection(sectionId);
+    };
 
-      audio.play();
-
-      audio.onended = () => {
-        setIsPlaying(false);
-        setActiveSection(null);
-        audioRef.current = null;
-      };
-      
-      audio.onerror = () => {
-        toast({
-          variant: "destructive",
-          title: "Audio Error",
-          description: "Could not play the audio file.",
-        });
-        setIsPlaying(false);
-        setActiveSection(null);
-        audioRef.current = null;
-      };
-
-    } catch (error: any) {
-      console.error('Text-to-speech error:', error);
-      toast({
-        variant: "destructive",
-        title: "Text-to-Speech Failed",
-        description: error.message || "Could not generate audio. Please try again later.",
-      });
+    newUtterance.onend = () => {
       setIsPlaying(false);
       setActiveSection(null);
+      utteranceRef.current = null;
+    };
+    
+    newUtterance.onerror = () => {
+      setIsPlaying(false);
+      setActiveSection(null);
+      utteranceRef.current = null;
+    };
+
+    synth.speak(newUtterance);
+  }, [isPlaying, activeSection]);
+
+
+  // Effect to ensure voices are loaded, especially on some browsers like Chrome
+  useEffect(() => {
+    const synth = window.speechSynthesis;
+    if (synth.getVoices().length === 0) {
+      synth.onvoiceschanged = () => {};
     }
-  };
+    // Cleanup function to cancel any ongoing speech when the component unmounts
+    return () => {
+      if (synth && synth.speaking) {
+        synth.cancel();
+      }
+    };
+  }, []);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
-    const isLoadingThis = isPlaying && activeSection === sectionId;
-    
-    let icon = <Volume2 className="h-4 w-4" />;
-    if (isLoadingThis) {
-      // Use a loader icon if this specific button is the one fetching/playing audio
-      icon = <Loader2 className="h-4 w-4 animate-spin" />;
-    } else if (isPlaying && activeSection !== sectionId) {
-      // If another button is playing, show a pause icon to indicate activity
-      icon = <Pause className="h-4 w-4" />;
-    }
-
     return (
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => handlePlayPause(sectionId, text)}
-        disabled={isPlaying && !isLoadingThis} // Disable if another section is playing
+        onClick={() => handlePlayPause(sectionId, text, locale)}
+        disabled={isPlaying && activeSection !== sectionId}
         className="ml-2 h-6 w-6"
-        aria-label={isLoadingThis ? 'Loading audio...' : 'Read section aloud'}
+        aria-label={isPlaying && activeSection === sectionId ? 'Pause reading' : 'Read section aloud'}
       >
-        {icon}
+        {isPlaying && activeSection === sectionId ? <Pause className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
       </Button>
     );
   };
@@ -242,7 +242,7 @@ export default function LandingPage() {
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
-              <Card key={feature.id} className="text-center">
+              <Card key={feature.id}>
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6">
                   {feature.icon}
                     <h3 className="text-xl font-bold">{feature.title}</h3>
