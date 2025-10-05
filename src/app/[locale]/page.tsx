@@ -146,7 +146,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden">
+    <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-14 w-14 text-primary" />
@@ -188,9 +188,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="relative px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
-           <BohoShapeOne className="absolute top-10 -left-48 h-auto w-[40rem] text-primary opacity-10" />
-           <BohoShapeTwo className="absolute bottom-0 -right-48 h-auto w-[40rem] text-accent opacity-60" />
+        <section className="relative overflow-hidden px-4 py-16 text-center md:px-6 md:py-24 lg:py-32">
+           <BohoShapeOne className="absolute top-10 -left-48 -z-10 h-auto w-[40rem] text-primary opacity-10" />
+           <BohoShapeTwo className="absolute bottom-0 -right-48 -z-10 h-auto w-[40rem] text-accent opacity-60" />
            <div className="flex items-center justify-center gap-4">
               <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                 {t('mainHeading')}
@@ -236,9 +236,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative px-4 py-16 md:px-6 md:py-24">
-          <BohoShapeOne className="absolute -bottom-24 -left-32 h-auto w-[30rem] -rotate-45 text-accent opacity-40" />
-           <BohoShapeTwo className="absolute -top-24 -right-32 h-auto w-[30rem] rotate-45 text-primary opacity-15" />
+        <section className="relative overflow-hidden px-4 py-16 md:px-6 md:py-24">
+          <BohoShapeOne className="absolute -bottom-24 -left-32 -z-10 h-auto w-[30rem] -rotate-45 text-accent opacity-40" />
+           <BohoShapeTwo className="absolute -top-24 -right-32 -z-10 h-auto w-[30rem] rotate-45 text-primary opacity-15" />
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
