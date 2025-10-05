@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState, useEffect } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -22,15 +23,41 @@ export default function LandingPage() {
   const locale = useLocale();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [isLanguageSupported, setIsLanguageSupported] = useState(false);
 
   useEffect(() => {
+    const checkVoiceSupport = () => {
+      if (typeof window === 'undefined' || !window.speechSynthesis) {
+        setIsLanguageSupported(false);
+        return;
+      }
+      
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        const hasSupport = voices.some(voice => voice.lang.startsWith(locale));
+        setIsLanguageSupported(hasSupport);
+      } else {
+        // Voices might not be loaded yet. Listen for the event.
+        window.speechSynthesis.onvoiceschanged = () => {
+           const updatedVoices = window.speechSynthesis.getVoices();
+           const hasSupport = updatedVoices.some(voice => voice.lang.startsWith(locale));
+           setIsLanguageSupported(hasSupport);
+        };
+      }
+    };
+
+    checkVoiceSupport();
+
     // Stop speech synthesis on component unmount
     return () => {
       window.speechSynthesis.cancel();
+      window.speechSynthesis.onvoiceschanged = null; // Clean up listener
     };
-  }, []);
+  }, [locale]);
 
   const handlePlaySound = (textId: string, text: string) => {
+    if (!isLanguageSupported) return;
+
     if (isSpeaking && speakingId === textId) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
@@ -41,20 +68,19 @@ export default function LandingPage() {
     window.speechSynthesis.cancel(); // Stop any previous speech
 
     const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Set the language of the utterance
     utterance.lang = locale;
 
-    // Let the browser pick the best available voice for the language
+    // Try to find a female voice for the current locale
     const voices = window.speechSynthesis.getVoices();
-    const localeVoices = voices.filter(voice => voice.lang.startsWith(locale));
-    let selectedVoice = localeVoices.find(voice => voice.name.toLowerCase().includes('female'));
-    if (!selectedVoice) {
-      selectedVoice = localeVoices[0];
+    const femaleVoice = voices.find(voice => 
+      voice.lang.startsWith(locale) && 
+      voice.name.toLowerCase().includes('female')
+    );
+    
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
     }
-    if (selectedVoice) {
-        utterance.voice = selectedVoice;
-    }
+    // If no female voice, browser will use its default for the language.
 
     utterance.onstart = () => {
       setIsSpeaking(true);
@@ -76,19 +102,33 @@ export default function LandingPage() {
   };
 
   const AudioButton = ({ textId, text }: { textId: string, text: string }) => (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={() => handlePlaySound(textId, text)}
-      className="ml-2 h-6 w-6"
-      aria-label={`Read section aloud`}
-    >
-      {isSpeaking && speakingId === textId ? (
-        <Pause className="h-4 w-4" />
-      ) : (
-        <Volume2 className="h-4 w-4" />
-      )}
-    </Button>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handlePlaySound(textId, text)}
+              disabled={!isLanguageSupported}
+              className="ml-2 h-6 w-6"
+              aria-label={`Read section aloud`}
+            >
+              {isSpeaking && speakingId === textId ? (
+                <Pause className="h-4 w-4" />
+              ) : (
+                <Volume2 className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </TooltipTrigger>
+        {!isLanguageSupported && (
+          <TooltipContent>
+            <p>No voice available for this language in your browser.</p>
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 
   const features = [
