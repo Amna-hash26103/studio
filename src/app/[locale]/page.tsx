@@ -4,55 +4,74 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Loader2 } from 'lucide-react';
+import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Loader2, Pause } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState, useRef, useEffect } from 'react';
-import { textToSpeech } from '@/ai/flows/text-to-speech';
+import { useState, useEffect } from 'react';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
-  const [audioSrc, setAudioSrc] = useState('');
-  const [playingId, setPlayingId] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const locale = useLocale();
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
   useEffect(() => {
-    if (audioSrc && audioRef.current) {
-      audioRef.current.play().catch(e => {
-        console.error("Audio playback failed:", e);
-        setPlayingId(null);
-      });
-    }
-  }, [audioSrc]);
+    const handleVoicesChanged = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
+    window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+    // Initial load
+    handleVoicesChanged(); 
+    return () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      window.speechSynthesis.cancel();
+    };
+  }, []);
 
-  const handlePlaySound = async (textId: string, text: string) => {
-    if (playingId === textId) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      setPlayingId(null);
-      setAudioSrc('');
+  const handlePlaySound = (textId: string, text: string) => {
+    if (isSpeaking && speakingId === textId) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setSpeakingId(null);
       return;
     }
+    
+    window.speechSynthesis.cancel(); // Stop any previous speech
 
-    setPlayingId(textId);
-    setAudioSrc('');
-    try {
-      const response = await textToSpeech({ text });
-      setAudioSrc(response.audio);
-    } catch (error) {
-      console.error('Failed to generate speech:', error);
-      setPlayingId(null);
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Try to find a voice for the current locale
+    const voiceForLocale = voices.find(voice => voice.lang.startsWith(locale));
+    if (voiceForLocale) {
+      utterance.voice = voiceForLocale;
     }
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setSpeakingId(textId);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setSpeakingId(null);
+    };
+    
+    utterance.onerror = () => {
+        setIsSpeaking(false);
+        setSpeakingId(null);
+        console.error("An error occurred during speech synthesis.");
+    }
+
+    window.speechSynthesis.speak(utterance);
   };
 
   const AudioButton = ({ textId, text }: { textId: string, text: string }) => (
@@ -63,8 +82,8 @@ export default function LandingPage() {
       className="ml-2 h-6 w-6"
       aria-label={`Read section aloud`}
     >
-      {playingId === textId ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
+      {isSpeaking && speakingId === textId ? (
+        <Pause className="h-4 w-4" />
       ) : (
         <Volume2 className="h-4 w-4" />
       )}
@@ -100,14 +119,6 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-       {audioSrc && (
-        <audio
-          ref={audioRef}
-          src={audioSrc}
-          onEnded={() => setPlayingId(null)}
-          onPause={() => setPlayingId(null)}
-        />
-      )}
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-14 w-14 text-primary" />
@@ -197,7 +208,10 @@ export default function LandingPage() {
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                 {t('featuresHeading')}
                 </h2>
-                <AudioButton textId='features-intro' text={`${t('featuresHeading')}. ${t('featuresSubHeading')}`} />
+                <AudioButton 
+                    textId='features-intro' 
+                    text={`${t('featuresHeading')}. ${t('featuresSubHeading')}. ${features.map(f => `${f.title}. ${f.description}`).join(' ')}`}
+                />
             </div>
             <p className="mt-4 text-muted-foreground md:text-lg">
               {t('featuresSubHeading')}
@@ -208,10 +222,7 @@ export default function LandingPage() {
               <Card key={feature.id} className="text-center">
                 <CardContent className="flex flex-col items-center justify-center gap-4 p-6">
                   {feature.icon}
-                  <div className="flex items-center">
                     <h3 className="text-xl font-bold">{feature.title}</h3>
-                    <AudioButton textId={feature.id} text={`${feature.title}. ${feature.description}`} />
-                  </div>
                   <p className="text-muted-foreground">
                     {feature.description}
                   </p>
