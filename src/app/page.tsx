@@ -38,7 +38,7 @@ const features = [
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="container mx-auto flex h-22 items-center justify-between px-4 md:px-6">
+      <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-1">
           <FemmoraLogo className="h-15 w-15 text-primary" />
           <span className="text-xl font-bold tracking-tight leading-none">FEMMORA</span>
