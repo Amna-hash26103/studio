@@ -35,11 +35,6 @@ export default function LandingPage() {
       return;
     }
 
-    // If another sound is generating or playing, do nothing.
-    if (isGenerating || isPlaying) {
-      return;
-    }
-
     // Stop any previously playing audio
     if (audioRef.current) {
       audioRef.current.pause();
@@ -68,14 +63,14 @@ export default function LandingPage() {
       setActiveSection(null);
       setIsGenerating(false);
     }
-  }, [isPlaying, isGenerating, activeSection]);
+  }, [isPlaying, activeSection]);
 
   const AudioButton = ({ sectionId, text }: { sectionId: string; text: string }) => {
     const isLoadingThis = isGenerating && activeSection === sectionId;
     const isPlayingThis = isPlaying && activeSection === sectionId;
     
-    // Disable if another button is generating/playing.
-    const isDisabled = (isGenerating || isPlaying) && activeSection !== sectionId;
+    // Disable if another button is generating audio.
+    const isDisabled = isGenerating && activeSection !== sectionId;
 
     return (
       <Button

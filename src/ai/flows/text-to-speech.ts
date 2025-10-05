@@ -67,7 +67,7 @@ const textToSpeechFlow = ai.defineFlow(
   },
   async ({ text }) => {
     const { media } = await ai.generate({
-      model: googleAI.model('tts-1'), // Use the standard TTS model
+      model: googleAI.model('tts-1'), // Use the standard, production-ready TTS model
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {
@@ -81,7 +81,8 @@ const textToSpeechFlow = ai.defineFlow(
     if (!media) {
       throw new Error('no media returned');
     }
-    // The tts-1 model may not return base64, so we handle both cases.
+    
+    // The tts-1 model often returns raw PCM audio data which needs to be converted to a WAV file.
     if (media.url.startsWith('data:')) {
        const audioBuffer = Buffer.from(
         media.url.substring(media.url.indexOf(',') + 1),
@@ -92,11 +93,8 @@ const textToSpeechFlow = ai.defineFlow(
         audioDataUri: 'data:audio/wav;base64,' + wavBase64,
       };
     }
-    // If it's a URL, we can return it directly if the format is correct,
-    // but for consistency we will process it to WAV.
-    // This part assumes you have a way to fetch the URL content if needed.
-    // For simplicity, we'll assume the data URI is provided for now.
-    // In a real scenario, you might need to fetch the URL content.
+    
+    // This case should be rare but handles if the model returns a non-data URI.
     throw new Error('Unsupported media format from TTS model.');
   }
 );
