@@ -141,7 +141,7 @@ export default function SignupPage() {
           <Link href="/" className="mb-4 inline-block">
             <FemmoraLogo className="mx-auto h-50 w-50 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-2xl">
+          <CardTitle className="font-headline text-xl">
             Join FEMMORA
           </CardTitle>
           <CardDescription>
