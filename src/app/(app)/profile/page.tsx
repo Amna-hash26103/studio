@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Calendar, Edit, Link as LinkIcon, MapPin, User } from 'lucide-react';
+import { Calendar, Edit, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useUser, useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useState } from 'react';
+import { EditProfileDialog } from '@/components/edit-profile-dialog';
 
 const galleryImages = [
     PlaceHolderImages.find(i => i.id === 'feed-post-1'),
@@ -22,10 +24,11 @@ const galleryImages = [
 export default function ProfilePage() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
 
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    // Correctly reference the user profile document at /users/{userId}
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
@@ -79,6 +82,15 @@ export default function ProfilePage() {
 
 
   return (
+    <>
+    {user && userProfile && (
+        <EditProfileDialog 
+            isOpen={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            user={user}
+            userProfile={userProfile}
+        />
+    )}
     <div className="mx-auto max-w-2xl space-y-12">
       <Card className="overflow-hidden">
         <div className="relative h-48 w-full">
@@ -90,7 +102,7 @@ export default function ProfilePage() {
                     <AvatarImage src={userProfile?.profilePhotoURL || undefined} />
                     <AvatarFallback>{userProfile?.displayName?.slice(0,2)}</AvatarFallback>
                 </Avatar>
-                <Button><Edit className="mr-2 h-4 w-4" />Edit Profile</Button>
+                <Button onClick={() => setIsEditDialogOpen(true)}><Edit className="mr-2 h-4 w-4" />Edit Profile</Button>
             </div>
             <div className="mt-4">
                 <h1 className="font-headline text-3xl font-bold">{userProfile?.displayName}</h1>
@@ -144,5 +156,6 @@ export default function ProfilePage() {
         </TabsContent>
       </Tabs>
     </div>
+    </>
   );
 }
