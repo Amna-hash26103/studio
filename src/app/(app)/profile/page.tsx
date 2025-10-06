@@ -25,8 +25,8 @@ export default function ProfilePage() {
 
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    // Correctly reference the user profile document within the 'profile' subcollection
-    return doc(firestore, 'users', user.uid, 'profile', user.uid);
+    // Correctly reference the user profile document at /users/{userId}
+    return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
   const { data: userProfile, isLoading } = useDoc(userProfileRef);

@@ -84,8 +84,8 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       };
 
-      // Correct path: /users/{userId}/profile/{userId}
-      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile);
+      // Correct path: /users/{userId}
+      await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
       sendWelcomeEmail({ name: values.displayName, email: values.email });
 
