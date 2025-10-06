@@ -33,7 +33,6 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
 
-// ✅ Validation Schema using Zod
 const formSchema = z.object({
   displayName: z.string().min(2, {
     message: 'Display name must be at least 2 characters.',
@@ -61,7 +60,6 @@ export default function SignupPage() {
     },
   });
 
-  // ✅ Handle Signup Submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -75,7 +73,6 @@ export default function SignupPage() {
         displayName: values.displayName,
       });
 
-      // ✅ Correct Firestore path: store user profile in "users/{uid}"
       const userProfile = {
         id: user.uid,
         displayName: values.displayName,
@@ -87,9 +84,9 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(firestore, 'users', user.uid), userProfile);
+      // Correct path: /users/{userId}/profile/{userId}
+      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile);
 
-      // ✅ Send Welcome Email (non-blocking)
       sendWelcomeEmail({ name: values.displayName, email: values.email });
 
       toast({

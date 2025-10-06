@@ -25,8 +25,8 @@ export default function ProfilePage() {
 
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    // Correctly reference the user profile document
-    return doc(firestore, 'users', user.uid);
+    // Correctly reference the user profile document within the 'profile' subcollection
+    return doc(firestore, 'users', user.uid, 'profile', user.uid);
   }, [firestore, user]);
 
   const { data: userProfile, isLoading } = useDoc(userProfileRef);
@@ -87,18 +87,18 @@ export default function ProfilePage() {
         <div className="p-6">
             <div className="relative -mt-20 flex items-end justify-between">
                 <Avatar className="h-32 w-32 border-4 border-background">
-                    <AvatarImage src={userProfile.profilePhotoURL || undefined} />
-                    <AvatarFallback>{userProfile.displayName?.slice(0,2)}</AvatarFallback>
+                    <AvatarImage src={userProfile?.profilePhotoURL || undefined} />
+                    <AvatarFallback>{userProfile?.displayName?.slice(0,2)}</AvatarFallback>
                 </Avatar>
                 <Button><Edit className="mr-2 h-4 w-4" />Edit Profile</Button>
             </div>
             <div className="mt-4">
-                <h1 className="font-headline text-3xl font-bold">{userProfile.displayName}</h1>
-                <p className="text-sm text-muted-foreground">@{userProfile.email.split('@')[0]}</p>
+                <h1 className="font-headline text-3xl font-bold">{userProfile?.displayName}</h1>
+                <p className="text-sm text-muted-foreground">@{userProfile?.email.split('@')[0]}</p>
             </div>
-            <p className="mt-4 max-w-2xl">{userProfile.bio || "No bio yet."}</p>
+            <p className="mt-4 max-w-2xl">{userProfile?.bio || "No bio yet."}</p>
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-                {userProfile.location && <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {userProfile.location}</div>}
+                {userProfile?.location && <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {userProfile.location}</div>}
                 {user?.metadata.creationTime && <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Joined {new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>}
             </div>
              <div className="mt-4 flex gap-6">
