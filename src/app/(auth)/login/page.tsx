@@ -59,12 +59,14 @@ export default function LoginPage() {
     ) {
       try {
         let userCredential;
+        let isNewUser = false;
         try {
           // Try to sign in the test user
           userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
         } catch (error: any) {
           // If the user doesn't exist, create them
           if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+            isNewUser = true;
             userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
             const user = userCredential.user;
             // Create a profile for the new test user
@@ -88,9 +90,11 @@ export default function LoginPage() {
         
         toast({
           title: 'Logged In!',
-          description: 'Welcome back, Test User!',
+          description: isNewUser ? 'Test user account created successfully!' : 'Welcome back, Amna!',
         });
-        router.push('/feed');
+        
+        // FIX: Ensure all previous async operations complete before navigating
+        await router.push('/feed');
 
       } catch (error: any) {
         console.error('Error with test user login:', error);
