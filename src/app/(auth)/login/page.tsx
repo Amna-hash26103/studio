@@ -23,7 +23,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -40,6 +41,7 @@ export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const firestore = getFirestore(auth.app);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,19 +58,45 @@ export default function LoginPage() {
       values.password === 'amna1234.,@'
     ) {
       try {
-        // We can sign in anonymously to get a valid session for testing
-        await signInAnonymously(auth);
+        let userCredential;
+        try {
+          // Try to sign in the test user
+          userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+        } catch (error: any) {
+          // If the user doesn't exist, create them
+          if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+            userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+            const user = userCredential.user;
+            // Create a profile for the new test user
+            const userProfile = {
+              id: user.uid,
+              displayName: 'Amna Test',
+              email: values.email,
+              bio: 'This is a test user profile for exploring the FEMMORA app features. Feel free to edit anything!',
+              interests: ['Wellness', 'Tech', 'Community'],
+              location: 'Digital Space',
+              profilePhotoURL: '',
+              projectIds: []
+            };
+            await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile);
+          } else {
+            // Re-throw other errors
+            throw error;
+          }
+        }
+        
         toast({
           title: 'Logged In!',
           description: 'Welcome back, Test User!',
         });
         router.push('/feed');
+
       } catch (error: any) {
-        console.error('Error signing in anonymously for test:', error);
+        console.error('Error with test user login:', error);
         toast({
           variant: 'destructive',
           title: 'Uh oh! Test Login Failed.',
-          description: 'Could not create an anonymous session for testing.',
+          description: error.message || 'Could not sign in or create the test user session.',
         });
       }
       return;
