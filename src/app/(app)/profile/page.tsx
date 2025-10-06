@@ -33,7 +33,7 @@ export default function ProfilePage() {
 
   const coverImage = PlaceHolderImages.find(i => i.id === 'user-profile-cover');
 
-  if (isLoading || !userProfile) {
+  if (isLoading) {
     return (
         <div className="mx-auto max-w-2xl space-y-12">
             <Card className="overflow-hidden">
@@ -64,6 +64,20 @@ export default function ProfilePage() {
     )
   }
 
+  // If after loading, there is still no user profile, show a message
+  if (!userProfile) {
+    return (
+        <div className="mx-auto max-w-2xl space-y-12">
+            <Card>
+                <CardContent className="p-6 text-center">
+                    <p>Could not load user profile. It might not exist yet.</p>
+                </CardContent>
+            </Card>
+        </div>
+    )
+  }
+
+
   return (
     <div className="mx-auto max-w-2xl space-y-12">
       <Card className="overflow-hidden">
@@ -85,7 +99,7 @@ export default function ProfilePage() {
             <p className="mt-4 max-w-2xl">{userProfile.bio || "No bio yet."}</p>
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 {userProfile.location && <div className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {userProfile.location}</div>}
-                {user.metadata.creationTime && <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Joined {new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>}
+                {user?.metadata.creationTime && <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Joined {new Date(user.metadata.creationTime).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</div>}
             </div>
              <div className="mt-4 flex gap-6">
                 <div className="text-sm"><span className="font-bold">{0}</span> Posts</div>
@@ -118,11 +132,13 @@ export default function ProfilePage() {
         <TabsContent value="media">
              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {galleryImages.filter(img => img).map((image, index) => (
-                    <Card key={index} className="overflow-hidden">
-                        <div className="relative aspect-square w-full">
-                           {image && <Image src={image.imageUrl} alt={image.description} data-ai-hint={image.imageHint} fill className="object-cover" />}
-                        </div>
-                    </Card>
+                    image && (
+                        <Card key={index} className="overflow-hidden">
+                            <div className="relative aspect-square w-full">
+                               <Image src={image.imageUrl} alt={image.description} data-ai-hint={image.imageHint} fill className="object-cover" />
+                            </div>
+                        </Card>
+                    )
                 ))}
             </div>
         </TabsContent>
