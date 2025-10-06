@@ -63,30 +63,6 @@ export default function SignupPage() {
 
   // ✅ Handle Signup Submission
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // 🔹 Special Case: Test email flow without registration
-    if (
-      values.displayName === 'amna' &&
-      values.email === 'amna26103@gmail.com' &&
-      values.password === 'amna1234.,@'
-    ) {
-      try {
-        await sendWelcomeEmail({ name: values.displayName, email: values.email });
-        toast({
-          title: 'Test Email Sent!',
-          description: `A welcome email has been sent to ${values.email}. Please proceed to login.`,
-        });
-        router.push('/login');
-      } catch (error: any) {
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: error.message || 'Could not send the test email.',
-        });
-      }
-      return;
-    }
-
-    // 🔹 Regular User Signup Flow
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,

@@ -23,8 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -41,7 +40,6 @@ export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  const firestore = getFirestore(auth.app);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,62 +50,6 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // 🔹 Special Case: Test user login & creation
-    if (
-      values.email === 'amna26103@gmail.com' &&
-      values.password === 'amna1234.,@'
-    ) {
-      try {
-        let userCredential;
-        let isNewUser = false;
-        try {
-          // Try to sign in the test user
-          userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
-        } catch (error: any) {
-          // If the user doesn't exist, create them
-          if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-            isNewUser = true;
-            userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-            const user = userCredential.user;
-            // Create a profile for the new test user
-            const userProfile = {
-              id: user.uid,
-              displayName: 'Amna',
-              email: values.email,
-              bio: 'This is a test user profile for exploring the FEMMORA app features. Feel free to edit anything!',
-              interests: ['Wellness', 'Tech', 'Community'],
-              location: 'Digital Space',
-              profilePhotoURL: '',
-              projectIds: []
-            };
-            // Store the profile at users/{userId}
-            await setDoc(doc(firestore, 'users', user.uid), userProfile);
-          } else {
-            // Re-throw other errors
-            throw error;
-          }
-        }
-        
-        toast({
-          title: 'Logged In!',
-          description: isNewUser ? 'Test user account created successfully!' : 'Welcome back, Amna!',
-        });
-        
-        // FIX: Ensure all previous async operations complete before navigating
-        await router.push('/feed');
-
-      } catch (error: any) {
-        console.error('Error with test user login:', error);
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Test Login Failed.',
-          description: error.message || 'Could not sign in or create the test user session.',
-        });
-      }
-      return;
-    }
-
-    // 🔹 Regular Login Flow
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
