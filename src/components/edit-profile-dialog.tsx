@@ -23,10 +23,15 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useStorage } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { updateProfile, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { v4 as uuidv4 } from 'uuid';
+import { Loader2 } from 'lucide-react';
 
 const profileFormSchema = z.object({
   displayName: z.string().min(2, {
@@ -34,6 +39,7 @@ const profileFormSchema = z.object({
   }),
   bio: z.string().max(160, 'Bio must not be longer than 160 characters.').optional(),
   location: z.string().max(50, 'Location must not be longer than 50 characters.').optional(),
+  profilePicture: z.any().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -44,6 +50,7 @@ interface EditProfileDialogProps {
   user: User;
   userProfile: {
     displayName: string;
+    profilePhotoURL?: string;
     bio?: string;
     location?: string;
   };
@@ -52,7 +59,10 @@ interface EditProfileDialogProps {
 export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: EditProfileDialogProps) {
   const auth = useAuth();
   const firestore = useFirestore();
+  const storage = useStorage();
   const { toast } = useToast();
+  const [isUploading, setIsUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(userProfile.profilePhotoURL || null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -64,18 +74,43 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
     mode: 'onChange',
   });
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue('profilePicture', file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   async function onSubmit(data: ProfileFormValues) {
+    setIsUploading(true);
     try {
+      let newProfilePhotoURL = userProfile.profilePhotoURL;
+      const imageFile = data.profilePicture;
+
+      if (imageFile && storage) {
+        const imageId = uuidv4();
+        const storageRef = ref(storage, `profile_pictures/${user.uid}/${imageId}`);
+        await uploadBytes(storageRef, imageFile);
+        newProfilePhotoURL = await getDownloadURL(storageRef);
+      }
+
       const userRef = doc(firestore, 'users', user.uid);
       await updateDoc(userRef, {
         displayName: data.displayName,
         bio: data.bio,
         location: data.location,
+        profilePhotoURL: newProfilePhotoURL,
       });
 
-      if (user.displayName !== data.displayName) {
+      if (user.displayName !== data.displayName || user.photoURL !== newProfilePhotoURL) {
         await updateProfile(user, {
           displayName: data.displayName,
+          photoURL: newProfilePhotoURL,
         });
       }
 
@@ -91,6 +126,8 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
         title: 'Uh oh! Something went wrong.',
         description: 'There was a problem updating your profile.',
       });
+    } finally {
+      setIsUploading(false);
     }
   }
 
@@ -104,7 +141,26 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="flex flex-col items-center space-y-4">
+                <Avatar className="h-24 w-24">
+                    <AvatarImage src={imagePreview || undefined} />
+                    <AvatarFallback>{userProfile.displayName?.slice(0, 2)}</AvatarFallback>
+                </Avatar>
+                <FormField
+                  control={form.control}
+                  name="profilePicture"
+                  render={() => (
+                    <FormItem>
+                      <FormControl>
+                        <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} className="text-sm"/>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </div>
+            
             <FormField
               control={form.control}
               name="displayName"
@@ -149,8 +205,8 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
               )}
             />
             <DialogFooter>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Saving...' : 'Save changes'}
+              <Button type="submit" disabled={isUploading}>
+                {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
               </Button>
             </DialogFooter>
           </form>
