@@ -31,6 +31,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { ScrollArea } from './ui/scroll-area';
 
 const avatarGallery = [
   'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg',
@@ -124,85 +125,87 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md grid-rows-[auto_1fr_auto] max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
             Choose a new avatar and update your details. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            
-            <div className='space-y-2'>
-              <FormLabel>Avatar</FormLabel>
-              <div className="grid grid-cols-4 gap-2">
-                {avatarGallery.map((url) => (
-                  <button
-                    type="button"
-                    key={url}
-                    onClick={() => setSelectedAvatar(url)}
-                    className={cn(
-                      'relative aspect-square w-full overflow-hidden rounded-full ring-2 ring-transparent transition-all hover:opacity-80',
-                      selectedAvatar === url ? 'ring-primary ring-offset-2' : 'ring-transparent'
-                    )}
-                  >
-                    <Image src={url} alt="Avatar option" layout="fill" className="object-cover" />
-                  </button>
-                ))}
+        <ScrollArea className="pr-6">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              
+              <div className='space-y-2'>
+                <FormLabel>Avatar</FormLabel>
+                <div className="grid grid-cols-4 gap-2">
+                  {avatarGallery.map((url) => (
+                    <button
+                      type="button"
+                      key={url}
+                      onClick={() => setSelectedAvatar(url)}
+                      className={cn(
+                        'relative aspect-square w-full overflow-hidden rounded-full ring-2 ring-transparent transition-all hover:opacity-80',
+                        selectedAvatar === url ? 'ring-primary ring-offset-2' : 'ring-transparent'
+                      )}
+                    >
+                      <Image src={url} alt="Avatar option" layout="fill" className="object-cover" />
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-            
-            <FormField
-              control={form.control}
-              name="displayName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Display Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bio</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Tell us a little bit about yourself"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Your Location" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+              
+              <FormField
+                control={form.control}
+                name="displayName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bio</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Tell us a little bit about yourself"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Your Location" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter className="pt-4">
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
