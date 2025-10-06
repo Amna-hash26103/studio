@@ -23,12 +23,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useAuth } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import { setDoc, doc, getFirestore } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
@@ -47,7 +47,7 @@ const formSchema = z.object({
 
 export default function SignupPage() {
   const auth = useAuth();
-  const firestore = getFirestore(auth.app);
+  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -82,9 +82,9 @@ export default function SignupPage() {
         location: '',
         profilePhotoURL: user.photoURL || '',
         createdAt: new Date().toISOString(),
+        projectIds: []
       };
 
-      // Correct path: /users/{userId}
       await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
       sendWelcomeEmail({ name: values.displayName, email: values.email });
