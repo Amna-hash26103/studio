@@ -1,3 +1,4 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -38,7 +39,7 @@ export default function FeedPage() {
       <Card>
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
-            <Avatar>
+            <Avatar className="ring-1 ring-primary">
               <AvatarImage src={user1?.imageUrl} />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
@@ -54,7 +55,7 @@ export default function FeedPage() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar>
+                  <Avatar className="ring-1 ring-primary">
                     <AvatarImage src={post.avatar} />
                     <AvatarFallback>{post.author.slice(0,2)}</AvatarFallback>
                   </Avatar>
@@ -91,7 +92,7 @@ export default function FeedPage() {
                 </div>
               </div>
               <div className="flex w-full items-center gap-2">
-                <Avatar>
+                <Avatar className="ring-1 ring-primary">
                   <AvatarImage src={user1?.imageUrl} />
                   <AvatarFallback>JD</AvatarFallback>
                 </Avatar>

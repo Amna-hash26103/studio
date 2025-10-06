@@ -89,7 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <SidebarHeader className="border-b p-4">
         <div className="flex flex-col items-center gap-2 text-center">
-            <Avatar className="h-20 w-20">
+            <Avatar className="h-20 w-20 ring-2 ring-primary">
                 <AvatarImage src={user?.photoURL || undefined} />
                 <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
@@ -179,7 +179,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-full">
-            <Avatar className="h-8 w-8">
+            <Avatar className="h-8 w-8 ring-1 ring-primary">
               <AvatarImage src={user?.photoURL || undefined} />
               <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>

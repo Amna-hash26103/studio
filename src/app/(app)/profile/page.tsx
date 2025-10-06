@@ -85,8 +85,8 @@ export default function ProfilePage() {
         </div>
         <div className="p-6">
             <div className="relative -mt-20 flex items-end justify-between">
-                <Avatar className="h-32 w-32 border-4 border-background">
-                    <AvatarImage src={userProfile?.profilePhotoURL || undefined} />
+                <Avatar className="h-32 w-32 border-4 border-background ring-2 ring-primary">
+                    <AvatarImage src={userProfile?.profilePhotoURL || user?.photoURL || undefined} />
                     <AvatarFallback>{userProfile?.displayName?.slice(0,2)}</AvatarFallback>
                 </Avatar>
             </div>

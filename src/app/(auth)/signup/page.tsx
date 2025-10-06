@@ -69,8 +69,12 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
+      // Use one of the provided images as the default.
+      const defaultAvatarUrl = 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
+
       await updateProfile(user, {
         displayName: values.displayName,
+        photoURL: defaultAvatarUrl,
       });
 
       const userProfile = {
@@ -80,7 +84,7 @@ export default function SignupPage() {
         bio: '',
         interests: [],
         location: '',
-        profilePhotoURL: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
+        profilePhotoURL: defaultAvatarUrl,
         projectIds: []
       };
 
