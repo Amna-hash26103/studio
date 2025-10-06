@@ -87,7 +87,7 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(firestore, 'users', user.uid), userProfile, { merge: true });
+      await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
       // ✅ Send Welcome Email (non-blocking)
       sendWelcomeEmail({ name: values.displayName, email: values.email });
@@ -100,12 +100,14 @@ export default function SignupPage() {
       router.push('/feed');
     } catch (error: any) {
       console.error('Error signing up:', error);
+      let description = 'There was a problem creating your account. Please try again.';
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'This email is already in use. Please log in instead.';
+      }
       toast({
         variant: 'destructive',
         title: 'Signup Failed',
-        description:
-          error.message ||
-          'There was a problem creating your account. Please try again.',
+        description: description,
       });
     }
   }
