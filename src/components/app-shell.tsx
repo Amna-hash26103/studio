@@ -82,7 +82,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <SidebarHeader className="border-b">
       <div className="flex items-center gap-1 ">
-  <FemmoraLogo className="h-20 w-20 text-primary mb-1" />
+  <FemmoraLogo className="h-20 w-20 text-primary mb-4" />
   <span className="font-headline text-lg font-bold flex items-center">FEMMORA</span>
 </div>
       </SidebarHeader>
