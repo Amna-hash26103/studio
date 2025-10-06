@@ -88,12 +88,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sidebarContent = (
     <>
       <SidebarHeader className="border-b p-4">
-        <div className="flex flex-col items-center gap-2 text-center">
-            <Avatar className="h-20 w-20 ring-2 ring-primary">
+        <div className="flex flex-col items-center gap-2">
+            <Avatar className="h-20 w-20 border-2 border-primary">
                 <AvatarImage src={user?.photoURL || undefined} />
                 <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
-            <div className='group-data-[collapsible=icon]:hidden'>
+            <div className='group-data-[collapsible=icon]:hidden text-center'>
                  <p className="font-semibold">{user?.displayName}</p>
                  <p className="text-xs text-muted-foreground">Welcome back 🌷</p>
             </div>
@@ -179,7 +179,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-full">
-            <Avatar className="h-8 w-8 ring-1 ring-primary">
+            <Avatar className="h-8 w-8 border-2 border-primary">
               <AvatarImage src={user?.photoURL || undefined} />
               <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
