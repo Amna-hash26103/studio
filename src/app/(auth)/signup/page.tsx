@@ -110,7 +110,8 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(firestore, 'users', user.uid), userProfile);
+      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile, {merge: true});
+
 
       // ✅ Send Welcome Email (non-blocking)
       sendWelcomeEmail({ name: values.displayName, email: values.email });
@@ -139,7 +140,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mb-4 inline-block">
-            <FemmoraLogo className="mx-auto h-20 w-20 text-primary" />
+            <FemmoraLogo className="mx-auto h-40 w-40 text-primary" />
           </Link>
           <CardTitle className="font-headline text-xl">
             Join FEMMORA
