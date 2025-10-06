@@ -80,8 +80,7 @@ export default function SignupPage() {
         bio: '',
         interests: [],
         location: '',
-        profilePhotoURL: user.photoURL || '',
-        createdAt: new Date().toISOString(),
+        profilePhotoURL: user.photoURL || `https://picsum.photos/seed/${user.uid}/200/200`,
         projectIds: []
       };
 
@@ -97,15 +96,18 @@ export default function SignupPage() {
       router.push('/feed');
     } catch (error: any) {
       console.error('Error signing up:', error);
-      let description = 'There was a problem creating your account. Please try again.';
       if (error.code === 'auth/email-already-in-use') {
-        description = 'This email is already in use. Please log in instead.';
+        form.setError('email', {
+          type: 'manual',
+          message: 'This email is already in use. Please log in instead.',
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Signup Failed',
+          description: 'There was a problem creating your account. Please try again.',
+        });
       }
-      toast({
-        variant: 'destructive',
-        title: 'Signup Failed',
-        description: description,
-      });
     }
   }
 
