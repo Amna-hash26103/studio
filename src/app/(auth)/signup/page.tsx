@@ -72,8 +72,8 @@ export default function SignupPage() {
       try {
         await sendWelcomeEmail({ name: values.displayName, email: values.email });
         toast({
-          title: 'Email Sent!',
-          description: `A welcome email has been sent to ${values.email}.`,
+          title: 'Test Email Sent!',
+          description: `A welcome email has been sent to ${values.email}. Please proceed to login.`,
         });
         router.push('/login');
       } catch (error: any) {

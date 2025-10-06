@@ -52,7 +52,7 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // 🔹 Special Case: Test user login
+    // 🔹 Special Case: Test user login & creation
     if (
       values.email === 'amna26103@gmail.com' &&
       values.password === 'amna1234.,@'
