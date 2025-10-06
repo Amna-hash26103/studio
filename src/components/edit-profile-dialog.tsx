@@ -87,12 +87,20 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
   };
 
   async function onSubmit(data: ProfileFormValues) {
+    if (!storage) {
+        toast({
+            variant: 'destructive',
+            title: 'Storage Error',
+            description: 'Firebase Storage is not configured. Cannot upload image.',
+        });
+        return;
+    }
     setIsUploading(true);
     try {
       let newProfilePhotoURL = userProfile.profilePhotoURL;
       const imageFile = data.profilePicture;
 
-      if (imageFile && storage) {
+      if (imageFile) {
         const imageId = uuidv4();
         const storageRef = ref(storage, `profile_pictures/${user.uid}/${imageId}`);
         await uploadBytes(storageRef, imageFile);
@@ -107,8 +115,8 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
         profilePhotoURL: newProfilePhotoURL,
       });
 
-      if (user.displayName !== data.displayName || user.photoURL !== newProfilePhotoURL) {
-        await updateProfile(user, {
+      if (auth.currentUser && (auth.currentUser.displayName !== data.displayName || auth.currentUser.photoURL !== newProfilePhotoURL)) {
+        await updateProfile(auth.currentUser, {
           displayName: data.displayName,
           photoURL: newProfilePhotoURL,
         });
@@ -144,7 +152,7 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
                 <Avatar className="h-24 w-24">
-                    <AvatarImage src={imagePreview || undefined} />
+                    <AvatarImage src={imagePreview || undefined} className="object-cover" />
                     <AvatarFallback>{userProfile.displayName?.slice(0, 2)}</AvatarFallback>
                 </Avatar>
                 <FormField
