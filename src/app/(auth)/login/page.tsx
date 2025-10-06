@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -71,9 +72,11 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center pt-2 pb-2">
-          <Link href="/" className="inline-block mb-2">
-            <FemmoraLogo className="mx-auto h-40 w-40 text-primary" />
+        <CardHeader className="flex flex-col items-center justify-center pt-2 pb-2 space-y-2">
+          <Link href="/" className="flex justify-center items-center mb-2">
+            <div className="flex justify-center items-center">
+              <FemmoraLogo className="h-40 w-40 text-primary" />
+            </div>
           </Link>
           <CardTitle className="font-headline text-2xl">
             Welcome Back
