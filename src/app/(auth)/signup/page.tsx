@@ -137,19 +137,20 @@ export default function SignupPage() {
   // ✅ JSX Layout
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center pt-6 pb-2">
-          <Link href="/" className="inline-block">
-            <FemmoraLogo className="mx-auto h-80 w-80 text-primary" />
-          </Link>
-          <CardTitle className="font-headline text-xl">
-            Join FEMMORA
-          </CardTitle>
-          <CardDescription>
-            Create your account and start your journey of empowerment.
-          </CardDescription>
-        </CardHeader>
-
+  <Card className="w-full max-w-md">
+    <CardHeader className="flex flex-col items-center justify-center pt-2 pb-0">
+      <Link href="/" className="flex justify-center items-center">
+        <div className="flex justify-center items-center">
+          <FemmoraLogo className="h-32 w-32 text-primary" /> {/* Adjust size here */}
+        </div>
+      </Link>
+      <CardTitle className="font-headline text-2xl mt-4">
+        Join FEMMORA
+      </CardTitle>
+      <CardDescription className="text-center text-muted-foreground">
+        Create your account and start your journey of empowerment.
+      </CardDescription>
+    </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
