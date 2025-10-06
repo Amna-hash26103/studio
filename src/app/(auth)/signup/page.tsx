@@ -137,14 +137,13 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col items-center justify-center pt-0 pb-0 space-y-2">
-          <Link href="/" className="flex justify-center items-center">
+        <CardHeader className="flex flex-col items-center justify-center pt-2 pb-2 space-y-2">
+          <Link href="/" className="flex justify-center items-center mb-2">
             <div className="flex justify-center items-center">
-              {/* ⬇️ Adjusted logo size */}
-              <FemmoraLogo className="h-44 w-44 text-primary" />
+              <FemmoraLogo className="h-40 w-40 text-primary" />
             </div>
           </Link>
-          <CardTitle className="font-headline text-2xl mt-4">
+          <CardTitle className="font-headline text-2xl">
             Join FEMMORA
           </CardTitle>
           <CardDescription className="text-center text-muted-foreground">
