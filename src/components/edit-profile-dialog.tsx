@@ -124,16 +124,17 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md grid-rows-[auto_1fr] max-h-[90vh] p-0">
-        <DialogHeader className="p-6 pb-0">
+      <DialogContent className="sm:max-w-md grid-rows-[auto_1fr_auto] max-h-[90vh] p-0">
+        <DialogHeader className="p-6 pb-4">
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
             Choose a new avatar and update your details. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
+        
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col h-full overflow-hidden">
-            <ScrollArea className="flex-grow px-6">
+          <form id="edit-profile-form" className="overflow-hidden">
+            <ScrollArea className="px-6 h-[calc(90vh-200px)]">
               <div className="space-y-4 py-4">
                 <div className='space-y-2'>
                   <FormLabel>Avatar</FormLabel>
@@ -199,13 +200,16 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
                 />
               </div>
             </ScrollArea>
-            <div className="p-6 pt-4 flex justify-end border-t">
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
-              </Button>
-            </div>
           </form>
         </Form>
+        <div className="p-6 pt-4 flex justify-end border-t">
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={isSaving}
+          >
+            {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
