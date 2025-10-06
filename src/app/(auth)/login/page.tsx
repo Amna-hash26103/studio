@@ -70,7 +70,7 @@ export default function LoginPage() {
             // Create a profile for the new test user
             const userProfile = {
               id: user.uid,
-              displayName: 'Amna Test',
+              displayName: 'Amna',
               email: values.email,
               bio: 'This is a test user profile for exploring the FEMMORA app features. Feel free to edit anything!',
               interests: ['Wellness', 'Tech', 'Community'],
