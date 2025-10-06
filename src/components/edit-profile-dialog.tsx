@@ -22,9 +22,9 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { updateProfile, User } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -57,7 +57,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 interface EditProfileDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  user: User;
+  user: any; // Using `any` to avoid type conflicts with potential stale user objects
   userProfile: {
     displayName: string;
     profilePhotoURL?: string;
@@ -85,11 +85,20 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
   });
 
   async function onSubmit(data: ProfileFormValues) {
+    if (!auth.currentUser) {
+        toast({
+            variant: 'destructive',
+            title: 'Not authenticated',
+            description: 'You must be logged in to update your profile.',
+        });
+        return;
+    }
+
     setIsSaving(true);
     try {
       const newProfilePhotoURL = selectedAvatar || userProfile.profilePhotoURL;
       
-      const userDocRef = doc(firestore, 'users', user.uid);
+      const userDocRef = doc(firestore, 'users', auth.currentUser.uid);
       await updateDoc(userDocRef, {
         displayName: data.displayName,
         bio: data.bio,
@@ -97,14 +106,15 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
         profilePhotoURL: newProfilePhotoURL,
       });
 
-      if (auth.currentUser && (auth.currentUser.displayName !== data.displayName || auth.currentUser.photoURL !== newProfilePhotoURL)) {
+      if (auth.currentUser.displayName !== data.displayName || auth.currentUser.photoURL !== newProfilePhotoURL) {
         await updateProfile(auth.currentUser, {
           displayName: data.displayName,
           photoURL: newProfilePhotoURL,
         });
-        await auth.currentUser.reload();
       }
-
+      
+      await auth.currentUser.reload();
+      
       toast({
         title: 'Profile Updated',
         description: 'Your profile has been successfully updated.',
@@ -133,7 +143,7 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
         </DialogHeader>
         
         <Form {...form}>
-          <form id="edit-profile-form" className="overflow-hidden">
+          <form id="edit-profile-form" onSubmit={form.handleSubmit(onSubmit)} className="overflow-hidden">
             <ScrollArea className="px-6 h-[calc(90vh-200px)]">
               <div className="space-y-4 py-4">
                 <div className='space-y-2'>
@@ -204,7 +214,8 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
         </Form>
         <div className="p-6 pt-4 flex justify-end border-t">
           <Button
-            onClick={form.handleSubmit(onSubmit)}
+            type="submit"
+            form="edit-profile-form"
             disabled={isSaving}
           >
             {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}

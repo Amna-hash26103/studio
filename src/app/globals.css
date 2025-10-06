@@ -92,6 +92,6 @@
 
 @layer utilities {
     .dark ::-webkit-scrollbar-thumb {
-        @apply bg-primary;
+        background-color: hsl(var(--primary));
     }
 }
