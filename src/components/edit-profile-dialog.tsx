@@ -149,7 +149,7 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
                         selectedAvatar === url ? 'ring-primary ring-offset-2' : 'ring-transparent'
                       )}
                     >
-                      <Image src={url} alt="Avatar option" layout="fill" className="object-cover" />
+                      <Image src={url} alt="Avatar option" fill className="object-cover" />
                     </button>
                   ))}
                 </div>
