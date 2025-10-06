@@ -23,16 +23,28 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth, useFirestore, useStorage } from '@/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { updateProfile, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { v4 as uuidv4 } from 'uuid';
 import { Loader2 } from 'lucide-react';
-import { Label } from './ui/label';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+
+// TODO: Replace these placeholder URLs with your own publicly accessible image URLs.
+const avatarGallery = [
+  'https://picsum.photos/seed/avatar1/200',
+  'https://picsum.photos/seed/avatar2/200',
+  'https://picsum.photos/seed/avatar3/200',
+  'https://picsum.photos/seed/avatar4/200',
+  'https://picsum.photos/seed/avatar5/200',
+  'https://picsum.photos/seed/avatar6/200',
+  'https://picsum.photos/seed/avatar7/200',
+  'https://picsum.photos/seed/avatar8/200',
+];
+
 
 const profileFormSchema = z.object({
   displayName: z.string().min(2, {
@@ -40,7 +52,7 @@ const profileFormSchema = z.object({
   }),
   bio: z.string().max(160, 'Bio must not be longer than 160 characters.').optional(),
   location: z.string().max(50, 'Location must not be longer than 50 characters.').optional(),
-  profilePicture: z.any().optional(),
+  profilePhotoURL: z.string().url().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -60,10 +72,9 @@ interface EditProfileDialogProps {
 export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: EditProfileDialogProps) {
   const auth = useAuth();
   const firestore = useFirestore();
-  const storage = useStorage();
   const { toast } = useToast();
-  const [isUploading, setIsUploading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(userProfile.profilePhotoURL || null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState<string | null>(userProfile.profilePhotoURL || null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -71,42 +82,15 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
       displayName: userProfile.displayName || '',
       bio: userProfile.bio || '',
       location: userProfile.location || '',
+      profilePhotoURL: userProfile.profilePhotoURL || '',
     },
     mode: 'onChange',
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      form.setValue('profilePicture', file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   async function onSubmit(data: ProfileFormValues) {
-    if (!storage) {
-        toast({
-            variant: 'destructive',
-            title: 'Storage Error',
-            description: 'Firebase Storage is not configured. Cannot upload image.',
-        });
-        return;
-    }
-    setIsUploading(true);
+    setIsSaving(true);
     try {
-      let newProfilePhotoURL = userProfile.profilePhotoURL;
-      const imageFile = data.profilePicture;
-
-      if (imageFile && imageFile instanceof File) {
-        const imageId = uuidv4();
-        const storageRef = ref(storage, `profile_pictures/${user.uid}/${imageId}`);
-        await uploadBytes(storageRef, imageFile);
-        newProfilePhotoURL = await getDownloadURL(storageRef);
-      }
+      const newProfilePhotoURL = selectedAvatar || userProfile.profilePhotoURL;
       
       const userDocRef = doc(firestore, 'users', user.uid);
       await updateDoc(userDocRef, {
@@ -137,43 +121,39 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
         description: 'There was a problem updating your profile.',
       });
     } finally {
-      setIsUploading(false);
+      setIsSaving(false);
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Choose a new avatar and update your details. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="flex flex-col items-center space-y-4">
-                <Avatar className="h-24 w-24">
-                    <AvatarImage src={imagePreview || undefined} className="object-cover" />
-                    <AvatarFallback>{userProfile.displayName?.slice(0, 2)}</AvatarFallback>
-                </Avatar>
-                <FormField
-                  control={form.control}
-                  name="profilePicture"
-                  render={() => (
-                    <FormItem>
-                      <FormControl>
-                        <div>
-                          <Label htmlFor="picture" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 cursor-pointer">
-                            Choose File
-                          </Label>
-                          <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} className="sr-only"/>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            
+            <div className='space-y-2'>
+              <FormLabel>Avatar</FormLabel>
+              <div className="grid grid-cols-4 gap-2">
+                {avatarGallery.map((url) => (
+                  <button
+                    type="button"
+                    key={url}
+                    onClick={() => setSelectedAvatar(url)}
+                    className={cn(
+                      'relative aspect-square w-full overflow-hidden rounded-full ring-2 ring-transparent transition-all hover:opacity-80',
+                      selectedAvatar === url ? 'ring-primary ring-offset-2' : 'ring-transparent'
+                    )}
+                  >
+                    <Image src={url} alt="Avatar option" layout="fill" className="object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
             
             <FormField
@@ -220,8 +200,8 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
               )}
             />
             <DialogFooter>
-              <Button type="submit" disabled={isUploading}>
-                {isUploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</> : 'Save changes'}
               </Button>
             </DialogFooter>
           </form>
