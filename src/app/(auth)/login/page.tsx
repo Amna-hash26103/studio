@@ -71,8 +71,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <Link href="/" className="mb-4 inline-block">
+        <CardHeader className="text-center pt-6 pb-2">
+          <Link href="/" className="inline-block">
             <FemmoraLogo className="mx-auto h-40 w-40 text-primary" />
           </Link>
           <CardTitle className="font-headline text-2xl">
