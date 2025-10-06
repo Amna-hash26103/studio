@@ -73,8 +73,9 @@ export default function SignupPage() {
         await sendWelcomeEmail({ name: values.displayName, email: values.email });
         toast({
           title: 'Email Sent!',
-          description: `A welcome email has been sent to ${values.email}. This user was not registered.`,
+          description: `A welcome email has been sent to ${values.email}.`,
         });
+        router.push('/login');
       } catch (error: any) {
         toast({
           variant: 'destructive',
@@ -133,14 +134,13 @@ export default function SignupPage() {
     }
   }
 
-  // ✅ JSX Layout
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center justify-center space-y-2 pt-2 pb-2">
           <Link href="/" className="mb-2 flex items-center justify-center">
             <div className="flex items-center justify-center">
-              <FemmoraLogo className="h-70 w-70 text-primary" />
+              <FemmoraLogo className="h-40 w-40 text-primary" />
             </div>
           </Link>
           <CardTitle className="font-headline text-2xl">
