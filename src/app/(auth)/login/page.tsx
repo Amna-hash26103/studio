@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { FemmoraLogo } from '@/components/icons';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -72,9 +71,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col items-center justify-center pt-2 pb-2 space-y-2">
-          <Link href="/" className="flex justify-center items-center mb-2">
-            <div className="flex justify-center items-center">
+        <CardHeader className="flex flex-col items-center justify-center space-y-2 pt-2 pb-2">
+          <Link href="/" className="mb-2 flex items-center justify-center">
+            <div className="flex items-center justify-center">
               <FemmoraLogo className="h-40 w-40 text-primary" />
             </div>
           </Link>
@@ -120,7 +119,7 @@ export default function LoginPage() {
                         </Link>
                     </div>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
