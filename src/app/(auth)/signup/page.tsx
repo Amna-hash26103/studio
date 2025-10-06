@@ -115,7 +115,7 @@ export default function SignupPage() {
         <CardHeader className="flex flex-col items-center justify-center space-y-2 pt-2 pb-2">
           <Link href="/" className="mb-2 flex items-center justify-center">
             <div className="flex items-center justify-center">
-              <FemmoraLogo className="h-70 w-70 text-primary" />
+              <FemmoraLogo className="h-80 w-80 text-primary" />
             </div>
           </Link>
           <CardTitle className="font-headline text-2xl">
