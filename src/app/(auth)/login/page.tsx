@@ -23,7 +23,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useAuth } from '@/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInAnonymously } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
@@ -50,6 +50,31 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    // 🔹 Special Case: Test user login
+    if (
+      values.email === 'amna26103@gmail.com' &&
+      values.password === 'amna1234.,@'
+    ) {
+      try {
+        // We can sign in anonymously to get a valid session for testing
+        await signInAnonymously(auth);
+        toast({
+          title: 'Logged In!',
+          description: 'Welcome back, Test User!',
+        });
+        router.push('/feed');
+      } catch (error: any) {
+        console.error('Error signing in anonymously for test:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Uh oh! Test Login Failed.',
+          description: 'Could not create an anonymous session for testing.',
+        });
+      }
+      return;
+    }
+
+    // 🔹 Regular Login Flow
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
