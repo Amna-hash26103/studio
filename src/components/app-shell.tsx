@@ -12,6 +12,9 @@ import {
   SidebarInset,
   SidebarTrigger,
   SidebarFooter,
+  SidebarSeparator,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FemmoraLogo } from './icons';
@@ -44,12 +47,16 @@ import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
-const navItems = [
+const mainNavItems = [
   { href: '/feed', icon: <LayoutDashboard />, label: 'Feed' },
   { href: '/healthcare', icon: <HeartPulse />, label: 'Healthcare' },
   { href: '/emotional-health', icon: <Smile />, label: 'Emotional Health' },
   { href: '/diet', icon: <Salad />, label: 'Diet' },
- 
+];
+
+const accountNavItems = [
+    { href: '/profile', icon: <User />, label: 'Profile' },
+    { href: '#', icon: <Settings />, label: 'Settings' },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -80,51 +87,61 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const sidebarContent = (
     <>
-      <SidebarHeader className="border-b">
-        <div className="flex items-center justify-center p-2">
-          <FemmoraLogo className="h-20 w-20 text-primary" />
+      <SidebarHeader className="border-b p-4">
+        <div className="flex flex-col items-center gap-2 text-center">
+            <Avatar className="h-20 w-20">
+                <AvatarImage src={user?.photoURL || undefined} />
+                <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
+            </Avatar>
+            <div className='group-data-[collapsible=icon]:hidden'>
+                 <p className="font-semibold">{user?.displayName}</p>
+                 <p className="text-xs text-muted-foreground">Welcome back 🌷</p>
+            </div>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-2">
-        <SidebarMenu>
-          {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith(item.href)}
-                tooltip={{ children: item.label }}
-              >
-                <Link href={item.href}>
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-            <SidebarMenuItem>
-                 <SidebarMenuButton
+        <SidebarGroup>
+            <SidebarGroupLabel>MAIN</SidebarGroupLabel>
+            <SidebarMenu>
+            {mainNavItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith('/profile')}
-                    tooltip={{ children: 'Profile' }}
+                    isActive={pathname.startsWith(item.href)}
+                    tooltip={{ children: item.label }}
                 >
-                    <Link href={`/profile`}>
-                        <User />
-                        <span>Profile</span>
+                    <Link href={item.href}>
+                    {item.icon}
+                    <span>{item.label}</span>
                     </Link>
                 </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
+                </SidebarMenuItem>
+            ))}
+            </SidebarMenu>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+            <SidebarGroupLabel>ACCOUNT</SidebarGroupLabel>
+            <SidebarMenu>
+            {accountNavItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith(item.href)}
+                    tooltip={{ children: item.label }}
+                >
+                    <Link href={item.href}>
+                    {item.icon}
+                    <span>{item.label}</span>
+                    </Link>
+                </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
+            </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-2">
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip={{ children: 'Settings' }}>
-              <Link href="#">
-                <Settings />
-                <span>Settings</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton onClick={handleLogout} tooltip={{ children: 'Log Out' }}>
               <LogOut />
@@ -183,10 +200,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </header>
   );
 
+  const mobileNavItems = [
+    ...mainNavItems,
+    { href: '/profile', icon: <User />, label: 'Profile' },
+  ]
+
   const mobileNav = (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background md:hidden">
       <div className="grid h-16 grid-cols-5 items-center">
-        {navItems.map((item) => (
+        {mobileNavItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
