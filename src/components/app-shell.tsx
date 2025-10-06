@@ -48,7 +48,7 @@ const navItems = [
   { href: '/healthcare', icon: <HeartPulse />, label: 'Healthcare' },
   { href: '/emotional-health', icon: <Smile />, label: 'Emotional Health' },
   { href: '/diet', icon: <Salad />, label: 'Diet' },
-  { href: '/messages', icon: <MessageSquare />, label: 'Messages' },
+ 
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -81,7 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <SidebarHeader className="border-b">
         <div className="flex items-center gap-2 p-2">
-          <FemmoraLogo className="h-8 w-8 text-primary" />
+          <FemmoraLogo className="h-12 w-12 text-primary" />
           <span className="font-headline text-lg font-bold">FEMMORA</span>
         </div>
       </SidebarHeader>
