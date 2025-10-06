@@ -78,7 +78,8 @@ export default function LoginPage() {
               profilePhotoURL: '',
               projectIds: []
             };
-            await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile);
+            // Store the profile at users/{userId}
+            await setDoc(doc(firestore, 'users', user.uid), userProfile);
           } else {
             // Re-throw other errors
             throw error;

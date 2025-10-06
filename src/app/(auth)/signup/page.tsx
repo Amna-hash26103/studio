@@ -111,7 +111,7 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile, { merge: true });
+      await setDoc(doc(firestore, 'users', user.uid), userProfile, { merge: true });
 
       // ✅ Send Welcome Email (non-blocking)
       sendWelcomeEmail({ name: values.displayName, email: values.email });

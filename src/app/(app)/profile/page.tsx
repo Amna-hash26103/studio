@@ -1,3 +1,4 @@
+
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -24,8 +25,8 @@ export default function ProfilePage() {
 
   const userProfileRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    // Correctly reference the profile sub-document
-    return doc(firestore, 'users', user.uid, 'profile', user.uid);
+    // Correctly reference the user profile document
+    return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
   const { data: userProfile, isLoading } = useDoc(userProfileRef);
