@@ -110,8 +110,7 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       };
 
-      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile, {merge: true});
-
+      await setDoc(doc(firestore, 'users', user.uid, 'profile', user.uid), userProfile, { merge: true });
 
       // ✅ Send Welcome Email (non-blocking)
       sendWelcomeEmail({ name: values.displayName, email: values.email });
@@ -134,23 +133,25 @@ export default function SignupPage() {
     }
   }
 
-  // ✅ JSX Layout
+  // ✅ JSX Layout (fixed: added missing <Card> wrapper)
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
-  <Card className="w-full max-w-md">
-    <CardHeader className="flex flex-col items-center justify-center pt-2 pb-0">
-      <Link href="/" className="flex justify-center items-center">
-        <div className="flex justify-center items-center">
-          <FemmoraLogo className="h-32 w-32 text-primary" /> {/* Adjust size here */}
-        </div>
-      </Link>
-      <CardTitle className="font-headline text-2xl mt-4">
-        Join FEMMORA
-      </CardTitle>
-      <CardDescription className="text-center text-muted-foreground">
-        Create your account and start your journey of empowerment.
-      </CardDescription>
-    </CardHeader>
+      <Card className="w-full max-w-md">
+        <CardHeader className="flex flex-col items-center justify-center pt-0 pb-0 space-y-2">
+          <Link href="/" className="flex justify-center items-center">
+            <div className="flex justify-center items-center">
+              {/* ⬇️ Adjusted logo size */}
+              <FemmoraLogo className="h-44 w-44 text-primary" />
+            </div>
+          </Link>
+          <CardTitle className="font-headline text-2xl mt-4">
+            Join FEMMORA
+          </CardTitle>
+          <CardDescription className="text-center text-muted-foreground">
+            Create your account and start your journey of empowerment.
+          </CardDescription>
+        </CardHeader>
+
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
