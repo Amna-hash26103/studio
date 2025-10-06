@@ -32,6 +32,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { Loader2 } from 'lucide-react';
+import { Label } from './ui/label';
 
 const profileFormSchema = z.object({
   displayName: z.string().min(2, {
@@ -100,15 +101,15 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
       let newProfilePhotoURL = userProfile.profilePhotoURL;
       const imageFile = data.profilePicture;
 
-      if (imageFile) {
+      if (imageFile && imageFile instanceof File) {
         const imageId = uuidv4();
         const storageRef = ref(storage, `profile_pictures/${user.uid}/${imageId}`);
         await uploadBytes(storageRef, imageFile);
         newProfilePhotoURL = await getDownloadURL(storageRef);
       }
-
-      const userRef = doc(firestore, 'users', user.uid);
-      await updateDoc(userRef, {
+      
+      const userDocRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userDocRef, {
         displayName: data.displayName,
         bio: data.bio,
         location: data.location,
@@ -120,6 +121,7 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
           displayName: data.displayName,
           photoURL: newProfilePhotoURL,
         });
+        await auth.currentUser.reload();
       }
 
       toast({
@@ -161,7 +163,12 @@ export function EditProfileDialog({ isOpen, onOpenChange, user, userProfile }: E
                   render={() => (
                     <FormItem>
                       <FormControl>
-                        <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} className="text-sm"/>
+                        <div>
+                          <Label htmlFor="picture" className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 cursor-pointer">
+                            Choose File
+                          </Label>
+                          <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} className="sr-only"/>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
