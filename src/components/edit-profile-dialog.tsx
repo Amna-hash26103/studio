@@ -28,21 +28,18 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { updateProfile, User } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
-// TODO: Replace these placeholder URLs with your own publicly accessible image URLs.
 const avatarGallery = [
-  'https://picsum.photos/seed/avatar1/200',
-  'https://picsum.photos/seed/avatar2/200',
-  'https://picsum.photos/seed/avatar3/200',
-  'https://picsum.photos/seed/avatar4/200',
-  'https://picsum.photos/seed/avatar5/200',
-  'https://picsum.photos/seed/avatar6/200',
-  'https://picsum.photos/seed/avatar7/200',
-  'https://picsum.photos/seed/avatar8/200',
+  'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg',
+  'https://i.postimg.cc/hGZkzdyj/cute-cartoon-kid-posing-portrait-1.jpg',
+  'https://i.postimg.cc/6QQsp004/cute-cartoon-kid-posing-portrait-2.jpg',
+  'https://i.postimg.cc/mrrxgwwZ/cute-cartoon-kid-posing-portrait-3.jpg',
+  'https://i.postimg.cc/XvvMY88M/cute-cartoon-kid-posing-portrait-4.jpg',
+  'https://i.postimg.cc/XvvMY8gR/cute-cartoon-kid-posing-portrait-5.jpg',
+  'https://i.postimg.cc/hGGFtrrK/cute-cartoon-kid-posing-portrait-6.jpg'
 ];
 
 
