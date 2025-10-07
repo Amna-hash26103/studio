@@ -27,7 +27,7 @@
     {
       "id": "nutrition-avatar",
       "description": "Avatar for nutrition chatbot, a friendly woman with fresh vegetables.",
-      "imageUrl": "https://images.unsplash.com/photo-1696575812898-33d8d75c5e1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBjb29raW5nJTIwaWxsdXN0cmF0aW9ufGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1696575812898-33d8d75c5e1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBjb29raW5nJTIwaWxsdXN0cmF0aW9ufGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "woman cooking illustration"
     },
     {
@@ -51,7 +51,7 @@
     {
       "id": "project-image-1",
       "description": "A team of women brainstorming in a startup meeting.",
-      "imageUrl": "https://images.unsplash.com/photo-1702047129200-89734f555f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFydHVwJTIwbWVldGluZ3xlbnwwfHx8fDE3NTk2MDE2OTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1702047129200-89734f555f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFydHVwJTIwbWVldGluZ3xlbnwwfHx8fDE3NTk2MDE2OTF8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "startup meeting"
     },
     {
@@ -68,26 +68,44 @@
     },
     {
       "id": "user-avatar-1",
-      "description": "Profile picture of a user named Jane Doe.",
-      "imageUrl": "https://images.unsplash.com/photo-1598625873873-52f9aefd7d9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzU5NTQ4MjA5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman smiling"
+      "description": "Profile picture of a user.",
+      "imageUrl": "https://i.postimg.cc/hGZkzdyj/cute-cartoon-kid-posing-portrait-1.jpg",
+      "imageHint": "cartoon person"
     },
     {
       "id": "user-avatar-2",
-      "description": "Profile picture of a user named Sarah Smith.",
-      "imageUrl": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc1OTUyMDY3NXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "description": "Profile picture of a user.",
+      "imageUrl": "https://i.postimg.cc/6QQsp004/cute-cartoon-kid-posing-portrait-2.jpg",
+      "imageHint": "cartoon person"
     },
     {
       "id": "user-avatar-3",
-      "description": "Profile picture of a user named Emily White.",
-      "imageUrl": "https://images.unsplash.com/photo-1695470667338-e7e8608ff048?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc1OTU3ODk3NXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person face"
+      "description": "Profile picture of a user.",
+      "imageUrl": "https://i.postimg.cc/mrrxgwwZ/cute-cartoon-kid-posing-portrait-3.jpg",
+      "imageHint": "cartoon person"
+    },
+    {
+      "id": "user-avatar-4",
+      "description": "Profile picture of a user.",
+      "imageUrl": "https://i.postimg.cc/XvvMY88M/cute-cartoon-kid-posing-portrait-4.jpg",
+      "imageHint": "cartoon person"
+    },
+    {
+      "id": "user-avatar-5",
+      "description": "Profile picture of a user.",
+      "imageUrl": "https://i.postimg.cc/XvvMY8gR/cute-cartoon-kid-posing-portrait-5.jpg",
+      "imageHint": "cartoon person"
+    },
+    {
+      "id": "user-avatar-6",
+      "description": "Profile picture of a user.",
+      "imageUrl": "https://i.postimg.cc/hGGFtrrK/cute-cartoon-kid-posing-portrait-6.jpg",
+      "imageHint": "cartoon person"
     },
     {
       "id": "user-profile-cover",
       "description": "A cover image for a user profile page, showing a serene landscape.",
-      "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b6cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b6cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "serene landscape"
     }
   ]
