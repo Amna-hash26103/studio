@@ -17,8 +17,7 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { Link, useRouter, usePathname } from '@/navigation';
 import {
   Bell,
   Globe,
@@ -47,7 +46,7 @@ import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations, useLocale } from 'next-intl';
-import { locales } from '@/app/[locale]/layout';
+import { locales } from '@/navigation';
 
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -58,16 +57,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations('AppShell');
   const locale = useLocale();
   const pathname = usePathname();
-
-  const getPathWithoutLocale = () => {
-    if (!pathname) return '/';
-    const segments = pathname.split('/');
-    if (locales.includes(segments[1])) {
-      return `/${segments.slice(2).join('/')}`;
-    }
-    return pathname;
-  }
-  const pathWithoutLocale = getPathWithoutLocale();
 
   const mainNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
@@ -88,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         title: t('toast.logoutSuccess.title'),
         description: t('toast.logoutSuccess.description'),
       });
-      router.push(`/${locale}/login`);
+      router.push(`/login`);
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
@@ -100,9 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const getActivePath = (href: string) => {
-    // This function will check if the current pathname (without locale) matches the link's href
-    const currentPath = `/${pathname.split('/').slice(2).join('/')}`;
-    return currentPath === href;
+    return pathname === href;
   }
 
   const sidebarContent = (
@@ -130,7 +117,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     isActive={getActivePath(item.href)}
                     tooltip={{ children: item.label }}
                 >
-                    <Link href={`/${locale}${item.href}`}>
+                    <Link href={item.href}>
                     {item.icon}
                     <span>{item.label}</span>
                     </Link>
@@ -150,7 +137,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     isActive={getActivePath(item.href)}
                     tooltip={{ children: item.label }}
                 >
-                    <Link href={item.href === '#' ? '#' : `/${locale}${item.href}`}>
+                    <Link href={item.href}>
                     {item.icon}
                     <span>{item.label}</span>
                     </Link>
@@ -198,8 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               placeholder={t('searchPlaceholder')}
             />
           </div>
-        </form>
-      </div>
+        </form>      </div>
       <Button variant="ghost" size="icon" className="rounded-full">
         <Bell className="h-5 w-5" />
         <span className="sr-only">{t('notifications')}</span>
@@ -213,7 +199,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <DropdownMenuContent>
           {localeItems.map((item) => (
             <DropdownMenuItem key={item.locale} asChild>
-              <Link href={pathWithoutLocale} locale={item.locale}>
+              <Link href={pathname} locale={item.locale}>
                 {item.label}
               </Link>
             </DropdownMenuItem>
@@ -237,7 +223,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {mobileNavItems.map((item) => (
           <Link
             key={item.href}
-            href={`/${locale}${item.href}`}
+            href={item.href}
             className={`flex flex-col items-center justify-center gap-1 text-xs ${
               getActivePath(item.href)
                 ? 'text-primary'

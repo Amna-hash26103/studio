@@ -1,6 +1,6 @@
 
 'use client';
-import Link from 'next/link';
+import { Link, usePathname } from '@/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,8 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useLocale } from 'next-intl';
 import { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
-import { locales } from './layout';
+import { locales } from '@/navigation';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
@@ -162,17 +161,6 @@ export default function LandingPage() {
     { locale: 'pa', label: 'پنجابی' },
   ];
 
-  const getPathWithoutLocale = () => {
-    if (!pathname) return '/';
-    const segments = pathname.split('/');
-    if (locales.includes(segments[1])) {
-      return `/${segments.slice(2).join('/')}`;
-    }
-    return pathname;
-  }
-  
-  const pathWithoutLocale = getPathWithoutLocale();
-
   return (
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
@@ -197,7 +185,7 @@ export default function LandingPage() {
             <DropdownMenuContent>
               {localeItems.map((item) => (
                 <DropdownMenuItem key={item.locale} asChild>
-                  <Link href={pathWithoutLocale} locale={item.locale}>
+                   <Link href={pathname} locale={item.locale}>
                     {item.label}
                   </Link>
                 </DropdownMenuItem>

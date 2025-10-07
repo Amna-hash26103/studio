@@ -1,8 +1,7 @@
 
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -32,7 +31,7 @@ import {
 import { setDoc, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const formSchema = z.object({
@@ -53,7 +52,6 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const t = useTranslations('SignupPage');
-  const locale = useLocale();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -101,7 +99,7 @@ export default function SignupPage() {
         description: t('toast.success.description'),
       });
 
-      router.push(`/${locale}/feed`);
+      router.push('/feed');
     } catch (error: any) {
       console.error('Error signing up:', error);
       if (error.code === 'auth/email-already-in-use') {
