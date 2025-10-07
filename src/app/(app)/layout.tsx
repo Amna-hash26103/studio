@@ -1,7 +1,7 @@
 'use client';
 import { AppShell } from '@/components/app-shell';
 import { useUser } from '@/firebase';
-import { useRouter } from 'next-intl/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations } from 'next-intl';
