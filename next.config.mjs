@@ -1,11 +1,9 @@
 import createNextIntlPlugin from 'next-intl/plugin';
-import type { NextConfig } from 'next';
- 
+
 const withNextIntl = createNextIntlPlugin('./src/i18n.ts');
- 
-const nextConfig: NextConfig = {
-  /* config options here */
-  turbopack: {},
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -33,7 +31,7 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https' ,
+        protocol: 'https',
         hostname: 'i.imgur.com',
         port: '',
         pathname: '/**',
@@ -47,5 +45,5 @@ const nextConfig: NextConfig = {
     ],
   },
 };
- 
+
 export default withNextIntl(nextConfig);
