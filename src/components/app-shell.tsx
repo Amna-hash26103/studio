@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Bell,
   Globe,
@@ -50,22 +50,25 @@ import { useLocale, useTranslations } from 'next-intl';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
-  const pathname = usePathname();
+  const fullPathname = usePathname();
   const { user } = useUser();
   const auth = useAuth();
   const router = useRouter();
   const t = useTranslations('AppShell');
   const locale = useLocale();
 
+  const pathname = fullPathname.startsWith(`/${locale}`) ? fullPathname.substring(`/${locale}`.length) : fullPathname;
+
+
   const mainNavItems = [
-    { href: `/${locale}/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: `/${locale}/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
-    { href: `/${locale}/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
-    { href: `/${locale}/diet`, icon: <Salad />, label: t('nav.diet') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
+    { href: `/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
+    { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
+    { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
   ];
 
   const accountNavItems = [
-      { href: `/${locale}/profile`, icon: <User />, label: t('nav.profile') },
+      { href: `/profile`, icon: <User />, label: t('nav.profile') },
       { href: '#', icon: <Settings />, label: t('nav.settings') },
   ];
 
@@ -186,19 +189,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem asChild>
-            <Link href="/en" locale="en">English</Link>
+            <Link href={pathname || '/'} locale="en">English</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/ur" locale="ur">اردو</Link>
+            <Link href={pathname || '/'} locale="ur">اردو</Link>
           </DropdownMenuItem>
             <DropdownMenuItem asChild>
-            <Link href="/ur-RO" locale="ur-RO">Roman Urdu</Link>
+            <Link href={pathname || '/'} locale="ur-RO">Roman Urdu</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/ps" locale="ps">پښتو</Link>
+            <Link href={pathname || '/'} locale="ps">پښتو</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/pa" locale="pa">پنجابی</Link>
+            <Link href={pathname || '/'} locale="pa">پنجابی</Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -207,7 +210,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNavItems = [
     ...mainNavItems,
-    { href: `/${locale}/profile`, icon: <User />, label: t('nav.profile') },
+    { href: `/profile`, icon: <User />, label: t('nav.profile') },
   ]
 
   const mobileNav = (
@@ -246,3 +249,5 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    
