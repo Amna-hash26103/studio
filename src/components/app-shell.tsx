@@ -19,7 +19,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FemmoraLogo } from './icons';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next-intl/navigation';
 import {
   Bell,
   HeartPulse,
@@ -95,7 +95,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <AvatarImage src={user?.photoURL || undefined} />
                 <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
-            <div className='group-data-[collapsible=icon]:hidden'>
+            <div className='group-data-[collapsible=icon]:hidden text-center'>
                  <p className="font-semibold">{user?.displayName}</p>
                  <p className="text-xs text-muted-foreground">{t('welcomeBack')}</p>
             </div>
