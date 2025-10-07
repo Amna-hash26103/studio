@@ -28,10 +28,10 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { useRouter } from 'next-intl/navigation';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const formSchema = z.object({
@@ -52,6 +52,7 @@ export default function SignupPage() {
   const router = useRouter();
   const { toast } = useToast();
   const t = useTranslations('SignupPage');
+  const locale = useLocale();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,7 +100,7 @@ export default function SignupPage() {
         description: t('toast.success.description'),
       });
 
-      router.push('/feed');
+      router.push(`/${locale}/feed`);
     } catch (error: any) {
       console.error('Error signing up:', error);
       if (error.code === 'auth/email-already-in-use') {
