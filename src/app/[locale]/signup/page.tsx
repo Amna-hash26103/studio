@@ -29,7 +29,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
 import { useTranslations } from 'next-intl';
@@ -72,7 +72,7 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
-      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-3');
+      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-default');
       const defaultAvatarUrl = defaultAvatar?.imageUrl || 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
 
       await updateProfile(user, {
