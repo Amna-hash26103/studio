@@ -18,8 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useRouter } from 'next-intl/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   Globe,
@@ -77,7 +76,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         title: t('toast.logoutSuccess.title'),
         description: t('toast.logoutSuccess.description'),
       });
-      router.push(`/login`);
+      router.push(`/${locale}/login`);
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
@@ -96,7 +95,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         return '/' + parts.slice(2).join('/');
       }
     }
-    return '/'; // Fallback to root
+    return pathname; // Fallback to the full path if something is wrong
   }
 
   const sidebarContent = (
