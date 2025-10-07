@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -17,7 +18,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
-import { usePathname as useNextPathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import {
   Bell,
@@ -47,6 +48,7 @@ import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations, useLocale } from 'next-intl';
+import { locales } from '@/app/[locale]/layout';
 
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -56,24 +58,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const t = useTranslations('AppShell');
   const locale = useLocale();
-  const pathname = useNextPathname();
+  const pathname = usePathname();
 
-  const getPathForLocale = (newLocale: string) => {
+  const getPathWithoutLocale = () => {
     if (!pathname) return '/';
     const segments = pathname.split('/');
-    segments[1] = newLocale;
-    return segments.join('/');
-  };
-  
+    if (locales.includes(segments[1])) {
+      return `/${segments.slice(2).join('/')}`;
+    }
+    return pathname;
+  }
+  const pathWithoutLocale = getPathWithoutLocale();
+
   const mainNavItems = [
-    { href: `/${locale}/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: `/${locale}/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
-    { href: `/${locale}/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
-    { href: `/${locale}/diet`, icon: <Salad />, label: t('nav.diet') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
+    { href: `/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
+    { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
+    { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
   ];
 
   const accountNavItems = [
-      { href: `/${locale}/profile`, icon: <User />, label: t('nav.profile') },
+      { href: `/profile`, icon: <User />, label: t('nav.profile') },
       { href: '#', icon: <Settings />, label: t('nav.settings') },
   ];
 
@@ -94,6 +99,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       });
     }
   };
+
+  const getActivePath = (href: string) => {
+    // This function will check if the current pathname (without locale) matches the link's href
+    const currentPath = `/${pathname.split('/').slice(2).join('/')}`;
+    return currentPath === href;
+  }
 
   const sidebarContent = (
     <>
@@ -117,10 +128,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.href}
+                    isActive={getActivePath(item.href)}
                     tooltip={{ children: item.label }}
                 >
-                    <Link href={item.href}>
+                    <Link href={`/${locale}${item.href}`}>
                     {item.icon}
                     <span>{item.label}</span>
                     </Link>
@@ -137,10 +148,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.href}
+                    isActive={getActivePath(item.href)}
                     tooltip={{ children: item.label }}
                 >
-                    <Link href={item.href}>
+                    <Link href={item.href === '#' ? '#' : `/${locale}${item.href}`}>
                     {item.icon}
                     <span>{item.label}</span>
                     </Link>
@@ -203,7 +214,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <DropdownMenuContent>
           {localeItems.map((item) => (
             <DropdownMenuItem key={item.locale} asChild>
-              <Link href={getPathForLocale(item.locale)}>
+              <Link href={pathWithoutLocale} locale={item.locale}>
                 {item.label}
               </Link>
             </DropdownMenuItem>
@@ -213,13 +224,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </header>
   );
   
-  const mobileNavBasePath = `/${locale}`;
   const mobileNavItems = [
-    { href: `${mobileNavBasePath}/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: `${mobileNavBasePath}/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
-    { href: `${mobileNavBasePath}/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
-    { href: `${mobileNavBasePath}/diet`, icon: <Salad />, label: t('nav.diet') },
-    { href: `${mobileNavBasePath}/profile`, icon: <User />, label: t('nav.profile') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
+    { href: `/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
+    { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
+    { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
+    { href: `/profile`, icon: <User />, label: t('nav.profile') },
   ]
 
   const mobileNav = (
@@ -228,9 +238,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {mobileNavItems.map((item) => (
           <Link
             key={item.href}
-            href={item.href}
+            href={`/${locale}${item.href}`}
             className={`flex flex-col items-center justify-center gap-1 text-xs ${
-              pathname === item.href
+              getActivePath(item.href)
                 ? 'text-primary'
                 : 'text-muted-foreground'
             }`}

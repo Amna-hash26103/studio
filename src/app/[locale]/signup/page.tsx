@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -122,7 +123,7 @@ export default function SignupPage() {
     <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="flex flex-col items-center justify-center space-y-2 pt-2 pb-2">
-          <Link href={`/${locale}`} className="mb-2 flex items-center justify-center">
+          <Link href="/" className="mb-2 flex items-center justify-center">
             <div className="flex items-center justify-center">
               <FemmoraLogo className="h-70 w-70 text-primary" />
             </div>
@@ -196,7 +197,7 @@ export default function SignupPage() {
 
           <div className="mt-6 text-center text-sm">
             {t('hasAccountPrompt')}{' '}
-            <Link href={`/${locale}/login`} className="font-semibold text-primary">
+            <Link href="/login" className="font-semibold text-primary">
               {t('logInLink')}
             </Link>
           </div>
