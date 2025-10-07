@@ -1,6 +1,6 @@
 
 'use client';
-import Link from 'next/link';
+import { Link } from 'next-intl';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -29,6 +29,9 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+
+  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : pathname;
+
 
   useEffect(() => {
     const loadVoices = () => {
@@ -134,18 +137,6 @@ export default function LandingPage() {
     },
   ];
 
-  const getBasePath = () => {
-    if (pathname) {
-      const parts = pathname.split('/');
-      if (parts.length > 2) {
-        return '/' + parts.slice(2).join('/');
-      }
-    }
-    // For the root page, the base path is just '/'
-    if (pathname === `/${locale}`) return '/';
-    return pathname; // Fallback
-  }
-
   const renderSpeakerButton = (section: keyof typeof audioContent) => {
     if (locale !== 'en') return null;
 
@@ -164,6 +155,14 @@ export default function LandingPage() {
       </Button>
     );
   }
+
+  const localeItems = [
+    { locale: 'en', label: 'English' },
+    { locale: 'ur', label: 'اردو' },
+    { locale: 'ur-RO', label: 'Roman Urdu' },
+    { locale: 'ps', label: 'پښتو' },
+    { locale: 'pa', label: 'پنجابی' },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -187,11 +186,13 @@ export default function LandingPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem asChild><Link href={`/en${getBasePath()}`}>English</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href={`/ur${getBasePath()}`}>اردو</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href={`/ur-RO${getBasePath()}`}>Roman Urdu</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href={`/ps${getBasePath()}`}>پښتو</Link></DropdownMenuItem>
-              <DropdownMenuItem asChild><Link href={`/pa${getBasePath()}`}>پنجابی</Link></DropdownMenuItem>
+              {localeItems.map((item) => (
+                <DropdownMenuItem key={item.locale} asChild>
+                  <Link href={basePath || '/'} locale={item.locale}>
+                    {item.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>

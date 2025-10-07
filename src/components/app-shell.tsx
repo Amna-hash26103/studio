@@ -17,8 +17,8 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { Link } from 'next-intl';
+import { usePathname } from 'next/navigation';
 import {
   Bell,
   Globe,
@@ -46,16 +46,21 @@ import {
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useRouter } from 'next/navigation';
+
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
-  const pathname = usePathname();
   const router = useRouter();
-  const { user } = useUser();
   const auth = useAuth();
+  const { user } = useUser();
   const t = useTranslations('AppShell');
   const locale = useLocale();
+  const pathname = usePathname();
+
+  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : pathname;
+
 
   const mainNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
@@ -86,17 +91,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       });
     }
   };
-
-  const getBasePath = () => {
-    if (pathname) {
-      const parts = pathname.split('/');
-      // Path is /<locale>/<...rest>
-      if (parts.length > 2) {
-        return '/' + parts.slice(2).join('/');
-      }
-    }
-    return pathname; // Fallback to the full path if something is wrong
-  }
 
   const sidebarContent = (
     <>
@@ -166,6 +160,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </>
   );
 
+  const localeItems = [
+    { locale: 'en', label: 'English' },
+    { locale: 'ur', label: 'اردو' },
+    { locale: 'ur-RO', label: 'Roman Urdu' },
+    { locale: 'ps', label: 'پښتو' },
+    { locale: 'pa', label: 'پنجابی' },
+  ];
+
   const headerContent = (
     <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 md:px-6">
       <div className="md:hidden">
@@ -196,11 +198,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-            <DropdownMenuItem asChild><Link href={`/en${getBasePath()}`}>English</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href={`/ur${getBasePath()}`}>اردو</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href={`/ur-RO${getBasePath()}`}>Roman Urdu</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href={`/ps${getBasePath()}`}>پښتو</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href={`/pa${getBasePath()}`}>پنجابی</Link></DropdownMenuItem>
+          {localeItems.map((item) => (
+            <DropdownMenuItem key={item.locale} asChild>
+                <Link href={basePath || '/'} locale={item.locale}>
+                {item.label}
+                </Link>
+            </DropdownMenuItem>
+            ))}
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
@@ -236,7 +240,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <Sidebar collapsible="icon">{sidebarContent}</Sidebar>
-        <div className="flex flex-1 flex-col min-h-0">
+        <div className="flex-1 flex flex-col min-h-0">
             {headerContent}
             <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 lg:p-8 md:pb-8">
                 {children}

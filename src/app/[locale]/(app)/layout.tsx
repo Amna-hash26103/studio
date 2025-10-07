@@ -2,10 +2,10 @@
 'use client';
 import { AppShell } from '@/components/app-shell';
 import { useUser } from '@/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 export default function AppLayout({
   children,
@@ -15,13 +15,12 @@ export default function AppLayout({
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const t = useTranslations('AppLayout');
-  const locale = useLocale();
 
   useEffect(() => {
     if (!isUserLoading && !user) {
-      router.replace(`/${locale}/login`);
+      router.replace('/login');
     }
-  }, [isUserLoading, user, router, locale]);
+  }, [isUserLoading, user, router]);
 
   if (isUserLoading || !user) {
     return (

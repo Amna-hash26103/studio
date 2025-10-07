@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
-import { NextIntlClientProvider, useMessages } from 'next-intl';
+import { ReactNode } from 'react';
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",
@@ -14,12 +14,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  params: { locale },
+  params: {locale}
 }: Readonly<{
   children: React.ReactNode;
-  params: { locale: string };
+  params: {locale: string};
 }>) {
-  const messages = useMessages();
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
@@ -35,12 +35,10 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased h-screen flex flex-col')}>
-        <NextIntlClientProvider locale={locale} messages={messages}>
           <FirebaseClientProvider>
             {children}
             <Toaster />
           </FirebaseClientProvider>
-        </NextIntlClientProvider>
       </body>
     </html>
   );

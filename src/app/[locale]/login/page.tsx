@@ -1,6 +1,6 @@
 
 'use client';
-import Link from 'next/link';
+import { Link, useRouter } from 'next-intl/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -24,9 +24,8 @@ import {
 } from '@/components/ui/form';
 import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -42,7 +41,6 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const t = useTranslations('LoginPage');
-  const locale = useLocale();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,7 +57,7 @@ export default function LoginPage() {
         title: t('toast.success.title'),
         description: t('toast.success.description'),
       });
-      router.push(`/${locale}/feed`);
+      router.push(`/feed`);
     } catch (error: any) {
       console.error('Error signing in:', error);
       toast({
