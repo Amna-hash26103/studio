@@ -56,6 +56,72 @@
         "displayName",
         "email"
       ]
+    },
+    "CommunityPost": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "CommunityPost",
+      "type": "object",
+      "description": "Represents a post in the community feed.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the post."
+        },
+        "authorId": {
+          "type": "string",
+          "description": "The ID of the user who created the post."
+        },
+        "author": {
+          "type": "string",
+          "description": "The display name of the post author."
+        },
+        "avatar": {
+          "type": "string",
+          "description": "URL of the author's avatar.",
+          "format": "uri"
+        },
+        "time": {
+          "type": "string",
+          "description": "Timestamp of when the post was created."
+        },
+        "content": {
+          "type": "string",
+          "description": "The main text content of the post."
+        },
+        "originalContent": {
+          "type": "string",
+          "description": "The original, untranslated content of the post."
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "imageUrl": { "type": "string", "format": "uri" },
+            "imageHint": { "type": "string" }
+          },
+          "description": "Optional image attached to the post."
+        },
+        "likes": {
+          "type": "number",
+          "description": "The number of likes on the post."
+        },
+        "comments": {
+          "type": "number",
+          "description": "The number of comments on the post."
+        },
+        "lang": {
+          "type": "string",
+          "description": "The language code (e.g., 'en', 'ur') of the post's content."
+        },
+        "isTranslated": {
+          "type": "boolean",
+          "description": "Flag indicating if the content is currently a translated version."
+        },
+        "translation": {
+          "type": "string",
+          "description": "The translated content of the post, if available."
+        }
+      },
+      "required": ["id", "authorId", "author", "time", "content", "lang"]
     }
   },
   "auth": {
@@ -138,3 +204,4 @@
     "reasoning": "The Firestore structure is designed to support user authentication and profile management, a community feed, AI-powered wellness chatbots, project collaboration, and media handling, aligning with FEMMORA's core objective. The structure emphasizes authorization independence by denormalizing authorization data where needed and segregating data based on access patterns to ensure secure `list` operations (QAPs). \n\n**Authorization Independence and QAPs:** User-specific data, such as profiles and projects, are stored under the `/users/{userId}` path, ensuring that security rules can be based solely on `request.auth.uid` for access control.  Collaborative data, such as community posts, use a membership map for managing access, with denormalization of this map into subcollections if needed to avoid `get()` calls in security rules. This approach ensures that document creation and updates are atomic.\n\n**Structural Segregation:** Different types of data are stored in separate collections based on their access requirements.  For example, user profiles are stored in `/users/{userId}/profile`, while community posts are stored in `/community_posts`, allowing for different security rules to be applied to each type of data.  \n\n**Access Modeling:** The design consistently uses path-based ownership for user-owned data and membership maps for collaborative data. This standardization simplifies security rule creation and maintenance."
   }
 }
+    

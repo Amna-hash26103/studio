@@ -1,6 +1,6 @@
 import {NextIntlClientProvider, useMessages} from 'next-intl';
 import { ReactNode } from 'react';
-import {getMessages, getRequestConfig} from 'next-intl/server';
+import {getMessages} from 'next-intl/server';
 import { notFound } from 'next/navigation';
  
 export const locales = ['en', 'ur', 'ps', 'pa', 'ur-RO'];
@@ -13,11 +13,11 @@ export default async function LocaleLayout({
   children: ReactNode;
   params: {locale: string};
 }) {
-  const messages = await getMessages();
-
   if (!locales.includes(locale)) {
     notFound();
   }
+  
+  const messages = await getMessages();
  
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
@@ -25,3 +25,5 @@ export default async function LocaleLayout({
     </NextIntlClientProvider>
   );
 }
+
+    

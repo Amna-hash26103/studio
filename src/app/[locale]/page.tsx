@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -30,7 +29,12 @@ export default function LandingPage() {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
-  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : (pathname === '/' ? '/' : pathname);
+  const getPathForLocale = (newLocale: string) => {
+    if (!pathname) return '/';
+    const segments = pathname.split('/');
+    segments[1] = newLocale;
+    return segments.join('/');
+  };
 
 
   useEffect(() => {
@@ -167,16 +171,16 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href={`/${locale}`} className="flex items-center gap-2">
           <FemmoraLogo className="h-14 w-14 text-primary" />
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
           <Button variant="ghost" asChild>
-            <Link href="/login">{t('login')}</Link>
+            <Link href={`/${locale}/login`}>{t('login')}</Link>
           </Button>
           <Button asChild>
-            <Link href="/signup">{t('signup')}</Link>
+            <Link href={`/${locale}/signup`}>{t('signup')}</Link>
           </Button>
 
            <DropdownMenu>
@@ -188,7 +192,7 @@ export default function LandingPage() {
             <DropdownMenuContent>
               {localeItems.map((item) => (
                 <DropdownMenuItem key={item.locale} asChild>
-                  <Link href={`/${item.locale}${basePath === '/' ? '' : basePath}`} locale={false}>
+                  <Link href={getPathForLocale(item.locale)}>
                     {item.label}
                   </Link>
                 </DropdownMenuItem>
@@ -212,7 +216,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-8 flex justify-center">
               <Button size="lg" asChild>
-                <Link href="/signup">{t('joinButton')}</Link>
+                <Link href={`/${locale}/signup`}>{t('joinButton')}</Link>
               </Button>
             </div>
           </div>
