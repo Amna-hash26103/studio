@@ -168,6 +168,12 @@ export default function LandingPage() {
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link href="/login">{t('login')}</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/signup">{t('signup')}</Link>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -184,13 +190,6 @@ export default function LandingPage() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <Button variant="ghost" asChild>
-            <Link href="/login">{t('login')}</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/signup">{t('signup')}</Link>
-          </Button>
         </nav>
       </header>
 
