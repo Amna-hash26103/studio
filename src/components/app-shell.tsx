@@ -16,9 +16,8 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { FemmoraLogo } from './icons';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next-intl/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   HeartPulse,
