@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -44,7 +45,7 @@ import {
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -53,16 +54,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
   const t = useTranslations('AppShell');
+  const locale = useLocale();
 
   const mainNavItems = [
-    { href: '/feed', icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: '/healthcare', icon: <HeartPulse />, label: t('nav.healthcare') },
-    { href: '/emotional-health', icon: <Smile />, label: t('nav.emotionalHealth') },
-    { href: '/diet', icon: <Salad />, label: t('nav.diet') },
+    { href: `/${locale}/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
+    { href: `/${locale}/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
+    { href: `/${locale}/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
+    { href: `/${locale}/diet`, icon: <Salad />, label: t('nav.diet') },
   ];
 
   const accountNavItems = [
-      { href: '/profile', icon: <User />, label: t('nav.profile') },
+      { href: `/${locale}/profile`, icon: <User />, label: t('nav.profile') },
       { href: '#', icon: <Settings />, label: t('nav.settings') },
   ];
 
@@ -73,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         title: t('toast.logoutSuccess.title'),
         description: t('toast.logoutSuccess.description'),
       });
-      router.push('/login');
+      router.push(`/${locale}/login`);
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
@@ -106,7 +108,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={pathname === item.href}
                     tooltip={{ children: item.label }}
                 >
                     <Link href={item.href}>
@@ -126,7 +128,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={pathname === item.href}
                     tooltip={{ children: item.label }}
                 >
                     <Link href={item.href}>
@@ -189,7 +191,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/profile">{t('nav.profile')}</Link>
+            <Link href={`/${locale}/profile`}>{t('nav.profile')}</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>{t('nav.settings')}</DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -201,7 +203,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNavItems = [
     ...mainNavItems,
-    { href: '/profile', icon: <User />, label: t('nav.profile') },
+    { href: `/${locale}/profile`, icon: <User />, label: t('nav.profile') },
   ]
 
   const mobileNav = (
@@ -212,7 +214,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             key={item.href}
             href={item.href}
             className={`flex flex-col items-center justify-center gap-1 text-xs ${
-              pathname.startsWith(item.href)
+              pathname === item.href
                 ? 'text-primary'
                 : 'text-muted-foreground'
             }`}
@@ -229,7 +231,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <Sidebar collapsible="icon">{sidebarContent}</Sidebar>
-        <div className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col min-h-0">
             {headerContent}
             <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 lg:p-8 md:pb-8">
                 {children}
