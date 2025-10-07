@@ -43,7 +43,7 @@ import {
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -52,6 +52,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const t = useTranslations('AppShell');
   const pathname = usePathname();
+  const { toast } = useToast();
 
   const mainNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
