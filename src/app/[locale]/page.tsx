@@ -1,6 +1,6 @@
 
 'use client';
-import { Link } from 'next-intl';
+import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -30,7 +30,7 @@ export default function LandingPage() {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
 
-  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : pathname;
+  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : (pathname === '/' ? '/' : pathname);
 
 
   useEffect(() => {
@@ -188,7 +188,7 @@ export default function LandingPage() {
             <DropdownMenuContent>
               {localeItems.map((item) => (
                 <DropdownMenuItem key={item.locale} asChild>
-                  <Link href={basePath || '/'} locale={item.locale}>
+                  <Link href={`/${item.locale}${basePath === '/' ? '' : basePath}`} locale={false}>
                     {item.label}
                   </Link>
                 </DropdownMenuItem>

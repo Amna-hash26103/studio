@@ -17,7 +17,7 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Link } from 'next-intl';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Bell,
@@ -59,7 +59,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const locale = useLocale();
   const pathname = usePathname();
 
-  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : pathname;
+  const basePath = pathname.startsWith(`/${locale}`) ? pathname.substring(`/${locale}`.length) : (pathname === '/' ? '' : pathname);
 
 
   const mainNavItems = [
@@ -200,7 +200,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <DropdownMenuContent>
           {localeItems.map((item) => (
             <DropdownMenuItem key={item.locale} asChild>
-                <Link href={basePath || '/'} locale={item.locale}>
+                <Link href={`/${item.locale}${basePath}`} locale={false}>
                 {item.label}
                 </Link>
             </DropdownMenuItem>
