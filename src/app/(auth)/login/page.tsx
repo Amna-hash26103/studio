@@ -26,6 +26,7 @@ import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslations } from 'next-intl';
 
 const formSchema = z.object({
   email: z.string().email({
@@ -40,6 +41,7 @@ export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const t = useTranslations('LoginPage');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,17 +55,16 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
-        title: 'Logged In!',
-        description: 'Welcome back!',
+        title: t('toast.success.title'),
+        description: t('toast.success.description'),
       });
       router.push('/feed');
     } catch (error: any) {
       console.error('Error signing in:', error);
       toast({
         variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description:
-          'Invalid email or password. Please try again.',
+        title: t('toast.error.title'),
+        description: t('toast.error.description'),
       });
     }
   }
@@ -78,10 +79,10 @@ export default function LoginPage() {
             </div>
           </Link>
           <CardTitle className="font-headline text-2xl">
-            Welcome Back
+            {t('title')}
           </CardTitle>
           <CardDescription>
-            Log in to continue your journey with FEMMORA.
+            {t('description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,7 +93,7 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('emailLabel')}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -110,12 +111,12 @@ export default function LoginPage() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{t('passwordLabel')}</FormLabel>
                         <Link
                         href="#"
                         className="text-sm text-muted-foreground hover:text-primary"
                         >
-                        Forgot password?
+                        {t('forgotPasswordLink')}
                         </Link>
                     </div>
                     <FormControl>
@@ -126,15 +127,15 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Logging In...' : 'Log In'}
+                {form.formState.isSubmitting ? t('loggingInButton') : t('logInButton')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 text-center text-sm">
-            Don't have an account?{' '}
+            {t('noAccountPrompt')}{' '}
             <Link href="/signup" className="font-semibold text-primary">
-              Sign Up
+              {t('signUpLink')}
             </Link>
           </div>
         </CardContent>

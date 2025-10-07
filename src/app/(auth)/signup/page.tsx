@@ -32,6 +32,8 @@ import { setDoc, doc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
+import { useTranslations } from 'next-intl';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const formSchema = z.object({
   displayName: z.string().min(2, {
@@ -50,6 +52,7 @@ export default function SignupPage() {
   const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
+  const t = useTranslations('SignupPage');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -69,8 +72,8 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
-      // Use one of the provided images as the default.
-      const defaultAvatarUrl = 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
+      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-default');
+      const defaultAvatarUrl = defaultAvatar?.imageUrl || 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
 
       await updateProfile(user, {
         displayName: values.displayName,
@@ -93,8 +96,8 @@ export default function SignupPage() {
       sendWelcomeEmail({ name: values.displayName, email: values.email });
 
       toast({
-        title: 'Account Created!',
-        description: 'Welcome to FEMMORA! We’re so glad to have you here 💜',
+        title: t('toast.success.title'),
+        description: t('toast.success.description'),
       });
 
       router.push('/feed');
@@ -103,13 +106,13 @@ export default function SignupPage() {
       if (error.code === 'auth/email-already-in-use') {
         form.setError('email', {
           type: 'manual',
-          message: 'This email is already in use. Please log in instead.',
+          message: t('toast.error.emailInUse'),
         });
       } else {
         toast({
           variant: 'destructive',
-          title: 'Signup Failed',
-          description: 'There was a problem creating your account. Please try again.',
+          title: t('toast.error.title'),
+          description: t('toast.error.description'),
         });
       }
     }
@@ -125,10 +128,10 @@ export default function SignupPage() {
             </div>
           </Link>
           <CardTitle className="font-headline text-2xl">
-            Join FEMMORA
+            {t('title')}
           </CardTitle>
           <CardDescription className="text-center text-muted-foreground">
-            Create your account and start your journey of empowerment.
+            {t('description')}
           </CardDescription>
         </CardHeader>
 
@@ -140,9 +143,9 @@ export default function SignupPage() {
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Display Name</FormLabel>
+                    <FormLabel>{t('displayNameLabel')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Name" {...field} />
+                      <Input placeholder={t('displayNamePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +157,7 @@ export default function SignupPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t('emailLabel')}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -172,7 +175,7 @@ export default function SignupPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>{t('passwordLabel')}</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -186,15 +189,15 @@ export default function SignupPage() {
                 className="w-full"
                 disabled={form.formState.isSubmitting}
               >
-                {form.formState.isSubmitting ? 'Processing...' : 'Create Account'}
+                {form.formState.isSubmitting ? t('creatingAccountButton') : t('createAccountButton')}
               </Button>
             </form>
           </Form>
 
           <div className="mt-6 text-center text-sm">
-            Already have an account?{' '}
+            {t('hasAccountPrompt')}{' '}
             <Link href="/login" className="font-semibold text-primary">
-              Log In
+              {t('logInLink')}
             </Link>
           </div>
         </CardContent>

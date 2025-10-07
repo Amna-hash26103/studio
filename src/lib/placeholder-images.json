@@ -61,6 +61,12 @@
       "imageHint": "artist studio"
     },
     {
+      "id": "user-avatar-default",
+      "description": "Default user avatar, a cute cartoon drawing of a person.",
+      "imageUrl": "https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg",
+      "imageHint": "cartoon person"
+    },
+    {
       "id": "user-avatar-1",
       "description": "Profile picture of a user named Jane Doe.",
       "imageUrl": "https://images.unsplash.com/photo-1598625873873-52f9aefd7d9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHNtaWxpbmd8ZW58MHx8fHwxNzU5NTQ4MjA5fDA&ixlib=rb-4.1.0&q=80&w=1080",

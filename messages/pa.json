@@ -25,6 +25,156 @@
     "footerPrivacy": "رازداری",
     "footerTerms": "شرائط",
     "footerContact": "رابطہ"
+  },
+  "AppShell": {
+    "welcomeBack": "Welcome back 🌷",
+    "searchPlaceholder": "Search...",
+    "notifications": "Notifications",
+    "userMenu": "User menu",
+    "nav": {
+      "feed": "Feed",
+      "healthcare": "Healthcare",
+      "emotionalHealth": "Emotional Health",
+      "diet": "Diet",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Log Out",
+      "mainGroup": "MAIN",
+      "accountGroup": "ACCOUNT"
+    },
+    "toast": {
+      "logoutSuccess": {
+        "title": "Logged Out",
+        "description": "You have been successfully logged out."
+      },
+      "logoutError": {
+        "title": "Uh oh!",
+        "description": "Could not log you out. Please try again."
+      }
+    }
+  },
+  "AppLayout": {
+    "loading": "Loading your space..."
+  },
+  "LoginPage": {
+    "title": "Welcome Back",
+    "description": "Log in to continue your journey with FEMMORA.",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "forgotPasswordLink": "Forgot password?",
+    "logInButton": "Log In",
+    "loggingInButton": "Logging In...",
+    "noAccountPrompt": "Don't have an account?",
+    "signUpLink": "Sign Up",
+    "toast": {
+      "success": {
+        "title": "Logged In!",
+        "description": "Welcome back!"
+      },
+      "error": {
+        "title": "Uh oh! Something went wrong.",
+        "description": "Invalid email or password. Please try again."
+      }
+    }
+  },
+  "SignupPage": {
+    "title": "Join FEMMORA",
+    "description": "Create your account and start your journey of empowerment.",
+    "displayNameLabel": "Display Name",
+    "displayNamePlaceholder": "Your Name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "createAccountButton": "Create Account",
+    "creatingAccountButton": "Processing...",
+    "hasAccountPrompt": "Already have an account?",
+    "logInLink": "Log In",
+    "toast": {
+      "success": {
+        "title": "Account Created!",
+        "description": "Welcome to FEMMORA! We’re so glad to have you here 💜"
+      },
+      "error": {
+        "title": "Signup Failed",
+        "description": "There was a problem creating your account. Please try again.",
+        "emailInUse": "This email is already in use. Please log in instead."
+      }
+    }
+  },
+  "FeedPage": {
+    "postPlaceholder": "What's on your mind, Jane?",
+    "postButton": "Post",
+    "shareButton": "Share",
+    "commentPlaceholder": "Write a comment..."
+  },
+  "ProfilePage": {
+    "editProfileButton": "Edit Profile",
+    "coverImageAlt": "Cover image",
+    "noBio": "No bio yet.",
+    "joined": "Joined",
+    "posts": "Posts",
+    "followers": "Followers",
+    "following": "Following",
+    "postsTab": "Posts",
+    "projectsTab": "Projects",
+    "mediaTab": "Media",
+    "postsTabContent": "User's posts will be displayed here.",
+    "projectsTabContent": "User's projects will be displayed here.",
+    "profileLoadError": "Could not load user profile. It might not exist yet."
+  },
+  "EditProfileDialog": {
+    "title": "Edit Profile",
+    "description": "Make changes to your profile here. Click save when you're done.",
+    "changePictureButton": "Change Picture",
+    "displayNameLabel": "Display Name",
+    "displayNamePlaceholder": "Your full name",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Tell us a little about yourself",
+    "locationLabel": "Location",
+    "locationPlaceholder": "Where are you in the world?",
+    "cancelButton": "Cancel",
+    "saveButton": "Save changes",
+    "savingButton": "Saving...",
+    "toast": {
+      "avatarSuccess": {
+        "title": "Avatar updated!"
+      },
+      "avatarError": {
+        "title": "Upload failed",
+        "description": "There was a problem uploading your new avatar. Please try again."
+      },
+      "profileSuccess": {
+        "title": "Profile Updated!",
+        "description": "Your changes have been saved successfully."
+      },
+      "profileError": {
+        "title": "Update failed",
+        "description": "There was a problem saving your profile. Please try again."
+      }
+    }
+  },
+  "ChatInterface": {
+    "placeholders": {
+      "health": "e.g., How can I start a simple home workout routine?",
+      "emotionalWellbeing": "e.g., I feel stressed, any quick mindfulness tips?",
+      "nutrition": "e.g., What are some healthy snack ideas?"
+    },
+    "initialMessages": {
+      "health": "Hi! I'm your Healthcare assistant. How can I help you today?",
+      "emotionalWellbeing": "Hello, I'm here to support your emotional well-being. What's on your mind?",
+      "nutrition": "Hey there! I'm your Diet guide. Ask me anything about healthy eating!"
+    },
+    "errorMessage": "I'm sorry, something went wrong. Please try again later."
+  },
+  "DietPage": {
+    "title": "Diet AI",
+    "description": "Your personal guide for nutrition and healthy eating."
+  },
+  "EmotionalHealthPage": {
+    "title": "Emotional Health AI",
+    "description": "Your personal guide for mindfulness and emotional balance."
+  },
+  "HealthcarePage": {
+    "title": "Healthcare AI",
+    "description": "Your personal guide for physical health and well-being."
   }
 }
-

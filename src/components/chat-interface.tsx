@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -15,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
+import { useTranslations } from 'next-intl';
 
 const healthAvatar = PlaceHolderImages.find(
   (img) => img.id === 'health-avatar'
@@ -29,39 +31,41 @@ const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
 type Topic = 'health' | 'emotionalWellbeing' | 'nutrition';
 
-const avatars: Record<Topic, typeof healthAvatar> = {
-  health: healthAvatar,
-  emotionalWellbeing: emotionalAvatar,
-  nutrition: nutritionAvatar,
-};
-
-const placeholders: Record<Topic, string> = {
-  health: 'e.g., How can I start a simple home workout routine?',
-  emotionalWellbeing: 'e.g., I feel stressed, any quick mindfulness tips?',
-  nutrition: 'e.g., What are some healthy snack ideas?',
-};
-
-const initialMessages: Record<Topic, Message> = {
-    health: {
-        role: 'assistant',
-        content: "Hi! I'm your Healthcare assistant. How can I help you today?",
-    },
-    emotionalWellbeing: {
-        role: 'assistant',
-        content: "Hello, I'm here to support your emotional well-being. What's on your mind?",
-    },
-    nutrition: {
-        role: 'assistant',
-        content: "Hey there! I'm your Diet guide. Ask me anything about healthy eating!",
-    },
-}
-
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
 export function ChatInterface({ topic }: { topic: Topic }) {
+  const t = useTranslations('ChatInterface');
+  
+  const avatars: Record<Topic, typeof healthAvatar> = {
+    health: healthAvatar,
+    emotionalWellbeing: emotionalAvatar,
+    nutrition: nutritionAvatar,
+  };
+  
+  const placeholders: Record<Topic, string> = {
+    health: t('placeholders.health'),
+    emotionalWellbeing: t('placeholders.emotionalWellbeing'),
+    nutrition: t('placeholders.nutrition'),
+  };
+  
+  const initialMessages: Record<Topic, Message> = {
+      health: {
+          role: 'assistant',
+          content: t('initialMessages.health'),
+      },
+      emotionalWellbeing: {
+          role: 'assistant',
+          content: t('initialMessages.emotionalWellbeing'),
+      },
+      nutrition: {
+          role: 'assistant',
+          content: t('initialMessages.nutrition'),
+      },
+  }
+  
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -95,7 +99,7 @@ export function ChatInterface({ topic }: { topic: Topic }) {
     } catch (error) {
       const errorMessage: Message = {
         role: 'assistant',
-        content: "I'm sorry, something went wrong. Please try again later.",
+        content: t('errorMessage'),
       };
       setMessages((prev) => [...prev, errorMessage]);
       console.error('Error calling AI:', error);

@@ -1,4 +1,5 @@
 
+'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
@@ -6,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -34,6 +36,8 @@ const posts = [
 
 
 export default function FeedPage() {
+  const t = useTranslations('FeedPage');
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <Card>
@@ -43,8 +47,8 @@ export default function FeedPage() {
               <AvatarImage src={user1?.imageUrl} />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
-            <Input placeholder="What's on your mind, Jane?" className="bg-secondary" />
-            <Button>Post</Button>
+            <Input placeholder={t('postPlaceholder')} className="bg-secondary" />
+            <Button>{t('postButton')}</Button>
           </div>
         </CardContent>
       </Card>
@@ -87,7 +91,7 @@ export default function FeedPage() {
                         <MessageCircle className="h-4 w-4" /> {post.comments}
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                        <Share2 className="h-4 w-4" /> Share
+                        <Share2 className="h-4 w-4" /> {t('shareButton')}
                     </Button>
                 </div>
               </div>
@@ -97,7 +101,7 @@ export default function FeedPage() {
                   <AvatarFallback>JD</AvatarFallback>
                 </Avatar>
                 <div className="relative w-full">
-                  <Input placeholder="Write a comment..." className="pr-10" />
+                  <Input placeholder={t('commentPlaceholder')} className="pr-10" />
                   <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2">
                     <Send className="h-4 w-4" />
                   </Button>

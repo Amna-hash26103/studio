@@ -4,6 +4,7 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations } from 'next-intl';
 
 export default function AppLayout({
   children,
@@ -12,6 +13,7 @@ export default function AppLayout({
 }) {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const t = useTranslations('AppLayout');
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -28,6 +30,7 @@ export default function AppLayout({
                 <Skeleton className="h-4 w-[250px]" />
                 <Skeleton className="h-4 w-[200px]" />
             </div>
+            <p className="mt-4 text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     );

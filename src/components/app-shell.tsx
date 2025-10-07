@@ -46,18 +46,7 @@ import {
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-
-const mainNavItems = [
-  { href: '/feed', icon: <LayoutDashboard />, label: 'Feed' },
-  { href: '/healthcare', icon: <HeartPulse />, label: 'Healthcare' },
-  { href: '/emotional-health', icon: <Smile />, label: 'Emotional Health' },
-  { href: '/diet', icon: <Salad />, label: 'Diet' },
-];
-
-const accountNavItems = [
-    { href: '/profile', icon: <User />, label: 'Profile' },
-    { href: '#', icon: <Settings />, label: 'Settings' },
-];
+import { useTranslations } from 'next-intl';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -66,42 +55,55 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const t = useTranslations('AppShell');
+
+  const mainNavItems = [
+    { href: '/feed', icon: <LayoutDashboard />, label: t('nav.feed') },
+    { href: '/healthcare', icon: <HeartPulse />, label: t('nav.healthcare') },
+    { href: '/emotional-health', icon: <Smile />, label: t('nav.emotionalHealth') },
+    { href: '/diet', icon: <Salad />, label: t('nav.diet') },
+  ];
+
+  const accountNavItems = [
+      { href: '/profile', icon: <User />, label: t('nav.profile') },
+      { href: '#', icon: <Settings />, label: t('nav.settings') },
+  ];
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
+        title: t('toast.logoutSuccess.title'),
+        description: t('toast.logoutSuccess.description'),
       });
       router.push('/login');
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
         variant: 'destructive',
-        title: 'Uh oh!',
-        description: 'Could not log you out. Please try again.',
+        title: t('toast.logoutError.title'),
+        description: t('toast.logoutError.description'),
       });
     }
   };
 
   const sidebarContent = (
     <>
-      <SidebarHeader className="border-b p-4">
-        <div className="flex flex-col items-center gap-2">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
+        <div className="flex flex-col items-center gap-2 text-center">
             <Avatar className="h-20 w-20 border-2 border-primary">
                 <AvatarImage src={user?.photoURL || undefined} />
                 <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
-            <div className='group-data-[collapsible=icon]:hidden text-center'>
+            <div className='group-data-[collapsible=icon]:hidden'>
                  <p className="font-semibold">{user?.displayName}</p>
-                 <p className="text-xs text-muted-foreground">Welcome back 🌷</p>
+                 <p className="text-xs text-muted-foreground">{t('welcomeBack')}</p>
             </div>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarGroup>
-            <SidebarGroupLabel>MAIN</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('nav.mainGroup')}</SidebarGroupLabel>
             <SidebarMenu>
             {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -121,7 +123,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarGroup>
         <SidebarSeparator />
         <SidebarGroup>
-            <SidebarGroupLabel>ACCOUNT</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('nav.accountGroup')}</SidebarGroupLabel>
             <SidebarMenu>
             {accountNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -143,9 +145,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SidebarFooter className="p-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip={{ children: 'Log Out' }}>
+            <SidebarMenuButton onClick={handleLogout} tooltip={{ children: t('nav.logout') }}>
               <LogOut />
-              <span>Log Out</span>
+              <span>{t('nav.logout')}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -167,14 +169,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               className="w-full appearance-none bg-secondary pl-9 md:w-2/3 lg:w-1/3"
-              placeholder="Search..."
+              placeholder={t('searchPlaceholder')}
             />
           </div>
         </form>
       </div>
       <Button variant="ghost" size="icon" className="rounded-full">
         <Bell className="h-5 w-5" />
-        <span className="sr-only">Notifications</span>
+        <span className="sr-only">{t('notifications')}</span>
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -183,18 +185,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <AvatarImage src={user?.photoURL || undefined} />
               <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
             </Avatar>
-            <span className="sr-only">User menu</span>
+            <span className="sr-only">{t('userMenu')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/profile">Profile</Link>
+            <Link href="/profile">{t('nav.profile')}</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>{t('nav.settings')}</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>{t('nav.logout')}</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
@@ -202,7 +204,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNavItems = [
     ...mainNavItems,
-    { href: '/profile', icon: <User />, label: 'Profile' },
+    { href: '/profile', icon: <User />, label: t('nav.profile') },
   ]
 
   const mobileNav = (
