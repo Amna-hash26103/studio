@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
+  Globe,
   HeartPulse,
   LayoutDashboard,
   LogOut,
@@ -177,25 +178,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Bell className="h-5 w-5" />
         <span className="sr-only">{t('notifications')}</span>
       </Button>
-      <DropdownMenu>
+       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <Avatar className="h-8 w-8 border-2 border-primary">
-              <AvatarImage src={user?.photoURL || undefined} />
-              <AvatarFallback>{user?.displayName?.slice(0,2) || 'U'}</AvatarFallback>
-            </Avatar>
-            <span className="sr-only">{t('userMenu')}</span>
+          <Button variant="ghost" size="icon">
+            <Globe className="h-5 w-5" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{user?.displayName}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+        <DropdownMenuContent>
           <DropdownMenuItem asChild>
-            <Link href={`/${locale}/profile`}>{t('nav.profile')}</Link>
+            <Link href="/en" locale="en">English</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>{t('nav.settings')}</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>{t('nav.logout')}</DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/ur" locale="ur">اردو</Link>
+          </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+            <Link href="/ur-RO" locale="ur-RO">Roman Urdu</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/ps" locale="ps">پښتو</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/pa" locale="pa">پنجابی</Link>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
