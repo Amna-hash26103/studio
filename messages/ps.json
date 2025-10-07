@@ -27,155 +27,155 @@
     "footerContact": "اړیکه"
   },
   "AppShell": {
-    "welcomeBack": "Welcome back 🌷",
-    "searchPlaceholder": "Search...",
-    "notifications": "Notifications",
-    "userMenu": "User menu",
+    "welcomeBack": "بیا ښه راغلاست 🌷",
+    "searchPlaceholder": "لټون...",
+    "notifications": "خبرتیاوې",
+    "userMenu": "د کارونکي مینو",
     "nav": {
-      "feed": "Feed",
-      "healthcare": "Healthcare",
-      "emotionalHealth": "Emotional Health",
-      "diet": "Diet",
-      "profile": "Profile",
-      "settings": "Settings",
-      "logout": "Log Out",
-      "mainGroup": "MAIN",
-      "accountGroup": "ACCOUNT"
+      "feed": "فیډ",
+      "healthcare": "روغتیاپالنه",
+      "emotionalHealth": "احساساتي روغتیا",
+      "diet": "خواړه",
+      "profile": "پروفایل",
+      "settings": "ترتیبات",
+      "logout": "وتل",
+      "mainGroup": "اصلي",
+      "accountGroup": "حساب"
     },
     "toast": {
       "logoutSuccess": {
-        "title": "Logged Out",
-        "description": "You have been successfully logged out."
+        "title": "وتل!",
+        "description": "تاسو په بریالیتوب سره وتلی ياست."
       },
       "logoutError": {
-        "title": "Uh oh!",
-        "description": "Could not log you out. Please try again."
+        "title": "اوه!",
+        "description": "تاسو نشئ وتلی. مهرباني وکړئ بیا هڅه وکړئ."
       }
     }
   },
   "AppLayout": {
-    "loading": "Loading your space..."
+    "loading": "ستاسو ځای بار کیږي..."
   },
   "LoginPage": {
-    "title": "Welcome Back",
-    "description": "Log in to continue your journey with FEMMORA.",
-    "emailLabel": "Email",
-    "passwordLabel": "Password",
-    "forgotPasswordLink": "Forgot password?",
-    "logInButton": "Log In",
-    "loggingInButton": "Logging In...",
-    "noAccountPrompt": "Don't have an account?",
-    "signUpLink": "Sign Up",
+    "title": "بیا ښه راغلاست",
+    "description": "د فیمورا سره خپل سفر ته دوام ورکولو لپاره ننوځئ.",
+    "emailLabel": "بریښنالیک",
+    "passwordLabel": "پټنوم",
+    "forgotPasswordLink": "پټنوم مو هیر دی؟",
+    "logInButton": "ننوتل",
+    "loggingInButton": "ننوتل...",
+    "noAccountPrompt": "حساب نه لرئ؟",
+    "signUpLink": "نوم لیکنه",
     "toast": {
       "success": {
-        "title": "Logged In!",
-        "description": "Welcome back!"
+        "title": "ننوتل!",
+        "description": "بیا ښه راغلاست!"
       },
       "error": {
-        "title": "Uh oh! Something went wrong.",
-        "description": "Invalid email or password. Please try again."
+        "title": "اوه! یو څه غلط شول.",
+        "description": "ناسم بریښنالیک یا پټنوم. مهرباني وکړئ بیا هڅه وکړئ."
       }
     }
   },
   "SignupPage": {
-    "title": "Join FEMMORA",
-    "description": "Create your account and start your journey of empowerment.",
-    "displayNameLabel": "Display Name",
-    "displayNamePlaceholder": "Your Name",
-    "emailLabel": "Email",
-    "passwordLabel": "Password",
-    "createAccountButton": "Create Account",
-    "creatingAccountButton": "Processing...",
-    "hasAccountPrompt": "Already have an account?",
-    "logInLink": "Log In",
+    "title": "له فیمورا سره یوځای شئ",
+    "description": "خپل حساب جوړ کړئ او د پیاوړتیا سفر پیل کړئ.",
+    "displayNameLabel": "ښودل شوی نوم",
+    "displayNamePlaceholder": "ستاسو نوم",
+    "emailLabel": "بریښنالیک",
+    "passwordLabel": "پټنوم",
+    "createAccountButton": "حساب جوړ کړئ",
+    "creatingAccountButton": "پروسس کول...",
+    "hasAccountPrompt": "مخکې له مخکې حساب لرئ؟",
+    "logInLink": "ننوتل",
     "toast": {
       "success": {
-        "title": "Account Created!",
-        "description": "Welcome to FEMMORA! We’re so glad to have you here 💜"
+        "title": "حساب جوړ شو!",
+        "description": "فیمورا ته ښه راغلاست! موږ ډیر خوښ یو چې تاسو دلته یاست 💜"
       },
       "error": {
-        "title": "Signup Failed",
-        "description": "There was a problem creating your account. Please try again.",
-        "emailInUse": "This email is already in use. Please log in instead."
+        "title": "نوم لیکنه ناکامه شوه",
+        "description": "ستاسو د حساب په جوړولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ.",
+        "emailInUse": "دا بریښنالیک لا دمخه کارول شوی. مهرباني وکړئ پرځای یې ننوځئ."
       }
     }
   },
   "FeedPage": {
-    "postPlaceholder": "What's on your mind, Jane?",
-    "postButton": "Post",
-    "shareButton": "Share",
-    "commentPlaceholder": "Write a comment..."
+    "postPlaceholder": "په ذهن کې دې څه دي، جین؟",
+    "postButton": "پوسټ",
+    "shareButton": "شریکول",
+    "commentPlaceholder": "یو نظر ولیکئ..."
   },
   "ProfilePage": {
-    "editProfileButton": "Edit Profile",
-    "coverImageAlt": "Cover image",
-    "noBio": "No bio yet.",
-    "joined": "Joined",
-    "posts": "Posts",
-    "followers": "Followers",
-    "following": "Following",
-    "postsTab": "Posts",
-    "projectsTab": "Projects",
-    "mediaTab": "Media",
-    "postsTabContent": "User's posts will be displayed here.",
-    "projectsTabContent": "User's projects will be displayed here.",
-    "profileLoadError": "Could not load user profile. It might not exist yet."
+    "editProfileButton": "پروفایل سمول",
+    "coverImageAlt": "د پوښ انځور",
+    "noBio": "تر اوسه بیو نشته.",
+    "joined": "یوځای شو",
+    "posts": "پوسټونه",
+    "followers": "followers",
+    "following": "following",
+    "postsTab": "پوسټونه",
+    "projectsTab": "پروژې",
+    "mediaTab": "میډیا",
+    "postsTabContent": "د کارونکي پوسټونه به دلته وښودل شي.",
+    "projectsTabContent": "د کارونکي پروژې به دلته وښودل شي.",
+    "profileLoadError": "د کارونکي پروفایل نشي باریدلی. دا ممکن لا تر اوسه شتون ونلري."
   },
   "EditProfileDialog": {
-    "title": "Edit Profile",
-    "description": "Make changes to your profile here. Click save when you're done.",
-    "changePictureButton": "Change Picture",
-    "displayNameLabel": "Display Name",
-    "displayNamePlaceholder": "Your full name",
-    "bioLabel": "Bio",
-    "bioPlaceholder": "Tell us a little about yourself",
-    "locationLabel": "Location",
-    "locationPlaceholder": "Where are you in the world?",
-    "cancelButton": "Cancel",
-    "saveButton": "Save changes",
-    "savingButton": "Saving...",
+    "title": "پروفایل سمول",
+    "description": "دلته خپل پروفایل کې بدلونونه راولی. کله چې سرته ورسیږي، 'خوندي' کلیک وکړئ.",
+    "changePictureButton": "انځور بدل کړئ",
+    "displayNameLabel": "ښودل شوی نوم",
+    "displayNamePlaceholder": "ستاسو بشپړ نوم",
+    "bioLabel": "بیو",
+    "bioPlaceholder": "موږ ته د ځان په اړه لږ څه ووایاست",
+    "locationLabel": "ځای",
+    "locationPlaceholder": "تاسو په نړۍ کې چیرته ياست؟",
+    "cancelButton": "لغوه کول",
+    "saveButton": "بدلونونه خوندي کړئ",
+    "savingButton": "خوندي کول...",
     "toast": {
       "avatarSuccess": {
-        "title": "Avatar updated!"
+        "title": "اوتار نوی شو!"
       },
       "avatarError": {
-        "title": "Upload failed",
-        "description": "There was a problem uploading your new avatar. Please try again."
+        "title": "اپلوډ ناکام شو",
+        "description": "ستاسو د نوي اوتار په اپلوډولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ."
       },
       "profileSuccess": {
-        "title": "Profile Updated!",
-        "description": "Your changes have been saved successfully."
+        "title": "پروفایل نوی شو!",
+        "description": "ستاسو بدلونونه په بریالیتوب سره خوندي شول."
       },
       "profileError": {
-        "title": "Update failed",
-        "description": "There was a problem saving your profile. Please try again."
+        "title": "نوي کول ناکام شول",
+        "description": "ستاسو د پروفایل په خوندي کولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ."
       }
     }
   },
   "ChatInterface": {
     "placeholders": {
-      "health": "e.g., How can I start a simple home workout routine?",
-      "emotionalWellbeing": "e.g., I feel stressed, any quick mindfulness tips?",
-      "nutrition": "e.g., What are some healthy snack ideas?"
+      "health": "د مثال په توګه، زه څنګه کولی شم د کور ساده ورزش معمول پیل کړم؟",
+      "emotionalWellbeing": "د مثال په توge، زه فشار احساسوم، کوم چټک ذهني لارښوونې؟",
+      "nutrition": "د مثال په توګه، د صحي ناشتو ځینې نظرونه څه دي؟"
     },
     "initialMessages": {
-      "health": "Hi! I'm your Healthcare assistant. How can I help you today?",
-      "emotionalWellbeing": "Hello, I'm here to support your emotional well-being. What's on your mind?",
-      "nutrition": "Hey there! I'm your Diet guide. Ask me anything about healthy eating!"
+      "health": "سلام! زه ستاسو د روغتیاپالنې مرستیال یم. نن څنګه مرسته کولی شم؟",
+      "emotionalWellbeing": "سلام، زه دلته یم چې ستاسو احساساتي هوساینې ملاتړ وکړم. په ذهن کې دې څه دي؟",
+      "nutrition": "سلام! زه ستاسو د خوړو لارښود یم. د صحي خوړو په اړه هر څه وپښتئ!"
     },
-    "errorMessage": "I'm sorry, something went wrong. Please try again later."
+    "errorMessage": "بخښنه غواړم، یو څه غلط شول. مهرباني وکړئ وروسته بیا هڅه وکړئ."
   },
   "DietPage": {
-    "title": "Diet AI",
-    "description": "Your personal guide for nutrition and healthy eating."
+    "title": "د خوړو AI",
+    "description": "د تغذیې او صحي خوړو لپاره ستاسو شخصي لارښود."
   },
   "EmotionalHealthPage": {
-    "title": "Emotional Health AI",
-    "description": "Your personal guide for mindfulness and emotional balance."
+    "title": "د احساساتي روغتیا AI",
+    "description": "د ذهني او احساساتي توازن لپاره ستاسو شخصي لارښood."
   },
   "HealthcarePage": {
-    "title": "Healthcare AI",
-    "description": "Your personal guide for physical health and well-being."
+    "title": "د روغتیاپالنې AI",
+    "description": "د فزیکي روغتیا او هوساینې لپاره ستاسو شخصي لارښود."
   }
 }
 

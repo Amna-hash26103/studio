@@ -27,154 +27,154 @@
     "footerContact": "Contact"
   },
   "AppShell": {
-    "welcomeBack": "Welcome back 🌷",
-    "searchPlaceholder": "Search...",
+    "welcomeBack": "Wapsi par khushamdeed 🌷",
+    "searchPlaceholder": "Talaash...",
     "notifications": "Notifications",
     "userMenu": "User menu",
     "nav": {
       "feed": "Feed",
-      "healthcare": "Healthcare",
-      "emotionalHealth": "Emotional Health",
-      "diet": "Diet",
+      "healthcare": "Sehat ki Dekhbhal",
+      "emotionalHealth": "Jazbati Sehat",
+      "diet": "Ghiza",
       "profile": "Profile",
       "settings": "Settings",
       "logout": "Log Out",
-      "mainGroup": "MAIN",
+      "mainGroup": "ASAL",
       "accountGroup": "ACCOUNT"
     },
     "toast": {
       "logoutSuccess": {
         "title": "Logged Out",
-        "description": "You have been successfully logged out."
+        "description": "Aap kamyabi se logout ho gaye hain."
       },
       "logoutError": {
         "title": "Uh oh!",
-        "description": "Could not log you out. Please try again."
+        "description": "Aap ko logout nahi kiya ja saka. Barah-e-karam dobara koshish karein."
       }
     }
   },
   "AppLayout": {
-    "loading": "Loading your space..."
+    "loading": "Aap ki jagah load ho rahi hai..."
   },
   "LoginPage": {
-    "title": "Welcome Back",
-    "description": "Log in to continue your journey with FEMMORA.",
+    "title": "Wapsi par Khushamdeed",
+    "description": "FEMMORA ke sath apna safar jari rakhne ke liye login karein.",
     "emailLabel": "Email",
     "passwordLabel": "Password",
-    "forgotPasswordLink": "Forgot password?",
+    "forgotPasswordLink": "Password bhool gaye?",
     "logInButton": "Log In",
-    "loggingInButton": "Logging In...",
-    "noAccountPrompt": "Don't have an account?",
+    "loggingInButton": "Login ho raha hai...",
+    "noAccountPrompt": "Account nahi hai?",
     "signUpLink": "Sign Up",
     "toast": {
       "success": {
         "title": "Logged In!",
-        "description": "Welcome back!"
+        "description": "Wapsi par khushamdeed!"
       },
       "error": {
-        "title": "Uh oh! Something went wrong.",
-        "description": "Invalid email or password. Please try again."
+        "title": "Uh oh! Kuch ghalat ho gaya.",
+        "description": "Ghalat email ya password. Barah-e-karam dobara koshish karein."
       }
     }
   },
   "SignupPage": {
-    "title": "Join FEMMORA",
-    "description": "Create your account and start your journey of empowerment.",
+    "title": "FEMMORA Mein Shamil Hon",
+    "description": "Apna account banayein aur apni taqatwari ka safar shuru karein.",
     "displayNameLabel": "Display Name",
-    "displayNamePlaceholder": "Your Name",
+    "displayNamePlaceholder": "Aap Ka Naam",
     "emailLabel": "Email",
     "passwordLabel": "Password",
-    "createAccountButton": "Create Account",
+    "createAccountButton": "Account Banayein",
     "creatingAccountButton": "Processing...",
-    "hasAccountPrompt": "Already have an account?",
+    "hasAccountPrompt": "Pehle se account hai?",
     "logInLink": "Log In",
     "toast": {
       "success": {
-        "title": "Account Created!",
-        "description": "Welcome to FEMMORA! We’re so glad to have you here 💜"
+        "title": "Account Ban Gaya!",
+        "description": "FEMMORA mein khushamdeed! Humein bohat khushi hai ke aap yahan hain 💜"
       },
       "error": {
-        "title": "Signup Failed",
-        "description": "There was a problem creating your account. Please try again.",
-        "emailInUse": "This email is already in use. Please log in instead."
+        "title": "Signup Nakam",
+        "description": "Aapka account banane mein masla hua. Barah-e-karam dobara koshish karein.",
+        "emailInUse": "Yeh email pehle se istemal mein hai. Barah-e-karam login karein."
       }
     }
   },
   "FeedPage": {
-    "postPlaceholder": "What's on your mind, Jane?",
+    "postPlaceholder": "Aap ke zehen mein kya hai, Jane?",
     "postButton": "Post",
     "shareButton": "Share",
-    "commentPlaceholder": "Write a comment..."
+    "commentPlaceholder": "Ek comment likhein..."
   },
   "ProfilePage": {
-    "editProfileButton": "Edit Profile",
+    "editProfileButton": "Profile Edit Karein",
     "coverImageAlt": "Cover image",
-    "noBio": "No bio yet.",
-    "joined": "Joined",
+    "noBio": "Abhi tak koi bio nahi.",
+    "joined": "Shamil hue",
     "posts": "Posts",
     "followers": "Followers",
     "following": "Following",
     "postsTab": "Posts",
     "projectsTab": "Projects",
     "mediaTab": "Media",
-    "postsTabContent": "User's posts will be displayed here.",
-    "projectsTabContent": "User's projects will be displayed here.",
-    "profileLoadError": "Could not load user profile. It might not exist yet."
+    "postsTabContent": "User ke posts yahan dikhaye jayenge.",
+    "projectsTabContent": "User ke projects yahan dikhaye jayenge.",
+    "profileLoadError": "User profile load nahi ho saki. Ho sakta hai ke yeh abhi tak mojood na ho."
   },
   "EditProfileDialog": {
-    "title": "Edit Profile",
-    "description": "Make changes to your profile here. Click save when you're done.",
-    "changePictureButton": "Change Picture",
+    "title": "Profile Edit Karein",
+    "description": "Apni profile mein tabdeeliyan yahan karein. Jab ho jaye to save par click karein.",
+    "changePictureButton": "Tasveer Badlein",
     "displayNameLabel": "Display Name",
-    "displayNamePlaceholder": "Your full name",
+    "displayNamePlaceholder": "Aapka poora naam",
     "bioLabel": "Bio",
-    "bioPlaceholder": "Tell us a little about yourself",
+    "bioPlaceholder": "Humein apne baray mein kuch batayein",
     "locationLabel": "Location",
-    "locationPlaceholder": "Where are you in the world?",
+    "locationPlaceholder": "Aap duniya mein kahan hain?",
     "cancelButton": "Cancel",
-    "saveButton": "Save changes",
+    "saveButton": "Tabdeeliyan save karein",
     "savingButton": "Saving...",
     "toast": {
       "avatarSuccess": {
-        "title": "Avatar updated!"
+        "title": "Avatar update ho gaya!"
       },
       "avatarError": {
-        "title": "Upload failed",
-        "description": "There was a problem uploading your new avatar. Please try again."
+        "title": "Upload nakam",
+        "description": "Aapka naya avatar upload karne mein masla hua. Barah-e-karam dobara koshish karein."
       },
       "profileSuccess": {
-        "title": "Profile Updated!",
-        "description": "Your changes have been saved successfully."
+        "title": "Profile Update Ho Gayi!",
+        "description": "Aapki tabdeeliyan kamyabi se save ho gayi hain."
       },
       "profileError": {
-        "title": "Update failed",
-        "description": "There was a problem saving your profile. Please try again."
+        "title": "Update nakam",
+        "description": "Aapki profile save karne mein masla hua. Barah-e-karam dobara koshish karein."
       }
     }
   },
   "ChatInterface": {
     "placeholders": {
-      "health": "e.g., How can I start a simple home workout routine?",
-      "emotionalWellbeing": "e.g., I feel stressed, any quick mindfulness tips?",
-      "nutrition": "e.g., What are some healthy snack ideas?"
+      "health": "Maslan, Main ghar par ek aasan warzish ka routine kaise shuru kar sakta hoon?",
+      "emotionalWellbeing": "Maslan, Main stress mehsoos kar raha hoon, koi fori mindfulness tips?",
+      "nutrition": "Maslan, Kuch sehatmand snack ke ideas kya hain?"
     },
     "initialMessages": {
-      "health": "Hi! I'm your Healthcare assistant. How can I help you today?",
-      "emotionalWellbeing": "Hello, I'm here to support your emotional well-being. What's on your mind?",
-      "nutrition": "Hey there! I'm your Diet guide. Ask me anything about healthy eating!"
+      "health": "Hi! Main aapka Healthcare assistant hoon. Main aaj aapki kaise madad kar sakta hoon?",
+      "emotionalWellbeing": "Hello, Main yahan aapki jazbati behtari ke liye hoon. Aapke zehen mein kya hai?",
+      "nutrition": "Hey! Main aapka Diet guide hoon. Sehatmand khane ke baray mein kuch bhi poochein!"
     },
-    "errorMessage": "I'm sorry, something went wrong. Please try again later."
+    "errorMessage": "Maaf kijiyega, kuch ghalat ho gaya. Barah-e-karam baad mein dobara koshish karein."
   },
   "DietPage": {
     "title": "Diet AI",
-    "description": "Your personal guide for nutrition and healthy eating."
+    "description": "Ghizaiyat aur sehatmand khane ke liye aapka zaati rehnuma."
   },
   "EmotionalHealthPage": {
-    "title": "Emotional Health AI",
-    "description": "Your personal guide for mindfulness and emotional balance."
+    "title": "Jazbati Sehat AI",
+    "description": "Mindfulness aur jazbati tawazun ke liye aapka zaati rehnuma."
   },
   "HealthcarePage": {
     "title": "Healthcare AI",
-    "description": "Your personal guide for physical health and well-being."
+    "description": "Jismani sehat aur tandrusti ke liye aapka zaati rehnuma."
   }
 }
