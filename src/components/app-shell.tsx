@@ -18,7 +18,8 @@ import {
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import {
   Bell,
   Globe,
@@ -50,15 +51,12 @@ import { useLocale, useTranslations } from 'next-intl';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
-  const fullPathname = usePathname();
+  const pathname = usePathname();
+  const router = useRouter();
   const { user } = useUser();
   const auth = useAuth();
-  const router = useRouter();
   const t = useTranslations('AppShell');
   const locale = useLocale();
-
-  const pathname = fullPathname.startsWith(`/${locale}`) ? fullPathname.substring(`/${locale}`.length) : fullPathname;
-
 
   const mainNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
@@ -79,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         title: t('toast.logoutSuccess.title'),
         description: t('toast.logoutSuccess.description'),
       });
-      router.push(`/${locale}/login`);
+      router.push(`/login`);
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
@@ -89,6 +87,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       });
     }
   };
+
+  const getBasePath = () => {
+    if (pathname) {
+      const parts = pathname.split('/');
+      // Path is /<locale>/<...rest>
+      if (parts.length > 2) {
+        return '/' + parts.slice(2).join('/');
+      }
+    }
+    return '/'; // Fallback to root
+  }
 
   const sidebarContent = (
     <>
@@ -112,7 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.href}
+                    isActive={pathname === `/${locale}${item.href}`}
                     tooltip={{ children: item.label }}
                 >
                     <Link href={item.href}>
@@ -132,7 +141,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.href}
+                    isActive={pathname === `/${locale}${item.href}`}
                     tooltip={{ children: item.label }}
                 >
                     <Link href={item.href}>
@@ -188,21 +197,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem asChild>
-            <Link href={pathname || '/'} locale="en">English</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={pathname || '/'} locale="ur">اردو</Link>
-          </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-            <Link href={pathname || '/'} locale="ur-RO">Roman Urdu</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={pathname || '/'} locale="ps">پښتو</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={pathname || '/'} locale="pa">پنجابی</Link>
-          </DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href={`/en${getBasePath()}`}>English</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href={`/ur${getBasePath()}`}>اردو</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href={`/ur-RO${getBasePath()}`}>Roman Urdu</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href={`/ps${getBasePath()}`}>پښتو</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href={`/pa${getBasePath()}`}>پنجابی</Link></DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>
@@ -221,7 +220,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             key={item.href}
             href={item.href}
             className={`flex flex-col items-center justify-center gap-1 text-xs ${
-              pathname === item.href
+              pathname === `/${locale}${item.href}`
                 ? 'text-primary'
                 : 'text-muted-foreground'
             }`}
@@ -249,5 +248,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-
-    

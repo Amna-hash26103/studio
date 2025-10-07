@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,16 +15,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useLocale } from 'next-intl';
 import { useState, useRef, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   const t = useTranslations('LandingPage');
   const locale = useLocale();
-  const fullPathname = usePathname();
-  const pathname = fullPathname.startsWith(`/${locale}`) ? fullPathname.substring(`/${locale}`.length) : fullPathname;
-
 
   const [isPlaying, setIsPlaying] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -177,21 +172,11 @@ export default function LandingPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem asChild>
-                <Link href={pathname || '/'} locale="en">English</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={pathname || '/'} locale="ur">اردو</Link>
-              </DropdownMenuItem>
-               <DropdownMenuItem asChild>
-                <Link href={pathname || '/'} locale="ur-RO">Roman Urdu</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={pathname || '/'} locale="ps">پښتو</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={pathname || '/'} locale="pa">پنجابی</Link>
-              </DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/en">English</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/ur">اردو</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/ur-RO">Roman Urdu</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/ps">پښتو</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/pa">پنجابی</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </nav>
@@ -307,5 +292,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
