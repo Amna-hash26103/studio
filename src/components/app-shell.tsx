@@ -20,11 +20,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Link, useRouter, usePathname } from '@/navigation';
 import {
   Bell,
-  Globe,
   HeartPulse,
   LayoutDashboard,
   LogOut,
-  MessageSquare,
   Salad,
   Search,
   Settings,
@@ -46,8 +44,6 @@ import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations, useLocale } from 'next-intl';
-import { locales } from '@/navigation';
-
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -55,7 +51,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const { user } = useUser();
   const t = useTranslations('AppShell');
-  const locale = useLocale();
   const pathname = usePathname();
 
   const mainNavItems = [
@@ -160,14 +155,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </>
   );
 
-  const localeItems = [
-    { locale: 'en', label: 'English' },
-    { locale: 'ur', label: 'اردو' },
-    { locale: 'ur-RO', label: 'Roman Urdu' },
-    { locale: 'ps', label: 'پښتو' },
-    { locale: 'pa', label: 'پنجابی' },
-  ];
-
   const headerContent = (
     <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 md:px-6">
       <div className="md:hidden">
@@ -190,22 +177,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Bell className="h-5 w-5" />
         <span className="sr-only">{t('notifications')}</span>
       </Button>
-       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Globe className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {localeItems.map((item) => (
-            <DropdownMenuItem key={item.locale} asChild>
-              <Link href={pathname} locale={item.locale}>
-                {item.label}
-              </Link>
-            </DropdownMenuItem>
-            ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
     </header>
   );
   

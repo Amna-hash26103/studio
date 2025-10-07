@@ -9,14 +9,14 @@ import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Smile, BrainCirc
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useTranslations } from 'next-intl';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { useLocale } from 'next-intl';
 import { useState, useRef, useEffect } from 'react';
-import { locales } from '@/navigation';
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
@@ -29,8 +29,14 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [showLangDialog, setShowLangDialog] = useState(false);
 
   useEffect(() => {
+    const langSelected = localStorage.getItem('femmora_lang_selected');
+    if (!langSelected) {
+      setShowLangDialog(true);
+    }
+
     const loadVoices = () => {
       setVoices(window.speechSynthesis.getVoices());
     };
@@ -46,6 +52,11 @@ export default function LandingPage() {
       }
     };
   }, []);
+
+  const handleLangSelect = () => {
+    localStorage.setItem('femmora_lang_selected', 'true');
+    setShowLangDialog(false);
+  };
 
   const audioContent = {
     hero: `${t('mainHeading')} ${t('subHeading')}`,
@@ -163,6 +174,24 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
+       <Dialog open={showLangDialog} onOpenChange={setShowLangDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Choose Your Language</DialogTitle>
+            <DialogDescription>Select your preferred language to continue.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            {localeItems.map((item) => (
+              <Button key={item.locale} variant="outline" asChild onClick={handleLangSelect}>
+                <Link href={pathname} locale={item.locale}>
+                  {item.label}
+                </Link>
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-14 w-14 text-primary" />
@@ -175,23 +204,6 @@ export default function LandingPage() {
           <Button asChild>
             <Link href="/signup">{t('signup')}</Link>
           </Button>
-
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {localeItems.map((item) => (
-                <DropdownMenuItem key={item.locale} asChild>
-                   <Link href={pathname} locale={item.locale}>
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </nav>
       </header>
 
