@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -19,7 +18,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FemmoraLogo } from './icons';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next-intl/navigation';
 import {
   Bell,
   HeartPulse,

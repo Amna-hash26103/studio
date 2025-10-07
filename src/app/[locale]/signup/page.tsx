@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -29,7 +28,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next-intl/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
 import { useTranslations } from 'next-intl';
