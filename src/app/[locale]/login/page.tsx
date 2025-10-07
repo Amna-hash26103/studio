@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/form';
 import { useAuth } from '@/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next-intl/navigation';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
 

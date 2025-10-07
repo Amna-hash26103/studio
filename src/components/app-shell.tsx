@@ -19,7 +19,7 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile';
 import { FemmoraLogo } from './icons';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next-intl/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
   HeartPulse,
@@ -54,7 +54,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const auth = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
   const t = useTranslations('AppShell');
 
   const mainNavItems = [
