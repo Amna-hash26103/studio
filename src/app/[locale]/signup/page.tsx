@@ -72,7 +72,7 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
-      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-default');
+      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-3');
       const defaultAvatarUrl = defaultAvatar?.imageUrl || 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
 
       await updateProfile(user, {
