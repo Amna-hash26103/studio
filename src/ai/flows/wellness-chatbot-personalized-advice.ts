@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const WellnessChatbotPersonalizedAdviceInputSchema = z.object({
   topic: z.enum(['health', 'emotionalWellbeing', 'nutrition']).describe('The topic for which the user needs advice.'),
@@ -64,6 +65,14 @@ const prompt = ai.definePrompt({
   `,
 });
 
+// Define a mapping from topic to your fine-tuned model identifiers.
+// IMPORTANT: Replace these placeholder strings with your actual deployed model names.
+const modelMapping = {
+  health: 'YOUR_HEALTHCARE_FLAN_T5_MODEL_ID',      // e.g., 'tunedModels/your-health-model-123'
+  emotionalWellbeing: 'YOUR_EMOTION_CARE_FLAN_T5_MODEL_ID', // e.g., 'tunedModels/your-emotion-model-456'
+  nutrition: 'YOUR_DIET_FLAN_T5_MODEL_ID',            // e.g., 'tunedModels/your-diet-model-789'
+};
+
 const wellnessChatbotPersonalizedAdviceFlow = ai.defineFlow(
   {
     name: 'wellnessChatbotPersonalizedAdviceFlow',
@@ -71,7 +80,18 @@ const wellnessChatbotPersonalizedAdviceFlow = ai.defineFlow(
     outputSchema: WellnessChatbotPersonalizedAdviceOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    // Select the appropriate model based on the input topic
+    const modelId = modelMapping[input.topic];
+    const targetModel = googleAI.model(modelId);
+
+    const {output} = await ai.generate({
+        prompt: await prompt.render(input),
+        model: targetModel,
+        output: {
+            schema: WellnessChatbotPersonalizedAdviceOutputSchema,
+        }
+    });
+
     return output!;
   }
 );
