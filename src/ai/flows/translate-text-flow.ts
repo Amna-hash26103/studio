@@ -31,7 +31,23 @@ const translationPrompt = ai.definePrompt({
   output: { schema: TranslateTextOutputSchema },
   prompt: `
     {{#ifCond targetLanguage '==' 'ur-RO'}}
-    Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters). The style should be informal and easy to read.
+    Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters). 
+    Your translations should be easy to read and sound like how a native speaker would write Urdu using the English alphabet.
+
+    Here are some examples of the style I want:
+    Example 1:
+    English: "Empower Your Journey. Together."
+    Roman Urdu: "Apne Safar ko Taqat dein. Ek Saath."
+
+    Example 2:
+    English: "A Space to Thrive"
+    Roman Urdu: "Aage Barhne ki Jagah"
+
+    Example 3:
+    English: "FEMMORA is a sanctuary for women to connect, share, and flourish."
+    Roman Urdu: "FEMMORA khawateen ke liye jurrne, apni baat kehne, aur aage barhne ki ek panahgah hai."
+
+    Now, please translate the following text in the same style.
     {{else}}
     Translate the following text to {{targetLanguage}}.
     {{/ifCond}}
