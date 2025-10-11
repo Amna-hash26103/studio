@@ -29,11 +29,16 @@ const translationPrompt = ai.definePrompt({
   name: 'translationPrompt',
   input: { schema: TranslateTextInputSchema },
   output: { schema: TranslateTextOutputSchema },
-  prompt: `Translate the following text to {{targetLanguage}}.
+  prompt: `
+    {{#ifCond targetLanguage '==' 'ur-RO'}}
+    Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters). The style should be informal and easy to read.
+    {{else}}
+    Translate the following text to {{targetLanguage}}.
+    {{/ifCond}}
 
-Text: {{{text}}}
+    Text: {{{text}}}
 
-Return only the translated text.`,
+    Return only the translated text.`,
 });
 
 const translateTextFlow = ai.defineFlow(
@@ -47,5 +52,4 @@ const translateTextFlow = ai.defineFlow(
     return output!;
   }
 );
-
     
