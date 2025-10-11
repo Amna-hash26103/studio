@@ -30,7 +30,7 @@ const translationPrompt = ai.definePrompt({
   input: { schema: TranslateTextInputSchema },
   output: { schema: TranslateTextOutputSchema },
   prompt: `
-    {{#ifCond targetLanguage '==' 'ur-RO'}}
+    {{#if (eq targetLanguage 'ur-RO')}}
     Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters). 
     Your translations should be easy to read and sound like how a native speaker would write Urdu using the English alphabet.
 
@@ -50,7 +50,7 @@ const translationPrompt = ai.definePrompt({
     Now, please translate the following text in the same style.
     {{else}}
     Translate the following text to {{targetLanguage}}.
-    {{/ifCond}}
+    {{/if}}
 
     Text: {{{text}}}
 
@@ -64,8 +64,13 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async input => {
+    // Manually add the 'eq' helper for the template
+    const handlebars = await import('handlebars');
+    handlebars.registerHelper('eq', function (a, b) {
+      return a === b;
+    });
+    
     const { output } = await translationPrompt(input);
     return output!;
   }
 );
-    
