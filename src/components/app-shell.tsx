@@ -157,15 +157,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarTrigger />
       </div>
       <div className="w-full flex-1">
-        <form>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="w-full appearance-none bg-secondary pl-9 md:w-2/3 lg:w-1/3"
-              placeholder={t('searchPlaceholder')}
-            />
-          </div>
-        </form>      </div>
+      </div>
       <Button variant="ghost" size="icon" className="rounded-full">
         <Bell className="h-5 w-5" />
         <span className="sr-only">{t('notifications')}</span>
@@ -217,5 +209,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-
-    
