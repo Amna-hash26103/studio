@@ -10,7 +10,7 @@
     "thriveParagraph": "FEMMORA mein, hum sabki mil kar kaam karne ki taqat par yaqeen rakhte hain. Hamara platform sirf ek app nahi hai; yeh har aurat ki behtari aur kamyabi ke anokhe safar ka jashn manane aur uski himayat karne ke liye ek tehreek hai.",
     "featuresHeading": "Khaas Aapke Liye Banaye Gaye Features",
     "featuresSubHeading": "Aapko apni zaati aur peshawarana taraqqi ke liye jo kuch bhi chahiye, sab ek jagah par.",
-    "featureSoulSpaceTitle": "SoulSpace: Aapka Jazbati Sehat ka Sathi",
+    "featureSoulSpaceTitle": "SoulSpace: Aapka Jazbati Sehat ka Saathi",
     "featureSoulSpaceDescription": "Ek mehfooz digital panahgah jahan aapke jazbaat ko hamdardi se samjha jaata hai. Chahe aap pareshan hon, kuch soch rahi hon, ya behtar mehsoos kar rahi hon, SoulSpace aapki sunta hai - aapko rehnumai, narm isharay, aur aise AI sathi deta hai jo aapke dil ki zaban bolte hain.",
     "featureHerHealthTitle": "HerHealth: Smart Health Ki Maloomat",
     "featureHerHealthDescription": "Apne cycles, neend aur zehni dabao ko ek pursukoon jagah par track karein. HerHealth aapko samajhne ke liye smart AI ka istemal karta hai - aapke jism ki taal ka khayal rakhte hue, lifestyle mein tabdeeliyan, reminders, aur madadgar routines tajweez karta hai.",
@@ -207,7 +207,39 @@
       "deleteError": {
         "title": "Delete Nakam",
         "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
-      }
+      },
+      "periodStarted": "Naya period {date} ko shuru hua.",
+      "periodEnded": "Period khatam ho gaya. Kul muddat: {duration} din.",
+      "periodUpdated": "Aapka {date} ka log update ho gaya hai."
+    },
+    "endPeriodPrompt": {
+      "title": "Period Khatam Karein?",
+      "description": "Kya aap is din ko apne mojooda period ke ekhtamam ke tor par nishanzad karna chahti hain?",
+      "cancel": "Cancel",
+      "confirm": "Confirm karein aur Khatam karein"
+    },
+    "logFlowDialog": {
+      "title": "{date} ke liye Flow aur Notes Log Karein",
+      "flowTitle": "Flow ki Shiddat",
+      "notesTitle": "Notes",
+      "notesPlaceholder": "Maslan, 'Dard mamool se zyada tha'",
+      "spotting": "Dhabba",
+      "light": "Halka",
+      "medium": "Darmiyana",
+      "heavy": "Bhaari",
+      "cancel": "Cancel",
+      "save": "Log Save Karein",
+      "saving": "Saving..."
+    },
+    "bleedingHistory": {
+      "title": "Bleeding ki History",
+      "noHistory": "Abhi tak koi mukammal cycle nahi. Shuru karne ke liye apna pehla period log karein!",
+      "cycle": "Cycle",
+      "duration": "Muddat",
+      "flowPattern": "Flow ka Pattern",
+      "notes": "Notes",
+      "noNotes": "Is cycle ke liye koi notes nahi.",
+      "days": "din"
     }
   }
 }

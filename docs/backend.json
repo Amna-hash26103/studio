@@ -127,7 +127,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "CycleEntry",
       "type": "object",
-      "description": "Represents a single menstrual cycle entry for a user.",
+      "description": "Represents a single menstrual cycle entry for a user, including daily logs.",
       "properties": {
         "id": {
           "type": "string",
@@ -145,10 +145,42 @@
         "endDate": {
           "type": "string",
           "format": "date-time",
-          "description": "The end date of the menstrual period."
+          "description": "The end date of the menstrual period (optional, indicates an ongoing cycle if not set)."
+        },
+        "duration": {
+            "type": "number",
+            "description": "The duration of the cycle in days. Calculated when the period ends."
+        },
+        "dailyLogs": {
+          "type": "object",
+          "description": "Object containing daily logs for flow and symptoms, keyed by date string (e.g., 'YYYY-MM-DD').",
+          "patternProperties": {
+            "^[0-9]{4}-[0-9]{2}-[0-9]{2}$": {
+              "type": "object",
+              "properties": {
+                "flow": {
+                  "type": "string",
+                  "enum": ["spotting", "light", "medium", "heavy"],
+                  "description": "The logged menstrual flow for the day."
+                },
+                "notes": {
+                  "type": "string",
+                  "description": "User-added notes for the day."
+                }
+              }
+            }
+          }
+        },
+        "flowPattern": {
+            "type": "array",
+            "description": "An ordered array representing the flow pattern for the cycle.",
+            "items": {
+                "type": "string",
+                "enum": ["Spotting", "Light", "Medium", "Heavy"]
+            }
         }
       },
-      "required": ["id", "userId", "startDate", "endDate"]
+      "required": ["id", "userId", "startDate"]
     }
   },
   "auth": {

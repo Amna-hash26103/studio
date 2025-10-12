@@ -207,7 +207,39 @@
       "deleteError": {
         "title": "Delete Failed",
         "description": "Could not delete the cycle entry. Please try again."
-      }
+      },
+      "periodStarted": "New period started on {date}.",
+      "periodEnded": "Period ended. Total duration: {duration} days.",
+      "periodUpdated": "Your log for {date} has been updated."
+    },
+    "endPeriodPrompt": {
+      "title": "End Period?",
+      "description": "Do you want to mark this day as the end of your current period?",
+      "cancel": "Cancel",
+      "confirm": "Confirm & End"
+    },
+    "logFlowDialog": {
+      "title": "Log Flow & Notes for {date}",
+      "flowTitle": "Flow Intensity",
+      "notesTitle": "Notes",
+      "notesPlaceholder": "e.g., 'Cramps worse than usual'",
+      "spotting": "Spotting",
+      "light": "Light",
+      "medium": "Medium",
+      "heavy": "Heavy",
+      "cancel": "Cancel",
+      "save": "Save Log",
+      "saving": "Saving..."
+    },
+    "bleedingHistory": {
+      "title": "Bleeding History",
+      "noHistory": "No completed cycles yet. Log your first period to get started!",
+      "cycle": "Cycle",
+      "duration": "Duration",
+      "flowPattern": "Flow Pattern",
+      "notes": "Notes",
+      "noNotes": "No notes for this cycle.",
+      "days": "days"
     }
   }
 }
