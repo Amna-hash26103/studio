@@ -174,13 +174,14 @@ export default function PeriodTrackerPage() {
       }
     };
     
+    // Using a timeout to allow the state update to settle before processing.
     const timer = setTimeout(() => {
         handleDateSelection();
     }, 0);
     
     return () => clearTimeout(timer);
 
-  }, [selectedDate]);
+  }, [selectedDate, activeCycle, isLoading, isLoadingCycles, periodDays]);
 
   const handleStartPeriod = async () => {
     if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
@@ -384,7 +385,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             setFlow(log?.flow || 'light'); // Default to light on first day
             setNotes(log?.notes || '');
         }
-    }, [activeCycle, date, open]);
+    }, [activeCycle, date, open, dayStr]);
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -528,5 +529,3 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-
-    
