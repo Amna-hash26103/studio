@@ -56,7 +56,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { DayPicker } from 'react-day-picker';
+import type { DayPicker, DayClickEventHandler } from 'react-day-picker';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
 
@@ -137,8 +137,8 @@ export default function PeriodTrackerPage() {
     return days;
   }, [cycles]);
 
-  const handleDayClick: DayPicker['onDayClick'] = async (day, modifiers) => {
-    setSelectedDate(day); // Always update the selected date first
+  const handleDayClick: DayClickEventHandler = async (day, modifiers) => {
+    setSelectedDate(day);
     if (isLoading || modifiers.disabled) return;
 
     const clickedDate = startOfDay(day);
@@ -475,3 +475,5 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
+
+    
