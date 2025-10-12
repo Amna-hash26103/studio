@@ -139,7 +139,8 @@ export default function PeriodTrackerPage() {
 
   const handleDayClick: DayPicker['onDayClick'] = async (day, modifiers) => {
     setSelectedDate(day); // Always update the selected date first
-    if (isLoading) return;
+    if (isLoading || modifiers.disabled) return;
+
     const clickedDate = startOfDay(day);
 
     if (activeCycle) {
@@ -158,6 +159,7 @@ export default function PeriodTrackerPage() {
       // No active cycle, start a new one
       setIsLoading(true);
       try {
+        if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
         const newCycle = {
           userId: user!.uid,
           startDate: clickedDate,
@@ -165,7 +167,7 @@ export default function PeriodTrackerPage() {
             [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
           },
         };
-        await addDoc(cyclesCollectionRef!, newCycle);
+        await addDoc(cyclesCollectionRef, newCycle);
         toast({
           title: t('toast.periodStarted', {
             date: format(clickedDate, 'LLL dd, yyyy'),
@@ -186,7 +188,7 @@ export default function PeriodTrackerPage() {
   };
   
   const handleEndPeriod = async () => {
-    if (!activeCycle || !endPeriodPrompt.date) return;
+    if (!activeCycle || !endPeriodPrompt.date || !firestore || !user) return;
 
     setIsLoading(true);
     try {
@@ -211,7 +213,7 @@ export default function PeriodTrackerPage() {
             }
         }
         
-        const cycleDocRef = doc(firestore!, 'users', user!.uid, 'cycles', activeCycle.id);
+        const cycleDocRef = doc(firestore, 'users', user.uid, 'cycles', activeCycle.id);
         await updateDoc(cycleDocRef, {
             endDate: endDate,
             duration: duration,
@@ -264,16 +266,14 @@ export default function PeriodTrackerPage() {
           <CardContent className="p-2 md:p-6">
             <Calendar
               selected={selectedDate}
-              onSelect={setSelectedDate}
+              onDayClick={handleDayClick}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
-              onDayClick={handleDayClick}
               modifiers={{
                 period: Array.from(periodDays.keys()).map(d => new Date(d)),
               }}
               modifiersClassNames={{
                 period: 'bg-primary/20 text-primary-foreground rounded-none',
-                selected: 'bg-primary text-primary-foreground rounded-full',
               }}
               components={{ Day: DayContent }}
               className="w-full"
@@ -322,12 +322,12 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     const [notes, setNotes] = useState(existingLog?.notes || '');
     
     useEffect(() => {
-        if(activeCycle && date) {
+        if(open && activeCycle && date) {
             const dayStr = format(date, 'yyyy-MM-dd');
             const log = activeCycle.dailyLogs?.[dayStr];
             setFlow(log?.flow);
             setNotes(log?.notes || '');
-        } else if (!activeCycle) {
+        } else if (open && !activeCycle) {
             setFlow(undefined);
             setNotes('');
         }
@@ -475,5 +475,3 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-
-    
