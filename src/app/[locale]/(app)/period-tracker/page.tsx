@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -9,11 +10,6 @@ import {
   query,
   orderBy,
   doc,
-  deleteDoc,
-  where,
-  getDocs,
-  serverTimestamp,
-  writeBatch,
 } from 'firebase/firestore';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -22,8 +18,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardFooter,
 } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -53,17 +47,13 @@ import {
   isSameDay,
   isBefore,
   startOfDay,
-  endOfDay,
 } from 'date-fns';
 import {
-  Droplets,
-  StickyNote,
   Loader2,
-  ChevronRight,
-  Blood,
-  Droplet,
-  Waves,
   CircleDot,
+  Droplet,
+  Droplets,
+  Waves,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DayPicker } from 'react-day-picker';
@@ -134,7 +124,11 @@ export default function PeriodTrackerPage() {
       let dayCount = 1;
       while (current <= end) {
         const dayStr = format(current, 'yyyy-MM-dd');
-        if (!cycle.endDate && isBefore(new Date(), current)) break; // Don't mark future days for active cycle
+        if (!cycle.endDate && isBefore(new Date(), current)) break;
+        if (isSameDay(current, new Date()) && !cycle.endDate) {
+          days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
+          break; // Stop if it's an active cycle and we've reached today
+        }
         days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
         current.setDate(current.getDate() + 1);
         dayCount++;
@@ -144,19 +138,19 @@ export default function PeriodTrackerPage() {
   }, [cycles]);
 
   const handleDayClick: DayPicker['onDayClick'] = async (day, modifiers) => {
+    setSelectedDate(day); // Always update the selected date first
     if (isLoading) return;
     const clickedDate = startOfDay(day);
 
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      // If clicked on a day within the active period
+      // If clicked on a day within the active period or a future day
       if (!isBefore(clickedDate, startDate)) {
         const dayStr = format(clickedDate, 'yyyy-MM-dd');
-        // If it's an active day, open log flow dialog
-        if (periodDays.has(dayStr)) {
+        // If it's an active day (already part of the period)
+        if (periodDays.has(dayStr) || isSameDay(clickedDate, startDate)) {
           setLogFlowDialog({ open: true, date: clickedDate });
-        } else {
-           // If it's after the start date but not logged, prompt to end period
+        } else { // If it's after the start date but not logged, prompt to end period
           setEndPeriodPrompt({ open: true, date: clickedDate });
         }
       }
@@ -167,7 +161,9 @@ export default function PeriodTrackerPage() {
         const newCycle = {
           userId: user!.uid,
           startDate: clickedDate,
-          dailyLogs: {},
+          dailyLogs: {
+            [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
+          },
         };
         await addDoc(cyclesCollectionRef!, newCycle);
         toast({
@@ -175,6 +171,7 @@ export default function PeriodTrackerPage() {
             date: format(clickedDate, 'LLL dd, yyyy'),
           }),
         });
+        setLogFlowDialog({ open: true, date: clickedDate });
       } catch (error) {
         console.error('Error starting new period:', error);
         toast({
@@ -194,7 +191,10 @@ export default function PeriodTrackerPage() {
     setIsLoading(true);
     try {
         const startDate = new Date(activeCycle.startDate.seconds * 1000);
-        const endDate = endPeriodPrompt.date;
+        // The end date is the day BEFORE the one clicked to end the period.
+        const endDate = new Date(endPeriodPrompt.date);
+        endDate.setDate(endDate.getDate() - 1);
+
         const duration = differenceInDays(endDate, startDate) + 1;
 
         const flowPattern: string[] = [];
@@ -235,12 +235,12 @@ export default function PeriodTrackerPage() {
   };
 
 
-  const DayContent: DayPicker['components']['Day'] = ({ date, ...props }) => {
+  const DayContent: DayPicker['components']['Day'] = ({ date }) => {
     const dayStr = format(date, 'yyyy-MM-dd');
     const dayInfo = periodDays.get(dayStr);
     
     return (
-      <div className="relative h-full w-full">
+      <div className="relative flex h-full w-full items-center justify-center">
         <span>{format(date, 'd')}</span>
         {dayInfo && (
           <span className="absolute bottom-0 right-1 text-[10px] font-semibold text-primary/80">
@@ -327,8 +327,11 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             const log = activeCycle.dailyLogs?.[dayStr];
             setFlow(log?.flow);
             setNotes(log?.notes || '');
+        } else if (!activeCycle) {
+            setFlow(undefined);
+            setNotes('');
         }
-    }, [activeCycle, date]);
+    }, [activeCycle, date, open]);
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -343,12 +346,12 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             });
 
             toast({
-                title: t('periodUpdated', { date: format(date, 'LLL dd') }),
+                description: t('toast.periodUpdated', { date: format(date, 'LLL dd') }),
             });
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('toast.logError.title') });
+             toast({ variant: 'destructive', title: t('toast.logError.title'), description: t('toast.logError.description') });
         } finally {
             setIsLoading(false);
         }
@@ -451,7 +454,7 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
                                     <div className="flex gap-2 flex-wrap">
                                         {cycle.flowPattern && cycle.flowPattern.length > 0 ? (
                                             cycle.flowPattern.map((flow, i) => (
-                                                <div key={i} className="flex items-center gap-1 p-1 rounded-md">
+                                                <div key={i} className="flex items-center gap-1 p-1 rounded-md" title={flow}>
                                                     {flowIcons[flow]}
                                                 </div>
                                             ))
@@ -461,7 +464,7 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
                                 {allNotes && (
                                     <div className="space-y-1">
                                         <span className="text-sm font-medium">{t('notes')}:</span>
-                                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{allNotes}</p>
+                                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{allNotes || t('noNotes')}</p>
                                     </div>
                                 )}
                             </CardContent>
@@ -472,3 +475,5 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
+
+    
