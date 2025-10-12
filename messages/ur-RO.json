@@ -3,7 +3,7 @@
   "LandingPage": {
     "login": "Log In",
     "signup": "Sign Up",
-    "mainHeading": "Apne Safar ko Taqat dein. Ek Saath.",
+    "mainHeading": "Apne Safar ko Taqat Dein. Ek Saath.",
     "subHeading": "FEMMORA khawateen ke liye jurrne, apni baat kehne, aur aage barhne ki ek panahgah hai. Apne liye banayi gayi is jagah par, apni behtari, takhleeqi salahiyat, aur community ko explore karein.",
     "joinButton": "Community Mein Shamil Hon",
     "thriveHeading": "Aage Barhne ki Jagah",
@@ -16,7 +16,7 @@
     "featureHerHealthDescription": "Apne cycles, neend aur zehni dabao ko ek pursukoon jagah par track karein. HerHealth aapko samajhne ke liye smart AI ka istemal karta hai - aapke jism ki taal ka khayal rakhte hue, lifestyle mein tabdeeliyan, reminders, aur madadgar routines tajweez karta hai.",
     "featureNourishTitle": "Nourish: Aapke Liye Makhsoos Ghiza aur Diet ka Guide",
     "featureNourishDescription": "Har aurat ke safar ke liye banaya gaya - taqat se lekar apni dekhbhal tak. Nourish aapke mood, sehat ke maqasid aur culture ke mutabiq khane ki tajaveez deta hai. Har sifarish mohabbat se di jaati hai, pabandi se nahi.",
-    "featureEvolveTitle": "Evolve: Halki پھلکی Fitness aur Tawanai ka Bahao",
+    "featureEvolveTitle": "Evolve: Halki Phulki Fitness aur Tawanai ka Bahao",
     "featureEvolveDescription": "Apni raftaar se chalein - yoga, mindful harkat, aur khawateen ke liye makhsoos warzishein jo aapki tawanai aur jazbati halat ke mutabiq hon. Evolve mein har harkat is baat ka jashn hai ke aapka jism kya kar sakta hai, na ke usey kya karna chahiye.",
     "featureCircleTitle": "Circle: FEMMORA Community",
     "featureCircleDescription": "Khawateen ke liye ek doosre se judne, kahaniyan share karne, aur ek doosre ko himmat dene ke liye ek khoobsurat moderate ki gayi jagah. Rozana check-in se lekar takhleeqi challenges tak, Circle baghair muqable ke ittehad ka jashn manata hai - taqat ki ek digital behnchara.",
@@ -28,7 +28,6 @@
   },
   "AppShell": {
     "welcomeBack": "Khush Aamdeed 🌷",
-    "searchPlaceholder": "Talaash...",
     "notifications": "Notifications",
     "userMenu": "User menu",
     "nav": {
@@ -40,7 +39,8 @@
       "settings": "Settings",
       "logout": "Log Out",
       "mainGroup": "ASAL",
-      "accountGroup": "ACCOUNT"
+      "accountGroup": "ACCOUNT",
+      "periodTracker": "Period Tracker"
     },
     "toast": {
       "logoutSuccess": {
@@ -176,7 +176,38 @@
   "HealthcarePage": {
     "title": "Healthcare AI",
     "description": "Jismani sehat aur tandrusti ke liye aapka zaati rehnuma."
+  },
+  "PeriodTrackerPage": {
+    "title": "Cycle Tracker",
+    "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
+    "logPeriodTitle": "Apna Period Log Karein",
+    "startDateLabel": "Shuru ki Tareekh",
+    "endDateLabel": "Aakhri Tareekh",
+    "logButton": "Period Log Karein",
+    "loggingButton": "Logging...",
+    "cycleHistoryTitle": "Cycle History",
+    "noCyclesLogged": "Abhi tak koi cycle log nahi hua.",
+    "historyHeaderStartDate": "Shuru ki Tareekh",
+    "historyHeaderEndDate": "Aakhri Tareekh",
+    "historyHeaderDuration": "Muddat",
+    "days": "din",
+    "toast": {
+      "logSuccess": {
+        "title": "Period Log Hogaya",
+        "description": "Aapka cycle kamyabi se record ho gaya hai."
+      },
+      "logError": {
+        "title": "Oh No!",
+        "description": "Aapka cycle save nahi ho saka. Barah-e-karam dobara koshish karein."
+      },
+      "deleteSuccess": {
+        "title": "Entry Delete Hogayi",
+        "description": "Cycle ki entry hata di gayi hai."
+      },
+      "deleteError": {
+        "title": "Delete Nakam",
+        "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
+      }
+    }
   }
 }
-
-    

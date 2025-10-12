@@ -28,7 +28,6 @@
   },
   "AppShell": {
     "welcomeBack": "Welcome back 🌷",
-    "searchPlaceholder": "Search...",
     "notifications": "Notifications",
     "userMenu": "User menu",
     "nav": {
@@ -40,7 +39,8 @@
       "settings": "Settings",
       "logout": "Log Out",
       "mainGroup": "MAIN",
-      "accountGroup": "ACCOUNT"
+      "accountGroup": "ACCOUNT",
+      "periodTracker": "Period Tracker"
     },
     "toast": {
       "logoutSuccess": {
@@ -176,5 +176,38 @@
   "HealthcarePage": {
     "title": "Healthcare AI",
     "description": "Your personal guide for physical health and well-being."
+  },
+  "PeriodTrackerPage": {
+    "title": "Cycle Tracker",
+    "description": "Track your menstrual cycle to understand your body better.",
+    "logPeriodTitle": "Log Your Period",
+    "startDateLabel": "Start Date",
+    "endDateLabel": "End Date",
+    "logButton": "Log Period",
+    "loggingButton": "Logging...",
+    "cycleHistoryTitle": "Cycle History",
+    "noCyclesLogged": "No cycles logged yet.",
+    "historyHeaderStartDate": "Start Date",
+    "historyHeaderEndDate": "End Date",
+    "historyHeaderDuration": "Duration",
+    "days": "days",
+    "toast": {
+      "logSuccess": {
+        "title": "Period Logged",
+        "description": "Your cycle has been successfully recorded."
+      },
+      "logError": {
+        "title": "Uh oh!",
+        "description": "Could not save your cycle. Please try again."
+      },
+      "deleteSuccess": {
+        "title": "Entry Deleted",
+        "description": "The cycle entry has been removed."
+      },
+      "deleteError": {
+        "title": "Delete Failed",
+        "description": "Could not delete the cycle entry. Please try again."
+      }
+    }
   }
 }

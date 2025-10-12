@@ -24,10 +24,10 @@ import {
   LayoutDashboard,
   LogOut,
   Salad,
-  Search,
   Settings,
   Smile,
   User,
+  Droplets,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -51,6 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: `/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
     { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
     { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
+    { href: `/period-tracker`, icon: <Droplets />, label: t('nav.periodTracker') },
   ];
 
   const accountNavItems = [
@@ -167,7 +168,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   
   const mobileNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: `/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
+    { href: `/period-tracker`, icon: <Droplets />, label: t('nav.periodTracker') },
     { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
     { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
     { href: `/profile`, icon: <User />, label: t('nav.profile') },
