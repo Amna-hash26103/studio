@@ -56,7 +56,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { DayPicker, DayModifiers } from 'react-day-picker';
+import type { DayPicker, DayProps } from 'react-day-picker';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
 
@@ -81,10 +81,7 @@ export default function PeriodTrackerPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    undefined
-  );
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
 
   const [startPeriodPrompt, setStartPeriodPrompt] = useState<{
@@ -110,32 +107,23 @@ export default function PeriodTrackerPage() {
     return query(cyclesCollectionRef, orderBy('startDate', 'desc'));
   }, [cyclesCollectionRef]);
 
-  const { data: cycles, isLoading: isLoadingCycles } =
-    useCollection<CycleEntry>(cyclesQuery);
+  const { data: cycles, isLoading: isLoadingCycles } = useCollection<CycleEntry>(cyclesQuery);
 
-  const activeCycle = useMemo(
-    () => cycles?.find((c) => !c.endDate),
-    [cycles]
-  );
+  const activeCycle = useMemo(() => cycles?.find((c) => !c.endDate), [cycles]);
   
   const periodDays = useMemo(() => {
     const days = new Map<string, { label: string; isPeriod: boolean }>();
     cycles?.forEach((cycle) => {
-      const start = new Date(cycle.startDate.seconds * 1000);
+      const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
       const end = cycle.endDate
-        ? new Date(cycle.endDate.seconds * 1000)
-        : new Date();
-      let current = start;
+        ? startOfDay(new Date(cycle.endDate.seconds * 1000))
+        : startOfDay(new Date());
+
+      let current = new Date(start);
       let dayCount = 1;
-      while (current <= end) {
+      while (isBefore(current, end) || isSameDay(current, end)) {
         const dayStr = format(current, 'yyyy-MM-dd');
-        if (!cycle.endDate && isBefore(new Date(), current) && !isSameDay(new Date(), current)) break;
-        
         days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
-        
-        if (isSameDay(current, new Date()) && !cycle.endDate) {
-          break; 
-        }
         current.setDate(current.getDate() + 1);
         dayCount++;
       }
@@ -144,51 +132,33 @@ export default function PeriodTrackerPage() {
   }, [cycles]);
 
   useEffect(() => {
-    const handleDateSelection = async () => {
-      if (!selectedDate || isLoading || isLoadingCycles) return;
+    if (!selectedDate) return;
 
-      const clickedDate = startOfDay(selectedDate);
-      const dayStr = format(clickedDate, 'yyyy-MM-dd');
-      const isPeriodDay = periodDays.has(dayStr);
+    const date = startOfDay(selectedDate);
+    const dayStr = format(date, 'yyyy-MM-dd');
 
-      if (activeCycle) {
-        const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-        
-        if (isPeriodDay) {
-           setLogFlowDialog({ open: true, date: clickedDate });
-        } else if (isBefore(clickedDate, startDate)) {
-          // Date before active cycle, do nothing for now
+    if (activeCycle) {
+      const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+      if (isSameDay(date, startDate) || isBefore(startDate, date)) {
+        if (periodDays.has(dayStr)) {
+          setLogFlowDialog({ open: true, date });
         } else {
-          // Date is after the start date but not logged, prompt to end
-           setEndPeriodPrompt({ open: true, date: clickedDate });
+          setEndPeriodPrompt({ open: true, date });
         }
-      } else { // No active cycle
-        if (isPeriodDay) {
-            // This case shouldn't happen if there's no active cycle, but as a safeguard
-            console.warn("Clicked a period day but no active cycle found.");
-            return;
-        }
-        
-        // Prompt to start a new cycle
-        setStartPeriodPrompt({ open: true, date: clickedDate });
       }
-    };
-    
-    // Using a timeout to allow the state update to settle before processing.
-    const timer = setTimeout(() => {
-        handleDateSelection();
-    }, 0);
-    
-    return () => clearTimeout(timer);
-
-  }, [selectedDate, activeCycle, isLoading, isLoadingCycles, periodDays]);
+    } else {
+      if (!periodDays.has(dayStr)) {
+        setStartPeriodPrompt({ open: true, date });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, activeCycle, cycles]);
 
   const handleStartPeriod = async () => {
     if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
     
     const clickedDate = startPeriodPrompt.date;
 
-    setIsLoading(true);
     try {
       if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
       const newCycle = {
@@ -204,7 +174,7 @@ export default function PeriodTrackerPage() {
           date: format(clickedDate, 'LLL dd, yyyy'),
         }),
       });
-      // Immediately open log dialog for the first day
+      setStartPeriodPrompt({ open: false });
       setLogFlowDialog({ open: true, date: clickedDate });
     } catch (error) {
       console.error('Error starting new period:', error);
@@ -213,8 +183,6 @@ export default function PeriodTrackerPage() {
         title: t('toast.logError.title'),
         description: t('toast.logError.description'),
       });
-    } finally {
-      setIsLoading(false);
       setStartPeriodPrompt({ open: false });
     }
   };
@@ -223,7 +191,6 @@ export default function PeriodTrackerPage() {
   const handleEndPeriod = async () => {
     if (!activeCycle || !endPeriodPrompt.date || !firestore || !user) return;
 
-    setIsLoading(true);
     try {
         const startDate = new Date(activeCycle.startDate.seconds * 1000);
         // The end date is the day BEFORE the one clicked to end the period.
@@ -264,19 +231,23 @@ export default function PeriodTrackerPage() {
             title: t('toast.logError.title'),
             description: t('toast.logError.description'),
         });
-    } finally {
-        setIsLoading(false);
     }
   };
 
 
-  const DayContent: DayPicker['components']['Day'] = ({ date }) => {
-    const dayStr = format(date, 'yyyy-MM-dd');
+  function Day(props: DayProps) {
+    const dayStr = format(props.date, 'yyyy-MM-dd');
     const dayInfo = periodDays.get(dayStr);
-    
+  
     return (
-      <div className="relative flex h-full w-full items-center justify-center">
-        <span>{format(date, 'd')}</span>
+      <div
+        className={cn(
+          'relative flex h-full w-full items-center justify-center',
+          'h-9 w-9 text-center text-sm p-0 relative',
+          '[&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20'
+        )}
+      >
+        <span>{format(props.date, 'd')}</span>
         {dayInfo && (
           <span className="absolute bottom-0 right-1 text-[10px] font-semibold text-primary/80">
             {dayInfo.label.split(' ')[1]}
@@ -284,7 +255,7 @@ export default function PeriodTrackerPage() {
         )}
       </div>
     );
-  };
+  }
 
 
   return (
@@ -309,9 +280,9 @@ export default function PeriodTrackerPage() {
               modifiersClassNames={{
                 period: 'bg-primary/20 text-primary-foreground rounded-none',
               }}
-              components={{ Day: DayContent }}
+              components={{ Day }}
               className="w-full"
-              disabled={isLoading || isLoadingCycles}
+              disabled={isLoadingCycles}
             />
           </CardContent>
         </Card>
@@ -329,8 +300,7 @@ export default function PeriodTrackerPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setStartPeriodPrompt({ open: false })}>{t('startPeriodPrompt.cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleStartPeriod} disabled={isLoading}>
-                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <AlertDialogAction onClick={handleStartPeriod}>
                       {t('startPeriodPrompt.confirm')}
                   </AlertDialogAction>
               </AlertDialogFooter>
@@ -347,8 +317,7 @@ export default function PeriodTrackerPage() {
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setEndPeriodPrompt({ open: false })}>{t('endPeriodPrompt.cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEndPeriod} disabled={isLoading}>
-                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  <AlertDialogAction onClick={handleEndPeriod}>
                       {t('endPeriodPrompt.confirm')}
                   </AlertDialogAction>
               </AlertDialogFooter>
@@ -380,9 +349,8 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             setFlow(log?.flow);
             setNotes(log?.notes || '');
         } else if (open) {
-            // This handles the case for the very first day of a new cycle
             const log = activeCycle?.dailyLogs?.[dayStr];
-            setFlow(log?.flow || 'light'); // Default to light on first day
+            setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
         }
     }, [activeCycle, date, open, dayStr]);
