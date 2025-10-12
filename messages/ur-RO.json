@@ -212,6 +212,12 @@
       "periodEnded": "Period khatam ho gaya. Kul muddat: {duration} din.",
       "periodUpdated": "Aapka {date} ka log update ho gaya hai."
     },
+    "startPeriodPrompt": {
+      "title": "Period Shuru Karein?",
+      "description": "Kya aap {date} ko apna period shuru karna chahti hain?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
     "endPeriodPrompt": {
       "title": "Period Khatam Karein?",
       "description": "Kya aap is din ko apne mojooda period ke ekhtamam ke tor par nishanzad karna chahti hain?",
@@ -243,3 +249,5 @@
     }
   }
 }
+
+  

@@ -212,6 +212,12 @@
       "periodEnded": "Period ended. Total duration: {duration} days.",
       "periodUpdated": "Your log for {date} has been updated."
     },
+    "startPeriodPrompt": {
+      "title": "Start Period?",
+      "description": "Would you like to start your period on {date}?",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
     "endPeriodPrompt": {
       "title": "End Period?",
       "description": "Do you want to mark this day as the end of your current period?",
@@ -243,3 +249,5 @@
     }
   }
 }
+
+  

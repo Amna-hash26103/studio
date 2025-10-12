@@ -83,10 +83,14 @@ export default function PeriodTrackerPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
+    undefined
   );
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
 
+  const [startPeriodPrompt, setStartPeriodPrompt] = useState<{
+    open: boolean;
+    date?: Date;
+  }>({ open: false });
   const [endPeriodPrompt, setEndPeriodPrompt] = useState<{
     open: boolean;
     date?: Date;
@@ -165,47 +169,54 @@ export default function PeriodTrackerPage() {
             return;
         }
         
-        // Start a new cycle
-        setIsLoading(true);
-        try {
-          if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
-          const newCycle = {
-            userId: user!.uid,
-            startDate: clickedDate,
-            dailyLogs: {
-              [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
-            },
-          };
-          await addDoc(cyclesCollectionRef, newCycle);
-          toast({
-            title: t('toast.periodStarted', {
-              date: format(clickedDate, 'LLL dd, yyyy'),
-            }),
-          });
-          // Immediately open log dialog for the first day
-          setLogFlowDialog({ open: true, date: clickedDate });
-        } catch (error) {
-          console.error('Error starting new period:', error);
-          toast({
-            variant: 'destructive',
-            title: t('toast.logError.title'),
-            description: t('toast.logError.description'),
-          });
-        } finally {
-          setIsLoading(false);
-        }
+        // Prompt to start a new cycle
+        setStartPeriodPrompt({ open: true, date: clickedDate });
       }
     };
     
-    // We wrap in a timeout to allow the state update from `onSelect` to render first
-    // before we trigger potentially blocking logic or dialogs.
     const timer = setTimeout(() => {
         handleDateSelection();
     }, 0);
     
     return () => clearTimeout(timer);
 
-  }, [selectedDate]); // This effect now triggers the logic
+  }, [selectedDate]);
+
+  const handleStartPeriod = async () => {
+    if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
+    
+    const clickedDate = startPeriodPrompt.date;
+
+    setIsLoading(true);
+    try {
+      if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
+      const newCycle = {
+        userId: user.uid,
+        startDate: clickedDate,
+        dailyLogs: {
+          [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
+        },
+      };
+      await addDoc(cyclesCollectionRef, newCycle);
+      toast({
+        title: t('toast.periodStarted', {
+          date: format(clickedDate, 'LLL dd, yyyy'),
+        }),
+      });
+      // Immediately open log dialog for the first day
+      setLogFlowDialog({ open: true, date: clickedDate });
+    } catch (error) {
+      console.error('Error starting new period:', error);
+      toast({
+        variant: 'destructive',
+        title: t('toast.logError.title'),
+        description: t('toast.logError.description'),
+      });
+    } finally {
+      setIsLoading(false);
+      setStartPeriodPrompt({ open: false });
+    }
+  };
 
 
   const handleEndPeriod = async () => {
@@ -306,6 +317,24 @@ export default function PeriodTrackerPage() {
         
         <BleedingHistory cycles={cycles?.filter(c => c.endDate) || []} />
       </div>
+
+      <AlertDialog open={startPeriodPrompt.open} onOpenChange={(open) => setStartPeriodPrompt({ ...startPeriodPrompt, open })}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>{t('startPeriodPrompt.title')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                      {t('startPeriodPrompt.description', { date: startPeriodPrompt.date ? format(startPeriodPrompt.date, 'MMMM dd, yyyy') : '' })}
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel onClick={() => setStartPeriodPrompt({ open: false })}>{t('startPeriodPrompt.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleStartPeriod} disabled={isLoading}>
+                      {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {t('startPeriodPrompt.confirm')}
+                  </AlertDialogAction>
+              </AlertDialogFooter>
+          </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={endPeriodPrompt.open} onOpenChange={(open) => setEndPeriodPrompt({ ...endPeriodPrompt, open })}>
           <AlertDialogContent>
@@ -499,6 +528,5 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-
 
     
