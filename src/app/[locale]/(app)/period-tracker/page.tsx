@@ -56,7 +56,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { DayPicker, DayClickEventHandler } from 'react-day-picker';
+import type { DayPicker, DayModifiers } from 'react-day-picker';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
 
@@ -113,6 +113,7 @@ export default function PeriodTrackerPage() {
     () => cycles?.find((c) => !c.endDate),
     [cycles]
   );
+  
   const periodDays = useMemo(() => {
     const days = new Map<string, { label: string; isPeriod: boolean }>();
     cycles?.forEach((cycle) => {
@@ -124,12 +125,13 @@ export default function PeriodTrackerPage() {
       let dayCount = 1;
       while (current <= end) {
         const dayStr = format(current, 'yyyy-MM-dd');
-        if (!cycle.endDate && isBefore(new Date(), current)) break;
-        if (isSameDay(current, new Date()) && !cycle.endDate) {
-          days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
-          break; // Stop if it's an active cycle and we've reached today
-        }
+        if (!cycle.endDate && isBefore(new Date(), current) && !isSameDay(new Date(), current)) break;
+        
         days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
+        
+        if (isSameDay(current, new Date()) && !cycle.endDate) {
+          break; 
+        }
         current.setDate(current.getDate() + 1);
         dayCount++;
       }
@@ -137,56 +139,75 @@ export default function PeriodTrackerPage() {
     return days;
   }, [cycles]);
 
-  const handleDayClick: DayClickEventHandler = async (day, modifiers) => {
-    setSelectedDate(day);
-    if (isLoading || modifiers.disabled) return;
+  useEffect(() => {
+    const handleDateSelection = async () => {
+      if (!selectedDate || isLoading || isLoadingCycles) return;
 
-    const clickedDate = startOfDay(day);
+      const clickedDate = startOfDay(selectedDate);
+      const dayStr = format(clickedDate, 'yyyy-MM-dd');
+      const isPeriodDay = periodDays.has(dayStr);
 
-    if (activeCycle) {
-      const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      // If clicked on a day within the active period or a future day
-      if (!isBefore(clickedDate, startDate)) {
-        const dayStr = format(clickedDate, 'yyyy-MM-dd');
-        // If it's an active day (already part of the period)
-        if (periodDays.has(dayStr) || isSameDay(clickedDate, startDate)) {
+      if (activeCycle) {
+        const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+        
+        if (isPeriodDay) {
+           setLogFlowDialog({ open: true, date: clickedDate });
+        } else if (isBefore(clickedDate, startDate)) {
+          // Date before active cycle, do nothing for now
+        } else {
+          // Date is after the start date but not logged, prompt to end
+           setEndPeriodPrompt({ open: true, date: clickedDate });
+        }
+      } else { // No active cycle
+        if (isPeriodDay) {
+            // This case shouldn't happen if there's no active cycle, but as a safeguard
+            console.warn("Clicked a period day but no active cycle found.");
+            return;
+        }
+        
+        // Start a new cycle
+        setIsLoading(true);
+        try {
+          if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
+          const newCycle = {
+            userId: user!.uid,
+            startDate: clickedDate,
+            dailyLogs: {
+              [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
+            },
+          };
+          await addDoc(cyclesCollectionRef, newCycle);
+          toast({
+            title: t('toast.periodStarted', {
+              date: format(clickedDate, 'LLL dd, yyyy'),
+            }),
+          });
+          // Immediately open log dialog for the first day
           setLogFlowDialog({ open: true, date: clickedDate });
-        } else { // If it's after the start date but not logged, prompt to end period
-          setEndPeriodPrompt({ open: true, date: clickedDate });
+        } catch (error) {
+          console.error('Error starting new period:', error);
+          toast({
+            variant: 'destructive',
+            title: t('toast.logError.title'),
+            description: t('toast.logError.description'),
+          });
+        } finally {
+          setIsLoading(false);
         }
       }
-    } else {
-      // No active cycle, start a new one
-      setIsLoading(true);
-      try {
-        if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
-        const newCycle = {
-          userId: user!.uid,
-          startDate: clickedDate,
-          dailyLogs: {
-            [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
-          },
-        };
-        await addDoc(cyclesCollectionRef, newCycle);
-        toast({
-          title: t('toast.periodStarted', {
-            date: format(clickedDate, 'LLL dd, yyyy'),
-          }),
-        });
-        setLogFlowDialog({ open: true, date: clickedDate });
-      } catch (error) {
-        console.error('Error starting new period:', error);
-        toast({
-          variant: 'destructive',
-          title: t('toast.logError.title'),
-          description: t('toast.logError.description'),
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-  
+    };
+    
+    // We wrap in a timeout to allow the state update from `onSelect` to render first
+    // before we trigger potentially blocking logic or dialogs.
+    const timer = setTimeout(() => {
+        handleDateSelection();
+    }, 0);
+    
+    return () => clearTimeout(timer);
+
+  }, [selectedDate]); // This effect now triggers the logic
+
+
   const handleEndPeriod = async () => {
     if (!activeCycle || !endPeriodPrompt.date || !firestore || !user) return;
 
@@ -265,8 +286,9 @@ export default function PeriodTrackerPage() {
         <Card>
           <CardContent className="p-2 md:p-6">
             <Calendar
+              mode="single"
               selected={selectedDate}
-              onDayClick={handleDayClick}
+              onSelect={setSelectedDate}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
               modifiers={{
@@ -327,9 +349,11 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             const log = activeCycle.dailyLogs?.[dayStr];
             setFlow(log?.flow);
             setNotes(log?.notes || '');
-        } else if (open && !activeCycle) {
-            setFlow(undefined);
-            setNotes('');
+        } else if (open) {
+            // This handles the case for the very first day of a new cycle
+            const log = activeCycle?.dailyLogs?.[dayStr];
+            setFlow(log?.flow || 'light'); // Default to light on first day
+            setNotes(log?.notes || '');
         }
     }, [activeCycle, date, open]);
 
