@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import {
   collection,
   addDoc,
@@ -499,5 +499,6 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
+
 
     
