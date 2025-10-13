@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import {
   collection,
@@ -117,16 +117,21 @@ export default function PeriodTrackerPage() {
     const days = new Set<string>();
     cycles?.forEach((cycle) => {
       const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
+      // Use today as the end date for the active cycle for UI purposes
       const end = cycle.endDate
         ? startOfDay(new Date(cycle.endDate.seconds * 1000))
-        : startOfDay(new Date()); // For active cycle, go up to today
+        : startOfDay(new Date());
 
       let current = new Date(start);
-      // Ensure the loop doesn't run infinitely if end date is far in future for some reason
-      let i = 0;
+      let i = 0; // Safety break
       while (i < 365 && (isBefore(current, end) || isSameDay(current, end))) {
-        const dayStr = format(current, 'yyyy-MM-dd');
-        days.add(dayStr);
+        // Only add days from active cycles or past cycles
+        if (!cycle.endDate || isSameDay(current, end) || isBefore(current, end)) {
+           const dayStr = format(current, 'yyyy-MM-dd');
+           if (cycle.dailyLogs && cycle.dailyLogs[dayStr]) {
+             days.add(dayStr);
+           }
+        }
         current.setDate(current.getDate() + 1);
         i++;
       }
@@ -139,19 +144,24 @@ export default function PeriodTrackerPage() {
 
     const date = startOfDay(selectedDate);
     const dayStr = format(date, 'yyyy-MM-dd');
-    
+
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      const isDayInActivePeriod = Array.from(periodDays).some(d => isSameDay(new Date(d), date)) && (isSameDay(date, startDate) || isBefore(startDate, date));
-
-      if (isDayInActivePeriod) {
+      
+      // If the selected date is part of the active cycle's logged days
+      if (activeCycle.dailyLogs && activeCycle.dailyLogs[dayStr]) {
         setLogFlowDialog({ open: true, date });
-      } else if (isBefore(date, startDate)) {
-        setStartPeriodPrompt({ open: true, date });
-      } else {
+      } 
+      // If selected date is after start, but not yet logged (potential end date)
+      else if (isBefore(startDate, date)) {
         setEndPeriodPrompt({ open: true, date });
+      } 
+      // If it's a date before the active cycle, it could be a new cycle start
+      else {
+        setStartPeriodPrompt({ open: true, date });
       }
     } else {
+      // No active cycle, so any selection is a potential start
       setStartPeriodPrompt({ open: true, date });
     }
   };
@@ -200,31 +210,36 @@ export default function PeriodTrackerPage() {
     setIsProcessing(true);
     try {
         const startDate = new Date(activeCycle.startDate.seconds * 1000);
-        // The end date is the day BEFORE the one clicked to end the period.
+        // The end date is the day clicked to end the period.
         const endDate = new Date(endPeriodPrompt.date);
-        endDate.setDate(endDate.getDate() - 1);
 
         const duration = differenceInDays(endDate, startDate) + 1;
 
         const flowPattern: string[] = [];
-        if (activeCycle.dailyLogs) {
-            let current = new Date(startDate);
-            while(current <= endDate) {
-                const dayStr = format(current, 'yyyy-MM-dd');
-                const log = activeCycle.dailyLogs[dayStr];
-                if (log) {
-                    const flow = log.flow.charAt(0).toUpperCase() + log.flow.slice(1);
-                    flowPattern.push(flow);
-                }
-                current.setDate(current.getDate() + 1);
+        const finalDailyLogs = { ...activeCycle.dailyLogs };
+
+        let current = new Date(startDate);
+        while(current <= endDate) {
+            const dayStr = format(current, 'yyyy-MM-dd');
+            const log = finalDailyLogs[dayStr];
+            if (log) {
+                const flow = log.flow.charAt(0).toUpperCase() + log.flow.slice(1);
+                flowPattern.push(flow);
             }
+            // Add a log for the day being marked as the end if it doesn't exist
+            if (isSameDay(current, endDate) && !log) {
+                 finalDailyLogs[dayStr] = { flow: 'light' };
+                 flowPattern.push('Light');
+            }
+            current.setDate(current.getDate() + 1);
         }
         
         const cycleDocRef = doc(firestore, 'users', user.uid, 'cycles', activeCycle.id);
         await updateDoc(cycleDocRef, {
             endDate: endDate,
             duration: duration,
-            flowPattern: flowPattern
+            flowPattern: flowPattern,
+            dailyLogs: finalDailyLogs
         });
 
         toast({
@@ -327,7 +342,6 @@ export default function PeriodTrackerPage() {
 
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const tToast = useTranslations('PeriodTrackerPage.toast');
     const { user, firestore } = useFirebase();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -358,12 +372,12 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             });
 
             toast({
-                description: tToast('periodUpdated', { date: format(date, 'LLL dd') }),
+                description: t('periodUpdated', { date: format(date, 'LLL dd') }),
             });
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('save'), description: tToast('logError.description') });
+             toast({ variant: 'destructive', title: t('save'), description: t('logError.description', { ns: 'PeriodTrackerPage' }) });
         } finally {
             setIsLoading(false);
         }
@@ -389,7 +403,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
                         <Label>{t('flowTitle')}</Label>
                         <RadioGroup value={flow} onValueChange={(v) => setFlow(v as FlowIntensity)} className="flex gap-2">
                            {flowOptions.map(option => (
-                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground", {"bg-primary text-primary-foreground": flow === option.value})}>
+                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"bg-primary text-primary-foreground border-primary": flow === option.value})}>
                                    <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
                                    {React.cloneElement(option.icon as React.ReactElement, { className: cn('h-5 w-5', flow === option.value ? 'text-primary-foreground' : 'text-red-500')})}
                                    <span className="mt-2 text-sm font-medium">{option.label}</span>
