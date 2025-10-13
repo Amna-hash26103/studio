@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -115,12 +114,14 @@ export default function PeriodTrackerPage() {
     const days = new Map<string, { label: string; isPeriod: boolean }>();
     cycles?.forEach((cycle) => {
       const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
+      // If there's no end date, the period is active until today.
       const end = cycle.endDate
         ? startOfDay(new Date(cycle.endDate.seconds * 1000))
         : startOfDay(new Date());
 
       let current = new Date(start);
       let dayCount = 1;
+      // Loop from start date to end date (inclusive)
       while (isBefore(current, end) || isSameDay(current, end)) {
         const dayStr = format(current, 'yyyy-MM-dd');
         days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
@@ -131,28 +132,39 @@ export default function PeriodTrackerPage() {
     return days;
   }, [cycles]);
 
+  // This useEffect hook correctly handles the side-effects after a date is selected.
   useEffect(() => {
     if (!selectedDate) return;
 
     const date = startOfDay(selectedDate);
     const dayStr = format(date, 'yyyy-MM-dd');
-
+    const isPeriodDay = periodDays.has(dayStr);
+    
     if (activeCycle) {
-      const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      if (isSameDay(date, startDate) || isBefore(startDate, date)) {
-        if (periodDays.has(dayStr)) {
-          setLogFlowDialog({ open: true, date });
-        } else {
-          setEndPeriodPrompt({ open: true, date });
+        const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+        // Check if the selected date is part of the active cycle
+        if (isSameDay(date, startDate) || isBefore(startDate, date)) {
+            if (isPeriodDay) {
+                // If it's already a period day, open the log/edit dialog
+                 setLogFlowDialog({ open: true, date });
+            } else {
+                // If it's a future date in an active cycle, ask to end it
+                setEndPeriodPrompt({ open: true, date });
+            }
         }
-      }
     } else {
-      if (!periodDays.has(dayStr)) {
-        setStartPeriodPrompt({ open: true, date });
-      }
+        // No active cycle
+        if (!isPeriodDay) {
+            // If it's not a period day, ask to start a new one.
+            setStartPeriodPrompt({ open: true, date });
+        } else {
+            // This case can happen if they click a day from a *past* cycle.
+            // We can optionally allow them to edit old logs here. For now, we'll do nothing.
+            console.log("Clicked a day in a past, completed cycle.");
+        }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, activeCycle, cycles]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, activeCycle]); // Dependency array ensures this runs only when selectedDate changes
 
   const handleStartPeriod = async () => {
     if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
@@ -175,6 +187,7 @@ export default function PeriodTrackerPage() {
         }),
       });
       setStartPeriodPrompt({ open: false });
+      // Open the flow dialog immediately after starting a period
       setLogFlowDialog({ open: true, date: clickedDate });
     } catch (error) {
       console.error('Error starting new period:', error);
@@ -235,25 +248,32 @@ export default function PeriodTrackerPage() {
   };
 
 
+  // Custom Day component to add labels and interactive styling
   function Day(props: DayProps) {
     const dayStr = format(props.date, 'yyyy-MM-dd');
     const dayInfo = periodDays.get(dayStr);
   
     return (
-      <div
-        className={cn(
-          'relative flex h-full w-full items-center justify-center',
-          'h-9 w-9 text-center text-sm p-0 relative',
-          '[&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20'
-        )}
-      >
-        <span>{format(props.date, 'd')}</span>
-        {dayInfo && (
-          <span className="absolute bottom-0 right-1 text-[10px] font-semibold text-primary/80">
-            {dayInfo.label.split(' ')[1]}
-          </span>
-        )}
-      </div>
+        <div
+            className={cn(
+                'relative h-full w-full p-0',
+                'flex items-center justify-center',
+                'h-9 w-9 text-center text-sm p-0 relative', // base size
+                'rounded-md transition-colors',
+                // Hover and focus styles for all selectable dates
+                !props.disabled && 'hover:bg-accent hover:text-accent-foreground cursor-pointer',
+                'focus-within:relative focus-within:z-20 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+                // Styles for the currently selected date
+                props.selected && 'bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary/90',
+            )}
+            >
+            <span>{format(props.date, 'd')}</span>
+            {dayInfo && (
+            <span className="absolute bottom-0 right-1 text-[10px] font-semibold text-primary/80">
+                {dayInfo.label.split(' ')[1]}
+            </span>
+            )}
+        </div>
     );
   }
 
@@ -271,14 +291,14 @@ export default function PeriodTrackerPage() {
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate}
+              onSelect={setSelectedDate} // Use the simple state setter here
               month={currentMonth}
               onMonthChange={setCurrentMonth}
               modifiers={{
                 period: Array.from(periodDays.keys()).map(d => new Date(d)),
               }}
               modifiersClassNames={{
-                period: 'bg-primary/20 text-primary-foreground rounded-none',
+                period: 'bg-primary/10 text-primary-foreground rounded-none',
               }}
               components={{ Day }}
               className="w-full"
@@ -337,23 +357,23 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     const [isLoading, setIsLoading] = useState(false);
 
     const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
-    const existingLog = activeCycle?.dailyLogs?.[dayStr];
-
-    const [flow, setFlow] = useState<FlowIntensity | undefined>(existingLog?.flow);
-    const [notes, setNotes] = useState(existingLog?.notes || '');
+    
+    const [flow, setFlow] = useState<FlowIntensity | undefined>();
+    const [notes, setNotes] = useState('');
     
     useEffect(() => {
         if(open && activeCycle && date) {
             const dayStr = format(date, 'yyyy-MM-dd');
             const log = activeCycle.dailyLogs?.[dayStr];
-            setFlow(log?.flow);
+            setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
         } else if (open) {
+            const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
             const log = activeCycle?.dailyLogs?.[dayStr];
             setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
         }
-    }, [activeCycle, date, open, dayStr]);
+    }, [activeCycle, date, open]);
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -368,12 +388,12 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             });
 
             toast({
-                description: t('toast.periodUpdated', { date: format(date, 'LLL dd') }),
+                description: t('PeriodTrackerPage.toast.periodUpdated', { date: format(date, 'LLL dd') }),
             });
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('toast.logError.title'), description: t('toast.logError.description') });
+             toast({ variant: 'destructive', title: t('PeriodTrackerPage.toast.logError.title'), description: t('PeriodTrackerPage.toast.logError.description') });
         } finally {
             setIsLoading(false);
         }
