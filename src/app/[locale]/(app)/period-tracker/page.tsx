@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -82,8 +82,9 @@ export default function PeriodTrackerPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const [startPeriodPrompt, setStartPeriodPrompt] = useState<{
     open: boolean;
@@ -155,6 +156,7 @@ export default function PeriodTrackerPage() {
     if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
     
     const clickedDate = startPeriodPrompt.date;
+    setIsProcessing(true);
 
     try {
       const newCycle = {
@@ -181,6 +183,8 @@ export default function PeriodTrackerPage() {
         description: t('toast.logError.description'),
       });
       setStartPeriodPrompt({ open: false });
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -188,6 +192,7 @@ export default function PeriodTrackerPage() {
   const handleEndPeriod = async () => {
     if (!activeCycle || !endPeriodPrompt.date || !firestore || !user) return;
 
+    setIsProcessing(true);
     try {
         const startDate = new Date(activeCycle.startDate.seconds * 1000);
         // The end date is the day BEFORE the one clicked to end the period.
@@ -228,6 +233,8 @@ export default function PeriodTrackerPage() {
             title: t('toast.logError.title'),
             description: t('toast.logError.description'),
         });
+    } finally {
+        setIsProcessing(false);
     }
   };
 
@@ -252,13 +259,16 @@ export default function PeriodTrackerPage() {
               modifiers={{
                 period: periodDaysModifier,
               }}
+              modifiersStyles={{
+                 period: { position: 'relative' },
+              }}
               modifiersClassNames={{
                 period: 'bg-primary/20 text-primary-foreground',
               }}
               className="w-full max-w-md"
-              disabled={isLoadingCycles}
+              disabled={isLoadingCycles || isProcessing}
               components={{
-                Day: ({ date, displayMonth, ...props }) => {
+                Day: ({ date, ...props }) => {
                   const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
                   
                   let flowIcon = null;
@@ -301,8 +311,9 @@ export default function PeriodTrackerPage() {
             />
           </CardContent>
           <CardFooter className="flex justify-center border-t p-4">
-              <Button onClick={handleLogDayClick} disabled={!selectedDate || isLoadingCycles}>
-                  {t('logButton')}
+              <Button onClick={handleLogDayClick} disabled={!selectedDate || isLoadingCycles || isProcessing}>
+                  {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  {isProcessing ? t('loggingButton') : t('logButton')}
               </Button>
           </CardFooter>
         </Card>
@@ -321,7 +332,7 @@ export default function PeriodTrackerPage() {
               <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setStartPeriodPrompt({ open: false })}>{t('startPeriodPrompt.cancel')}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleStartPeriod}>
-                      {t('startPeriodPrompt.confirm')}
+                      {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t('startPeriodPrompt.confirm')}
                   </AlertDialogAction>
               </AlertDialogFooter>
           </AlertDialogContent>
@@ -338,7 +349,7 @@ export default function PeriodTrackerPage() {
               <AlertDialogFooter>
                   <AlertDialogCancel onClick={() => setEndPeriodPrompt({ open: false })}>{t('endPeriodPrompt.cancel')}</AlertDialogCancel>
                   <AlertDialogAction onClick={handleEndPeriod}>
-                      {t('endPeriodPrompt.confirm')}
+                      {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t('endPeriodPrompt.confirm')}
                   </AlertDialogAction>
               </AlertDialogFooter>
           </AlertDialogContent>
@@ -352,8 +363,7 @@ export default function PeriodTrackerPage() {
 
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const { user } = useUser();
-    const firestore = useFirestore();
+    const { user, firestore } = useFirebase();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -362,14 +372,17 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     const [flow, setFlow] = useState<FlowIntensity | undefined>();
     const [notes, setNotes] = useState('');
     
-    useState(() => {
+    useEffect(() => {
         if(open && activeCycle && date) {
             const dayStr = format(date, 'yyyy-MM-dd');
             const log = activeCycle.dailyLogs?.[dayStr];
             setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
+        } else if (open) {
+            setFlow('light');
+            setNotes('');
         }
-    });
+    }, [open, activeCycle, date]);
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -384,7 +397,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             });
 
             toast({
-                description: t('toast.periodUpdated', { date: format(date, 'LLL dd') }),
+                description: t('periodUpdated', { date: format(date, 'LLL dd') }),
             });
             onOpenChange(false);
         } catch (error) {

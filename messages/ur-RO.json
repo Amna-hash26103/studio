@@ -235,7 +235,8 @@
       "heavy": "Bhaari",
       "cancel": "Cancel",
       "save": "Log Save Karein",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "periodUpdated": "Aapka {date} ka log update ho gaya hai."
     },
     "bleedingHistory": {
       "title": "Bleeding ki History",
@@ -249,4 +250,5 @@
     }
   }
 }
-  
+
+    

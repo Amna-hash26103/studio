@@ -235,7 +235,8 @@
       "heavy": "Heavy",
       "cancel": "Cancel",
       "save": "Save Log",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "periodUpdated": "Your log for {date} has been updated."
     },
     "bleedingHistory": {
       "title": "Bleeding History",
@@ -249,4 +250,5 @@
     }
   }
 }
-  
+
+    
