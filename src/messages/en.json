@@ -183,6 +183,45 @@
     "logPeriodTitle": "Log Your Period",
     "logButton": "Log Period",
     "loggingButton": "Logging...",
+    "dialogs": {
+        "start": {
+            "title": "Start Period?",
+            "description": "Would you like to start a new period on {date}?",
+            "confirm": "Yes, Start Period"
+        },
+        "end": {
+            "title": "End Period?",
+            "description": "Would you like to end your current period on {date}?",
+            "confirm": "Yes, End Period"
+        },
+        "cancel": "Cancel"
+    },
+    "logFlowDialog": {
+        "title": "Log for {date}",
+        "description": "Record your flow, symptoms, and any notes for this day.",
+        "flow": {
+            "label": "Flow Intensity",
+            "spotting": "Spotting",
+            "light": "Light",
+            "medium": "Medium",
+            "heavy": "Heavy"
+        },
+        "notes": {
+            "label": "Notes",
+            "placeholder": "Anything to remember for this day..."
+        },
+        "save": "Save Log",
+        "cancel": "Cancel",
+        "toast": {
+            "logSuccess": {
+                "title": "Log Saved"
+            },
+            "logError": {
+                "title": "Uh oh!",
+                "description": "Could not save your log. Please try again."
+            }
+        }
+    },
     "toast": {
       "logSuccess": {
         "title": "Period Logged",
@@ -191,6 +230,10 @@
       "logError": {
         "title": "Uh oh!",
         "description": "Could not save your cycle. Please try again."
+      },
+      "endDateError": {
+        "title": "Invalid Date",
+        "description": "End date cannot be before the start date."
       },
       "deleteSuccess": {
         "title": "Entry Deleted",
@@ -202,13 +245,13 @@
       }
     },
     "bleedingHistory": {
-      "title": "Bleeding History",
+      "title": "Cycle History",
       "noHistory": "No completed cycles yet. Log your first period to get started!",
       "cycle": "Cycle",
       "duration": "Duration",
       "flowPattern": "Flow Pattern",
       "notes": "Notes",
-      "noNotes": "No notes for this cycle.",
+      "noNotes": "No logs for this cycle.",
       "days": "days"
     }
   }
