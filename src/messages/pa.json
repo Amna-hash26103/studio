@@ -133,7 +133,7 @@
     "locationPlaceholder": "تسیں دنیا وچ کتھے او؟",
     "cancelButton": "منسوخ کرو",
     "saveButton": "تبدیلیاں محفوظ کرو",
-    "savingButton": "محفوظ हो رہیا اے۔۔۔",
+    "savingButton": "محفوظ ہو رہیا اے۔۔۔",
     "toast": {
       "avatarSuccess": {
         "title": "اوتار اپڈیٹ ہو گیا!"
@@ -183,7 +183,7 @@
     "logPeriodTitle": "اپنا پیریڈ لاگ کرو",
     "startDateLabel": "شروع دی تاریخ",
     "endDateLabel": "آخری تاریخ",
-    "logButton": "پیریڈ لاگ کرو",
+    "logButton": "ایہہ دن لاگ کرو",
     "loggingButton": "لاگنگ...",
     "cycleHistoryTitle": "سائیکل دی ہسٹری",
     "noCyclesLogged": "حالے کوئی سائیکل لاگ نہیں ہویا۔",
@@ -194,7 +194,7 @@
     "toast": {
       "logSuccess": {
         "title": "پیریڈ لاگ ہو گیا",
-        "description": "تہاڈا سائیکل کامیابی نال ریکارڈ हो گیا اے۔"
+        "description": "تہاڈا سائیکل کامیابی نال ریکارڈ ہو گیا اے۔"
       },
       "logError": {
         "title": "اوہ!",
@@ -247,3 +247,7 @@
       "noNotes": "ایس سائیکل لئی کوئی نوٹس نہیں۔",
       "days": "دن"
     }
+  }
+}
+
+    

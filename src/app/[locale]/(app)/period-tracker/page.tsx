@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, useFirebase } from '@/firebase';
 import {
   collection,
   addDoc,
@@ -57,6 +57,7 @@ import {
   Waves,
 } from 'lucide-react';
 import type { DayProps } from 'react-day-picker';
+import { cn } from '@/lib/utils';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
 
@@ -138,27 +139,27 @@ export default function PeriodTrackerPage() {
 
     const date = startOfDay(selectedDate);
     const dayStr = format(date, 'yyyy-MM-dd');
+    const isDayInAnyPeriod = periodDays.has(dayStr);
 
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      const isDayInActivePeriod = periodDays.has(dayStr);
-      
+      const isDayInActivePeriod = isDayInAnyPeriod;
+
       if (isBefore(date, startDate)) {
-        // Date is before the start of the active cycle. This is ambiguous.
-        // For simplicity, we'll assume they want to log a new, separate cycle.
-        // It could also be an error, but this is a reasonable starting point.
         setStartPeriodPrompt({ open: true, date });
       } else if (isDayInActivePeriod) {
-        // Day is within the currently active period, so log flow/notes.
         setLogFlowDialog({ open: true, date });
       } else {
-        // Day is after the start of the active period, but not part of it.
-        // This is the trigger to end the period.
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-      // No active cycle, so any click should prompt to start a new one.
-      setStartPeriodPrompt({ open: true, date });
+       if (isDayInAnyPeriod) {
+           // This day is part of a past, logged cycle. For simplicity, we can allow them to log a new cycle.
+           setStartPeriodPrompt({ open: true, date });
+       } else {
+           // No active cycle, and not part of a past cycle.
+           setStartPeriodPrompt({ open: true, date });
+       }
     }
   };
 
@@ -334,7 +335,7 @@ export default function PeriodTrackerPage() {
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
     const tToast = useTranslations('PeriodTrackerPage.toast');
-    const { user, firestore } = useUser();
+    const { user, firestore } = useFirebase();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [flow, setFlow] = useState<FlowIntensity | undefined>();
@@ -369,7 +370,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('save'), description: (error as Error).message });
+             toast({ variant: 'destructive', title: t('save'), description: tToast('logError.description') });
         } finally {
             setIsLoading(false);
         }
@@ -493,3 +494,5 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
+
+    
