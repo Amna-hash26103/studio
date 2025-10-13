@@ -181,16 +181,8 @@
     "title": "د سایکل تعقیبونکی",
     "description": "د خپل بدن ښه پوهیدو لپاره خپله میاشتنۍ دوره تعقیب کړئ.",
     "logPeriodTitle": "خپله دوره ثبت کړئ",
-    "startDateLabel": "د پیل نیټه",
-    "endDateLabel": "د پای نیټه",
-    "logButton": "دا ورځ ثبت کړئ",
+    "logButton": "دوره ثبت کړئ",
     "loggingButton": "ثبت کول...",
-    "cycleHistoryTitle": "د سایکل تاریخ",
-    "noCyclesLogged": "تر اوسه کوم سایکل ندی ثبت شوی.",
-    "historyHeaderStartDate": "د پیل نیټه",
-    "historyHeaderEndDate": "د پای نیټه",
-    "historyHeaderDuration": "موده",
-    "days": "ورځې",
     "toast": {
       "logSuccess": {
         "title": "دوره ثبت شوه",
@@ -207,36 +199,7 @@
       "deleteError": {
         "title": "ړنګول ناکام شول",
         "description": "د سایکل ننوتل ړنګ نشو. مهرباني وکړئ بیا هڅه وکړئ."
-      },
-      "periodStarted": "نوې دوره په {date} پیل شوه.",
-      "periodEnded": "دوره پای ته ورسیده. ټوله موده: {duration} ورځې.",
-      "periodUpdated": "ستاسو د {date} لپاره لاګ نوی شو."
-    },
-    "startPeriodPrompt": {
-      "title": "دوره پیل کړو؟",
-      "description": "ایا تاسو غواړئ په {date} خپله دوره پیل کړئ؟",
-      "cancel": "لغوه کول",
-      "confirm": "تصدیق"
-    },
-    "endPeriodPrompt": {
-      "title": "دوره پای ته ورسوو؟",
-      "description": "ایا تاسو غواړئ دا ورځ د خپلې اوسنۍ دورې د پای په توګه په نښه کړئ؟",
-      "cancel": "لغوه کول",
-      "confirm": "تصدیق او پای"
-    },
-    "logFlowDialog": {
-      "title": "د {date} لپاره جریان او یادښتونه ثبت کړئ",
-      "flowTitle": "د جریان شدت",
-      "notesTitle": "یادښتونه",
-      "notesPlaceholder": "د مثال په توګه، 'کرامپونه د معمول څخه ډیر بد وو'",
-      "spotting": "داغونه",
-      "light": "سپک",
-      "medium": "متوسط",
-      "heavy": "دروند",
-      "cancel": "لغوه کول",
-      "save": "لاګ خوندي کړئ",
-      "saving": "خوندي کول...",
-      "periodUpdated": "ستاسو د {date} لپاره لاګ نوی شو."
+      }
     },
     "bleedingHistory": {
       "title": "د وینې بهیدنې تاریخ",
@@ -250,5 +213,3 @@
     }
   }
 }
-
-    

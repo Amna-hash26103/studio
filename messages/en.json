@@ -181,16 +181,8 @@
     "title": "Cycle Tracker",
     "description": "Track your menstrual cycle to understand your body better.",
     "logPeriodTitle": "Log Your Period",
-    "startDateLabel": "Start Date",
-    "endDateLabel": "End Date",
-    "logButton": "Log This Day",
+    "logButton": "Log Period",
     "loggingButton": "Logging...",
-    "cycleHistoryTitle": "Cycle History",
-    "noCyclesLogged": "No cycles logged yet.",
-    "historyHeaderStartDate": "Start Date",
-    "historyHeaderEndDate": "End Date",
-    "historyHeaderDuration": "Duration",
-    "days": "days",
     "toast": {
       "logSuccess": {
         "title": "Period Logged",
@@ -207,36 +199,7 @@
       "deleteError": {
         "title": "Delete Failed",
         "description": "Could not delete the cycle entry. Please try again."
-      },
-      "periodStarted": "New period started on {date}.",
-      "periodEnded": "Period ended. Total duration: {duration} days.",
-      "periodUpdated": "Your log for {date} has been updated."
-    },
-    "startPeriodPrompt": {
-      "title": "Start Period?",
-      "description": "Would you like to start your period on {date}?",
-      "cancel": "Cancel",
-      "confirm": "Confirm"
-    },
-    "endPeriodPrompt": {
-      "title": "End Period?",
-      "description": "Do you want to mark this day as the end of your current period?",
-      "cancel": "Cancel",
-      "confirm": "Confirm & End"
-    },
-    "logFlowDialog": {
-      "title": "Log Flow & Notes for {date}",
-      "flowTitle": "Flow Intensity",
-      "notesTitle": "Notes",
-      "notesPlaceholder": "e.g., 'Cramps worse than usual'",
-      "spotting": "Spotting",
-      "light": "Light",
-      "medium": "Medium",
-      "heavy": "Heavy",
-      "cancel": "Cancel",
-      "save": "Save Log",
-      "saving": "Saving...",
-      "periodUpdated": "Your log for {date} has been updated."
+      }
     },
     "bleedingHistory": {
       "title": "Bleeding History",
@@ -250,5 +213,3 @@
     }
   }
 }
-
-    

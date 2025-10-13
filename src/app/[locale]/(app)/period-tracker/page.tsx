@@ -10,6 +10,9 @@ import {
   query,
   orderBy,
   doc,
+  writeBatch,
+  where,
+  getDocs,
 } from 'firebase/firestore';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -20,45 +23,16 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
 import {
   format,
   differenceInDays,
   isSameDay,
-  isBefore,
   startOfDay,
-  isAfter,
 } from 'date-fns';
-import {
-  Loader2,
-  CircleDot,
-  Droplet,
-  Droplets,
-  Waves,
-} from 'lucide-react';
-import type { DayProps } from 'react-day-picker';
-import { cn } from '@/lib/utils';
+import { Loader2, CircleDot, Droplet, Droplets, Waves } from 'lucide-react';
+import type { DateRange } from 'react-day-picker';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
 
@@ -83,22 +57,9 @@ export default function PeriodTrackerPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  const [startPeriodPrompt, setStartPeriodPrompt] = useState<{
-    open: boolean;
-    date?: Date;
-  }>({ open: false });
-  const [endPeriodPrompt, setEndPeriodPrompt] = useState<{
-    open: boolean;
-    date?: Date;
-  }>({ open: false });
-  const [logFlowDialog, setLogFlowDialog] = useState<{
-    open: boolean;
-    date?: Date;
-  }>({ open: false });
   
   const cyclesCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
@@ -112,132 +73,67 @@ export default function PeriodTrackerPage() {
 
   const { data: cycles, isLoading: isLoadingCycles } = useCollection<CycleEntry>(cyclesQuery);
 
-  const activeCycle = useMemo(() => cycles?.find((c) => !c.endDate), [cycles]);
-  
   const periodDays = useMemo(() => {
     const days = new Set<string>();
     cycles?.forEach((cycle) => {
-      if (cycle.dailyLogs) {
-        Object.keys(cycle.dailyLogs).forEach(dayStr => {
-          days.add(dayStr);
-        });
+      if (cycle.startDate) {
+        const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
+        const end = cycle.endDate ? startOfDay(new Date(cycle.endDate.seconds * 1000)) : start;
+        let current = start;
+        while (current <= end) {
+          days.add(format(current, 'yyyy-MM-dd'));
+          current.setDate(current.getDate() + 1);
+        }
       }
     });
     return days;
   }, [cycles]);
 
-  const handleLogDayClick = () => {
-    if (!selectedDate) return;
-
-    const date = startOfDay(selectedDate);
-    const dayStr = format(date, 'yyyy-MM-dd');
-
-    if (activeCycle) {
-      const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      const isDayInActiveCycle = isSameDay(date, startDate) || isAfter(date, startDate);
-      const isDayLogged = activeCycle.dailyLogs && activeCycle.dailyLogs[dayStr];
-
-      if (isDayInActiveCycle) {
-        if (isDayLogged) {
-          // Day is already logged in the active cycle, so allow editing.
-          setLogFlowDialog({ open: true, date });
-        } else {
-          // Day is after the start, but not logged. Propose ending the period.
-          setEndPeriodPrompt({ open: true, date });
-        }
-      } else {
-        // Selected date is before the current active cycle's start date.
-        // Assume the user wants to start a new cycle.
-        setStartPeriodPrompt({ open: true, date });
-      }
-    } else {
-      // No active cycle, so any selection is a potential new start.
-      setStartPeriodPrompt({ open: true, date });
-    }
-  };
-
-
-  const handleStartPeriod = async () => {
-    if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
-    
-    const clickedDate = startPeriodPrompt.date;
+  const handleLogPeriod = async () => {
+    if (!dateRange?.from || !user || !firestore || !cyclesCollectionRef) return;
     setIsProcessing(true);
 
+    const startDate = startOfDay(dateRange.from);
+    const endDate = startOfDay(dateRange.to || dateRange.from);
+
     try {
-      const newCycle = {
-        userId: user.uid,
-        startDate: clickedDate,
-        dailyLogs: {
-          [format(clickedDate, 'yyyy-MM-dd')]: { flow: 'light' }
-        },
-      };
-      await addDoc(cyclesCollectionRef, newCycle);
-      toast({
-        title: t('toast.periodStarted', {
-          date: format(clickedDate, 'LLL dd, yyyy'),
-        }),
-      });
-      setStartPeriodPrompt({ open: false });
-      // Open the flow dialog immediately after starting a period
-      setLogFlowDialog({ open: true, date: clickedDate });
-    } catch (error) {
-      console.error('Error starting new period:', error);
-      toast({
-        variant: 'destructive',
-        title: t('toast.logError.title'),
-        description: t('toast.logError.description'),
-      });
-      setStartPeriodPrompt({ open: false });
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+        const batch = writeBatch(firestore);
 
+        // Find and delete any existing cycles that overlap with the new range
+        const overlappingQuery = query(
+            cyclesCollectionRef,
+            where('startDate', '<=', endDate),
+        );
+        const overlappingSnap = await getDocs(overlappingQuery);
+        overlappingSnap.forEach(docSnap => {
+            const cycle = docSnap.data() as CycleEntry;
+            const cycleStart = startOfDay(new Date(cycle.startDate.seconds * 1000));
+            const cycleEnd = cycle.endDate ? startOfDay(new Date(cycle.endDate.seconds * 1000)) : cycleStart;
+            if (startDate <= cycleEnd && endDate >= cycleStart) {
+                batch.delete(docSnap.ref);
+            }
+        });
 
-  const handleEndPeriod = async () => {
-    if (!activeCycle || !endPeriodPrompt.date || !firestore || !user) return;
-
-    setIsProcessing(true);
-    try {
-        const startDate = new Date(activeCycle.startDate.seconds * 1000);
-        // The end date is the day clicked to end the period.
-        const endDate = new Date(endPeriodPrompt.date);
-
+        // Create the new cycle
         const duration = differenceInDays(endDate, startDate) + 1;
-
-        const flowPattern: string[] = [];
-        const finalDailyLogs = { ...activeCycle.dailyLogs };
-
-        let current = new Date(startDate);
-        while(current <= endDate) {
-            const dayStr = format(current, 'yyyy-MM-dd');
-            const log = finalDailyLogs[dayStr];
-            if (log) {
-                const flow = log.flow.charAt(0).toUpperCase() + log.flow.slice(1);
-                flowPattern.push(flow);
-            }
-            // Add a log for the day being marked as the end if it doesn't exist
-            if (isSameDay(current, endDate) && !log) {
-                 finalDailyLogs[dayStr] = { flow: 'light' };
-                 flowPattern.push('Light');
-            }
-            current.setDate(current.getDate() + 1);
-        }
-        
-        const cycleDocRef = doc(firestore, 'users', user.uid, 'cycles', activeCycle.id);
-        await updateDoc(cycleDocRef, {
+        const newCycleData = {
+            userId: user.uid,
+            startDate: startDate,
             endDate: endDate,
             duration: duration,
-            flowPattern: flowPattern,
-            dailyLogs: finalDailyLogs
-        });
+        };
+        const newCycleRef = doc(cyclesCollectionRef);
+        batch.set(newCycleRef, newCycleData);
+        
+        await batch.commit();
 
         toast({
-            title: t('toast.periodEnded', { duration: duration }),
+            title: t('toast.logSuccess.title'),
+            description: t('toast.logSuccess.description'),
         });
-        setEndPeriodPrompt({ open: false });
+        setDateRange(undefined); // Reset selection
     } catch (error) {
-        console.error('Error ending period:', error);
+        console.error('Error logging period:', error);
         toast({
             variant: 'destructive',
             title: t('toast.logError.title'),
@@ -263,11 +159,14 @@ export default function PeriodTrackerPage() {
         </div>
 
         <Card>
+          <CardHeader>
+            <CardTitle>{t('logPeriodTitle')}</CardTitle>
+          </CardHeader>
           <CardContent className="p-2 md:p-6 flex justify-center">
             <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
+              mode="range"
+              selected={dateRange}
+              onSelect={setDateRange}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
               modifiers={modifiers}
@@ -279,7 +178,7 @@ export default function PeriodTrackerPage() {
             />
           </CardContent>
           <CardFooter className="flex justify-center border-t p-4">
-              <Button onClick={handleLogDayClick} disabled={!selectedDate || isLoadingCycles || isProcessing}>
+              <Button onClick={handleLogPeriod} disabled={!dateRange?.from || isLoadingCycles || isProcessing}>
                   {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {isProcessing ? t('loggingButton') : t('logButton')}
               </Button>
@@ -288,138 +187,10 @@ export default function PeriodTrackerPage() {
         
         <BleedingHistory cycles={cycles?.filter(c => c.endDate) || []} />
       </div>
-
-      <AlertDialog open={startPeriodPrompt.open} onOpenChange={(open) => setStartPeriodPrompt({ ...startPeriodPrompt, open })}>
-          <AlertDialogContent>
-              <AlertDialogHeader>
-                  <AlertDialogTitle>{t('startPeriodPrompt.title')}</AlertDialogTitle>
-                  <AlertDialogDescription>
-                      {t('startPeriodPrompt.description', { date: startPeriodPrompt.date ? format(startPeriodPrompt.date, 'MMMM dd, yyyy') : '' })}
-                  </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setStartPeriodPrompt({ open: false })}>{t('startPeriodPrompt.cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleStartPeriod}>
-                      {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t('startPeriodPrompt.confirm')}
-                  </AlertDialogAction>
-              </AlertDialogFooter>
-          </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={endPeriodPrompt.open} onOpenChange={(open) => setEndPeriodPrompt({ ...endPeriodPrompt, open })}>
-          <AlertDialogContent>
-              <AlertDialogHeader>
-                  <AlertDialogTitle>{t('endPeriodPrompt.title')}</AlertDialogTitle>
-
-                  <AlertDialogDescription>
-                      {t('endPeriodPrompt.description')}
-                  </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setEndPeriodPrompt({ open: false })}>{t('endPeriodPrompt.cancel')}</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEndPeriod}>
-                      {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : t('endPeriodPrompt.confirm')}
-                  </AlertDialogAction>
-              </AlertDialogFooter>
-          </AlertDialogContent>
-      </AlertDialog>
-
-      {logFlowDialog.date && <LogFlowDialog {...logFlowDialog} onOpenChange={(open) => setLogFlowDialog({ ...logFlowDialog, open })} activeCycle={activeCycle} />}
     </>
   );
 }
 
-
-function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
-    const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const { user, firestore } = useFirebase();
-    const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState(false);
-    const [flow, setFlow] = useState<FlowIntensity | undefined>();
-    const [notes, setNotes] = useState('');
-    
-    const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
-
-    // Effect to set initial state when dialog opens
-    useEffect(() => {
-        if(open && date) {
-            const log = activeCycle?.dailyLogs?.[dayStr];
-            setFlow(log?.flow || 'light');
-            setNotes(log?.notes || '');
-        }
-    }, [open, date, activeCycle, dayStr]);
-
-    const handleSave = async () => {
-        if (!user || !firestore || !activeCycle || !date || !flow) return;
-
-        setIsLoading(true);
-        try {
-            const cycleDocRef = doc(firestore, 'users', user.uid, 'cycles', activeCycle.id);
-            const newLog: DailyLog = { flow, notes };
-
-            // When a day is logged, it should become part of the period
-            const newDailyLogs = { ...(activeCycle.dailyLogs || {}), [dayStr]: newLog };
-
-            await updateDoc(cycleDocRef, {
-                dailyLogs: newDailyLogs
-            });
-
-            toast({
-                description: t('periodUpdated', { date: format(date, 'LLL dd') }),
-            });
-            onOpenChange(false);
-        } catch (error) {
-            console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('save'), description: t('logError.description', { ns: 'PeriodTrackerPage' }) });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    
-    const flowOptions: {value: FlowIntensity, label: string, icon: React.ReactNode}[] = [
-        { value: 'spotting', label: t('spotting'), icon: <CircleDot className="h-5 w-5" /> },
-        { value: 'light', label: t('light'), icon: <Droplet className="h-5 w-5" /> },
-        { value: 'medium', label: t('medium'), icon: <Droplets className="h-5 w-5" /> },
-        { value: 'heavy', label: t('heavy'), icon: <Waves className="h-5 w-5" /> },
-    ];
-
-    if (!date) return null;
-
-    return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{t('title', { date: format(date, 'MMMM dd, yyyy') })}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6 py-4">
-                    <div className="space-y-2">
-                        <Label>{t('flowTitle')}</Label>
-                        <RadioGroup value={flow} onValueChange={(v) => setFlow(v as FlowIntensity)} className="flex gap-2">
-                           {flowOptions.map(option => (
-                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"border-primary bg-primary text-primary-foreground": flow === option.value})}>
-                                   <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
-                                   {React.cloneElement(option.icon as React.ReactElement, { className: cn('h-5 w-5', flow === option.value ? 'text-primary-foreground' : 'text-red-500')})}
-                                   <span className="mt-2 text-sm font-medium">{option.label}</span>
-                               </Label>
-                           ))}
-                        </RadioGroup>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="notes">{t('notesTitle')}</Label>
-                        <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t('notesPlaceholder')} />
-                    </div>
-                </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>{t('cancel')}</Button>
-                    <Button onClick={handleSave} disabled={isLoading || !flow}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {isLoading ? t('saving') : t('save')}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    )
-}
 
 function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
     const t = useTranslations('PeriodTrackerPage.bleedingHistory');
@@ -468,18 +239,20 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
                                     <span className="text-sm font-medium">{t('duration')}:</span>
                                     <span className="text-sm">{cycle.duration || 0} {t('days')}</span>
                                 </div>
-                                <div className="space-y-1">
-                                    <span className="text-sm font-medium">{t('flowPattern')}:</span>
-                                    <div className="flex gap-2 flex-wrap">
-                                        {cycle.flowPattern && cycle.flowPattern.length > 0 ? (
-                                            cycle.flowPattern.map((flow, i) => (
-                                                <div key={i} className="flex items-center gap-1 p-1 rounded-md" title={flow}>
-                                                    {flowIcons[flow]}
-                                                </div>
-                                            ))
-                                        ) : <span className="text-sm text-muted-foreground">-</span>}
+                                {cycle.flowPattern && cycle.flowPattern.length > 0 && (
+                                    <div className="space-y-1">
+                                        <span className="text-sm font-medium">{t('flowPattern')}:</span>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {
+                                                cycle.flowPattern.map((flow, i) => (
+                                                    <div key={i} className="flex items-center gap-1 p-1 rounded-md" title={flow}>
+                                                        {flowIcons[flow]}
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 {allNotes && (
                                     <div className="space-y-1">
                                         <span className="text-sm font-medium">{t('notes')}:</span>
