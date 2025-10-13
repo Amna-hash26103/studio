@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -55,7 +56,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { DayPicker, DayProps } from 'react-day-picker';
+import type { DayProps } from 'react-day-picker';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
 
@@ -111,60 +112,54 @@ export default function PeriodTrackerPage() {
   const activeCycle = useMemo(() => cycles?.find((c) => !c.endDate), [cycles]);
   
   const periodDays = useMemo(() => {
-    const days = new Map<string, { label: string; isPeriod: boolean }>();
+    const days = new Set<string>();
     cycles?.forEach((cycle) => {
       const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
-      // If there's no end date, the period is active until today.
       const end = cycle.endDate
         ? startOfDay(new Date(cycle.endDate.seconds * 1000))
         : startOfDay(new Date());
 
       let current = new Date(start);
-      let dayCount = 1;
-      // Loop from start date to end date (inclusive)
       while (isBefore(current, end) || isSameDay(current, end)) {
-        const dayStr = format(current, 'yyyy-MM-dd');
-        days.set(dayStr, { label: `Day ${dayCount}`, isPeriod: true });
+        days.add(format(current, 'yyyy-MM-dd'));
         current.setDate(current.getDate() + 1);
-        dayCount++;
       }
     });
     return days;
   }, [cycles]);
 
-  // This useEffect hook correctly handles the side-effects after a date is selected.
   useEffect(() => {
     if (!selectedDate) return;
 
     const date = startOfDay(selectedDate);
     const dayStr = format(date, 'yyyy-MM-dd');
-    const isPeriodDay = periodDays.has(dayStr);
+    const isPeriod = periodDays.has(dayStr);
     
     if (activeCycle) {
-        const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-        // Check if the selected date is part of the active cycle
-        if (isSameDay(date, startDate) || isBefore(startDate, date)) {
-            if (isPeriodDay) {
-                // If it's already a period day, open the log/edit dialog
-                 setLogFlowDialog({ open: true, date });
-            } else {
-                // If it's a future date in an active cycle, ask to end it
-                setEndPeriodPrompt({ open: true, date });
-            }
-        }
+      const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+      // Date is within the ongoing cycle
+      if (isBefore(date, startDate)) {
+          // Date is before active cycle, do nothing for now
+      } else if (isPeriod) {
+        // Log or edit existing day in active cycle
+        setLogFlowDialog({ open: true, date });
+      } else {
+        // A future date in an active cycle was clicked, ask to end it.
+        // The end date is considered the day *before* the clicked date.
+        setEndPeriodPrompt({ open: true, date });
+      }
     } else {
-        // No active cycle
-        if (!isPeriodDay) {
-            // If it's not a period day, ask to start a new one.
-            setStartPeriodPrompt({ open: true, date });
-        } else {
-            // This case can happen if they click a day from a *past* cycle.
-            // We can optionally allow them to edit old logs here. For now, we'll do nothing.
-            console.log("Clicked a day in a past, completed cycle.");
-        }
+      // No active cycle
+      if (isPeriod) {
+        // A day in a past cycle was clicked. For now, do nothing.
+        // Could open a read-only view or edit view in the future.
+      } else {
+        // Not a period day, so prompt to start a new one.
+        setStartPeriodPrompt({ open: true, date });
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate, activeCycle]); // Dependency array ensures this runs only when selectedDate changes
+  }, [selectedDate]);
 
   const handleStartPeriod = async () => {
     if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
@@ -247,36 +242,7 @@ export default function PeriodTrackerPage() {
     }
   };
 
-
-  // Custom Day component to add labels and interactive styling
-  function Day(props: DayProps) {
-    const dayStr = format(props.date, 'yyyy-MM-dd');
-    const dayInfo = periodDays.get(dayStr);
-  
-    return (
-        <div
-            className={cn(
-                'relative h-full w-full p-0',
-                'flex items-center justify-center',
-                'h-9 w-9 text-center text-sm p-0 relative', // base size
-                'rounded-md transition-colors',
-                // Hover and focus styles for all selectable dates
-                !props.disabled && 'hover:bg-accent hover:text-accent-foreground cursor-pointer',
-                'focus-within:relative focus-within:z-20 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
-                // Styles for the currently selected date
-                props.selected && 'bg-primary text-primary-foreground hover:bg-primary/90 focus:bg-primary/90',
-            )}
-            >
-            <span>{format(props.date, 'd')}</span>
-            {dayInfo && (
-            <span className="absolute bottom-0 right-1 text-[10px] font-semibold text-primary/80">
-                {dayInfo.label.split(' ')[1]}
-            </span>
-            )}
-        </div>
-    );
-  }
-
+  const periodDaysModifier = Array.from(periodDays).map(dayStr => new Date(dayStr));
 
   return (
     <>
@@ -291,16 +257,15 @@ export default function PeriodTrackerPage() {
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate} // Use the simple state setter here
+              onSelect={setSelectedDate}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
               modifiers={{
-                period: Array.from(periodDays.keys()).map(d => new Date(d)),
+                period: periodDaysModifier,
               }}
               modifiersClassNames={{
-                period: 'bg-primary/10 text-primary-foreground rounded-none',
+                period: 'bg-primary/10 text-primary-foreground',
               }}
-              components={{ Day }}
               className="w-full"
               disabled={isLoadingCycles}
             />
