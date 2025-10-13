@@ -118,12 +118,16 @@ export default function PeriodTrackerPage() {
       const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
       const end = cycle.endDate
         ? startOfDay(new Date(cycle.endDate.seconds * 1000))
-        : startOfDay(new Date());
+        : startOfDay(new Date()); // For active cycle, go up to today
 
       let current = new Date(start);
-      while (isBefore(current, end) || isSameDay(current, end)) {
-        days.add(format(current, 'yyyy-MM-dd'));
+      // Ensure the loop doesn't run infinitely if end date is far in future for some reason
+      let i = 0;
+      while (i < 365 && (isBefore(current, end) || isSameDay(current, end))) {
+        const dayStr = format(current, 'yyyy-MM-dd');
+        days.add(dayStr);
         current.setDate(current.getDate() + 1);
+        i++;
       }
     });
     return days;
@@ -133,20 +137,29 @@ export default function PeriodTrackerPage() {
     if (!selectedDate) return;
 
     const date = startOfDay(selectedDate);
-    const dayStr = format(date, 'yyyy-MM-dd');
-    const isPeriod = periodDays.has(dayStr);
     
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+      const dayStr = format(date, 'yyyy-MM-dd');
+      const isDayInActivePeriod = periodDays.has(dayStr) && !activeCycle.endDate;
+
       if (isBefore(date, startDate)) {
-          // Date is before active cycle, do nothing for now
-      } else if (isPeriod) {
+          // Date is before active cycle, so treat as starting a new one.
+          // This could happen if user wants to log a past cycle while another is active.
+          // For now, we simplify and prompt to start a new one, which might implicitly end the other.
+          // Or, just do nothing. For simplicity, let's just allow starting a new one.
+          setStartPeriodPrompt({ open: true, date });
+      } else if (isDayInActivePeriod) {
+        // It's a day within the currently active period
         setLogFlowDialog({ open: true, date });
       } else {
+        // It's a day after the start of the active period, but not logged as part of it.
+        // This is the trigger to end the period.
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-        setStartPeriodPrompt({ open: true, date });
+      // No active cycle, so any click should prompt to start one.
+      setStartPeriodPrompt({ open: true, date });
     }
   };
 
@@ -236,18 +249,11 @@ export default function PeriodTrackerPage() {
         setIsProcessing(false);
     }
   };
-
-  const periodDaysModifier = Array.from(periodDays).map(dayStr => new Date(dayStr));
+  
+  const periodDaysModifier = Array.from(periodDays).map(dayStr => new Date(`${dayStr}T00:00:00`));
 
   const modifiers = {
     period: periodDaysModifier,
-  };
-
-  const modifiersStyles = {
-    period: {
-      backgroundColor: 'var(--accent)',
-      color: 'var(--accent-foreground)',
-    },
   };
 
   return (
@@ -335,16 +341,14 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     
     const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
 
-    useState(() => {
-        if(open && activeCycle && date) {
-            const log = activeCycle.dailyLogs?.[dayStr];
+    // Effect to set initial state when dialog opens
+    useEffect(() => {
+        if(open && date) {
+            const log = activeCycle?.dailyLogs?.[dayStr];
             setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
-        } else if (open) {
-            setFlow('light');
-            setNotes('');
         }
-    });
+    }, [open, date, activeCycle, dayStr]);
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -364,7 +368,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('periodUpdated', { date: format(date, 'LLL dd') }), description: t('periodUpdated', { date: format(date, 'LLL dd') }) });
+             toast({ variant: 'destructive', title: t('save'), description: (error as Error).message });
         } finally {
             setIsLoading(false);
         }
