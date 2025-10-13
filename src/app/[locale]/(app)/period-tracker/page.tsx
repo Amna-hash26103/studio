@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -137,28 +137,27 @@ export default function PeriodTrackerPage() {
     if (!selectedDate) return;
 
     const date = startOfDay(selectedDate);
-    
+    const dayStr = format(date, 'yyyy-MM-dd');
+
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      const dayStr = format(date, 'yyyy-MM-dd');
-      const isDayInActivePeriod = periodDays.has(dayStr) && !activeCycle.endDate;
-
+      const isDayInActivePeriod = periodDays.has(dayStr);
+      
       if (isBefore(date, startDate)) {
-          // Date is before active cycle, so treat as starting a new one.
-          // This could happen if user wants to log a past cycle while another is active.
-          // For now, we simplify and prompt to start a new one, which might implicitly end the other.
-          // Or, just do nothing. For simplicity, let's just allow starting a new one.
-          setStartPeriodPrompt({ open: true, date });
+        // Date is before the start of the active cycle. This is ambiguous.
+        // For simplicity, we'll assume they want to log a new, separate cycle.
+        // It could also be an error, but this is a reasonable starting point.
+        setStartPeriodPrompt({ open: true, date });
       } else if (isDayInActivePeriod) {
-        // It's a day within the currently active period
+        // Day is within the currently active period, so log flow/notes.
         setLogFlowDialog({ open: true, date });
       } else {
-        // It's a day after the start of the active period, but not logged as part of it.
+        // Day is after the start of the active period, but not part of it.
         // This is the trigger to end the period.
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-      // No active cycle, so any click should prompt to start one.
+      // No active cycle, so any click should prompt to start a new one.
       setStartPeriodPrompt({ open: true, date });
     }
   };
@@ -312,6 +311,7 @@ export default function PeriodTrackerPage() {
           <AlertDialogContent>
               <AlertDialogHeader>
                   <AlertDialogTitle>{t('endPeriodPrompt.title')}</AlertDialogTitle>
+
                   <AlertDialogDescription>
                       {t('endPeriodPrompt.description')}
                   </AlertDialogDescription>
@@ -333,6 +333,7 @@ export default function PeriodTrackerPage() {
 
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
+    const tToast = useTranslations('PeriodTrackerPage.toast');
     const { user, firestore } = useUser();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -363,7 +364,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             });
 
             toast({
-                description: t('periodUpdated', { date: format(date, 'LLL dd') }),
+                description: tToast('periodUpdated', { date: format(date, 'LLL dd') }),
             });
             onOpenChange(false);
         } catch (error) {
@@ -457,7 +458,7 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
                         <Card key={cycle.id} className="bg-secondary/50">
                             <CardHeader>
                                 <div className="flex justify-between items-center">
-                                    <CardTitle className="text-lg">{t('cycle')} #{cycles.length - index}</CardTitle>
+                                    <p className="text-lg font-semibold">{t('cycle')} #{cycles.length - index}</p>
                                     <p className="text-sm text-muted-foreground">{format(startDate, 'MMM dd')} - {format(endDate, 'MMM dd, yyyy')}</p>
                                 </div>
                             </CardHeader>
@@ -492,4 +493,3 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-    
