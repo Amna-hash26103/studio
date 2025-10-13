@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -257,7 +258,7 @@ export default function PeriodTrackerPage() {
               className="w-full max-w-md"
               disabled={isLoadingCycles}
               components={{
-                Day: ({ date, ...props }) => {
+                Day: ({ date, displayMonth, ...props }) => {
                   const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
                   
                   let flowIcon = null;
@@ -351,7 +352,8 @@ export default function PeriodTrackerPage() {
 
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const { user, firestore } = useMemoFirebase(useUser, []);
+    const { user } = useUser();
+    const firestore = useFirestore();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -360,14 +362,14 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     const [flow, setFlow] = useState<FlowIntensity | undefined>();
     const [notes, setNotes] = useState('');
     
-    useEffect(() => {
+    useState(() => {
         if(open && activeCycle && date) {
             const dayStr = format(date, 'yyyy-MM-dd');
             const log = activeCycle.dailyLogs?.[dayStr];
             setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
         }
-    }, [activeCycle, date, open]);
+    });
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -511,3 +513,5 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
+
+    
