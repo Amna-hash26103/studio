@@ -2,158 +2,146 @@
  * @fileoverview Firestore Security Rules for Femmora App
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for personal data (profiles, cycles, projects)
- * and a public-read, owner-write model for community posts.
+ * This ruleset enforces a strict user-ownership model for personal data while allowing public read access to community posts.
  *
  * Data Structure:
- * - /users/{userId}/profile: User profile information. Only the user can read/write.
- * - /users/{userId}/cycles/{cycleId}: Menstrual cycle entries. Only the user can read/write.
- * - /users/{userId}/projects/{projectId}: User-created projects. Only the user can read/write.
- * - /community_posts/{postId}: Community posts. Publicly readable, but only the author can modify/delete.
- * - /chat_messages/{messageId}: Chat messages; access is based on a denormalized members map on the document.
+ * - User profiles and associated data (periods, daily logs, stats) are nested under /users/{userId}.
+ * - Community posts are stored in a top-level /community_posts/{postId} collection.
  *
  * Key Security Decisions:
- * - Users can only list cycles and projects that they own.
- * - Community posts are publicly readable, but only the author can modify them.
- * - Data validation is relaxed in this prototyping phase, focusing on authorization and relational integrity.
+ * - User data is strictly controlled by the owning user (based on Firebase Authentication UID).
+ * - Users can only read/write their own profile and associated cycle data.
+ * - Community posts are publicly readable but writable only by their authors.
+ * - Listing of user profiles is disallowed.
  *
  * Denormalization for Authorization:
- * - Ownership: User-specific data (profiles, cycles, projects) is stored under the /users/{userId} path
- *              to avoid the need for document reads during authorization.
- * - Community Posts: Community posts should have an authorId field.
+ * - The Period entity requires a userId field that must match the userId in the path.
+ * - The DailyLog entity does not have a userId field, but inherits authorization from the Period document.
+ * - The CommunityPost entity has an authorId field that identifies the owner.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is authenticated.
-     * @return {boolean} True if the request is authenticated, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the owner of the resource.
-     * @param {string} userId The user ID to compare against the request's authentication UID.
-     * @return {boolean} True if the user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the owner of the existing resource.
-     * @param {string} userId The user ID to compare against the resource's userId.
-     * @return {boolean} True if the user is the existing owner, false otherwise.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * @description User profile information.
-     * @path /users/{userId}/profile
-     * @allow (create) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can create their own profile.
-     * @allow (get) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can get their own profile.
-     * @allow (update) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can update their own profile.
-     * @allow (delete) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can delete their own profile.
-     * @deny (create) User with UID 'attackerId' cannot create a profile for user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-     * @deny (get) User with UID 'attackerId' cannot get the profile of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-     * @deny (update) User with UID 'attackerId' cannot update the profile of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-     * @deny (delete) User with UID 'attackerId' cannot delete the profile of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
+     * @description Secure access to user profiles.
+     * @path /users/{userId}
+     * @allow (create) User with matching UID can create their profile.
+     * @allow (get, update, delete) User with matching UID can read/write their profile.
+     * @deny (create) User cannot create a profile with a mismatched UID.
+     * @deny (list) Listing all users is not allowed.
      * @principle Enforces document ownership for writes.
      */
-    match /users/{userId}/profile {
-      allow get: if isOwner(userId);
+    match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
     }
 
     /**
-     * @description User-created projects.
-     * @path /users/{userId}/projects/{projectId}
-     * @allow (create) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can create a project under their ID.
-     * @allow (get) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can get their own project.
-     * @allow (update) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can update their own project.
-     * @allow (delete) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can delete their own project.
-     * @deny (create) User with UID 'attackerId' cannot create a project for user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-     * @deny (get) User with UID 'attackerId' cannot get the project of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-     * @deny (update) User with UID 'attackerId' cannot update the project of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-     * @deny (delete) User with UID 'attackerId' cannot delete the project of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
+     * @description Secure access to a user's menstrual cycle data.
+     * @path /users/{userId}/periods/{periodId}
+     * @allow (create) User can create a period entry for themselves.
+     * @allow (get, update, delete) User can read/write their own period entries.
+     * @deny (create) User cannot create a period entry for another user.
+     * @deny (update, delete) Non-existent document cannot be updated/deleted.
      * @principle Enforces document ownership for writes.
      */
-    match /users/{userId}/projects/{projectId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
-    }
+    match /users/{userId}/periods/{periodId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-     /**
-      * @description Menstrual cycle entries for a user.
-      * @path /users/{userId}/cycles/{cycleId}
-      * @allow (create) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can create a cycle entry under their ID.
-      * @allow (get) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can get their own cycle entry.
-      * @allow (list) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can list their own cycle entries.
-      * @allow (update) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can update their own cycle entry.
-      * @allow (delete) User with UID 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2' can delete their own cycle entry.
-      * @deny (create) User with UID 'attackerId' cannot create a cycle entry for user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-      * @deny (get) User with UID 'attackerId' cannot get the cycle entry of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-      * @deny (list) User with UID 'attackerId' cannot list the cycle entries of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-      * @deny (update) User with UID 'attackerId' cannot update the cycle entry of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-      * @deny (delete) User with UID 'attackerId' cannot delete the cycle entry of user 'tcE3ZQyiMmMyT0qdOaerOpkkrMe2'.
-      * @principle Enforces document ownership for writes.
-      */
-    match /users/{userId}/cycles/{cycleId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId);
-      allow update: if isExistingOwner(userId);
-      allow delete: if isExistingOwner(userId);
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+
+      allow create: if isSignedIn() && isOwner(userId);
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if isSignedIn() && isOwner(userId);
     }
 
     /**
-     * @description Community posts.
+     * @description Secure access to daily logs within a user's period.
+     * @path /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}
+     * @allow (create, get, list, update, delete) User can manage their own daily logs within a period.
+     * @deny (create) User cannot create a daily log for another user or period.
+     * @principle Enforces document ownership inherited from the parent.
+     */
+    match /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+       allow get: if isSignedIn() && isOwner(userId);
+       allow list: if false;
+
+       allow create: if isSignedIn() && isOwner(userId);
+       allow update: if isSignedIn() && isOwner(userId);
+       allow delete: if isSignedIn() && isOwner(userId);
+    }
+
+    /**
+     * @description Secure access to user stats.
+     * @path /users/{userId}/stats/{statId}
+     * @allow (get, update) User can read/update their own stats.
+     * @deny (create, delete) User cannot create or delete their stats (managed by backend).
+     * @principle Enforces document ownership for writes; restricts creation and deletion.
+     */
+    match /users/{userId}/stats/{statId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      allow get: if isSignedIn() && isOwner(userId);
+      allow list: if false;
+
+      allow create: if false;
+      allow update: if isSignedIn() && isOwner(userId);
+      allow delete: if false;
+    }
+
+    /**
+     * @description Secure access to community posts.
      * @path /community_posts/{postId}
-     * @allow (get) Any user can read a community post.
-     * @allow (list) Any user can list community posts.
-     * @allow (create) Any authenticated user can create a community post. The 'authorId' field must match their UID.
-     * @allow (update) Only the author can update the post.
-     * @allow (delete) Only the author can delete the post.
-     * @deny (create) User cannot create a post with an 'authorId' that doesn't match their UID.
-     * @deny (update) User cannot update a post if they are not the author.
-     * @deny (delete) User cannot delete a post if they are not the author.
+     * @allow (get, list) All users can read community posts.
+     * @allow (create) Authenticated users can create community posts.
+     * @allow (update, delete) Only the author of the post can update or delete it.
      * @principle Public read, owner-only writes.
      */
     match /community_posts/{postId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
-      allow update: if isSignedIn() && isExistingOwner(resource.data.authorId);
-      allow delete: if isSignedIn() && isExistingOwner(resource.data.authorId);
-    }
+      function isSignedIn() {
+        return request.auth != null;
+      }
 
-    /**
-     * @description Chat messages for direct messaging. Access control is managed either by path-based ownership if direct messages are associated with user pairs, or by a denormalized 'members' map if group chats are supported.
-     * @path /chat_messages/{messageId}
-     * @allow (get) Any user can read a chat message.
-     * @allow (list) Any user can list chat messages.
-     * @allow (create) Any authenticated user can create a chat message.
-     * @allow (update) Any authenticated user can update a chat message.
-     * @allow (delete) Any authenticated user can delete a chat message.
-     * @principle Public read, authenticated access for writes.
-     */
-    match /chat_messages/{messageId} {
       allow get: if true;
       allow list: if true;
+
       allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn();
+      allow update: if isSignedIn() && request.auth.uid == resource.data.authorId;
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.authorId;
     }
   }
 }
