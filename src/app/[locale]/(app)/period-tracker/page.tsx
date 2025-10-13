@@ -82,7 +82,7 @@ export default function PeriodTrackerPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -269,6 +269,7 @@ export default function PeriodTrackerPage() {
               disabled={isLoadingCycles || isProcessing}
               components={{
                 Day: ({ date, ...props }) => {
+                  const { displayMonth, ...validProps } = props as DayProps & {displayMonth: Date};
                   const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
                   
                   let flowIcon = null;
@@ -301,7 +302,7 @@ export default function PeriodTrackerPage() {
                   }
 
                   return (
-                     <div {...props} className={cn(props.className, 'relative')}>
+                     <div {...validProps} className={cn(validProps.className, 'relative')}>
                       {date.getDate()}
                       {flowIcon}
                     </div>
@@ -363,7 +364,7 @@ export default function PeriodTrackerPage() {
 
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const { user, firestore } = useFirebase();
+    const { user, firestore } = useUser();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -402,7 +403,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('toast.logError.title'), description: t('toast.logError.description') });
+             toast({ variant: 'destructive', title: t('periodUpdated', { date: format(date, 'LLL dd') }), description: t('periodUpdated', { date: format(date, 'LLL dd') }) });
         } finally {
             setIsLoading(false);
         }
