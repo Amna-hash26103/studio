@@ -183,7 +183,7 @@
     "logPeriodTitle": "Log Your Period",
     "startDateLabel": "Start Date",
     "endDateLabel": "End Date",
-    "logButton": "Log Period",
+    "logButton": "Log This Day",
     "loggingButton": "Logging...",
     "cycleHistoryTitle": "Cycle History",
     "noCyclesLogged": "No cycles logged yet.",
@@ -249,5 +249,4 @@
     }
   }
 }
-
   

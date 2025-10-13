@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase, useFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
   addDoc,
@@ -17,6 +17,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -127,7 +128,7 @@ export default function PeriodTrackerPage() {
     return days;
   }, [cycles]);
 
-  useEffect(() => {
+  const handleLogDayClick = () => {
     if (!selectedDate) return;
 
     const date = startOfDay(selectedDate);
@@ -144,15 +145,10 @@ export default function PeriodTrackerPage() {
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-      if (isPeriod) {
-        // This can happen if data is inconsistent, for now, treat as starting a new period.
         setStartPeriodPrompt({ open: true, date });
-      } else {
-        setStartPeriodPrompt({ open: true, date });
-      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDate]);
+  };
+
 
   const handleStartPeriod = async () => {
     if (!startPeriodPrompt.date || !cyclesCollectionRef || !user) return;
@@ -160,7 +156,6 @@ export default function PeriodTrackerPage() {
     const clickedDate = startPeriodPrompt.date;
 
     try {
-      if (!cyclesCollectionRef) throw new Error("Collection reference is not available.");
       const newCycle = {
         userId: user.uid,
         startDate: clickedDate,
@@ -246,7 +241,7 @@ export default function PeriodTrackerPage() {
         </div>
 
         <Card>
-          <CardContent className="p-2 md:p-6">
+          <CardContent className="p-2 md:p-6 flex justify-center">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -257,52 +252,58 @@ export default function PeriodTrackerPage() {
                 period: periodDaysModifier,
               }}
               modifiersClassNames={{
-                period: 'bg-primary/10 text-primary-foreground',
+                period: 'bg-primary/20 text-primary-foreground',
               }}
-              className="w-full"
+              className="w-full max-w-md"
               disabled={isLoadingCycles}
               components={{
-                Day: ({ date, displayMonth, ...props }) => {
+                Day: ({ date, ...props }) => {
                   const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
-
+                  
                   let flowIcon = null;
-                  if (isPeriod && activeCycle?.dailyLogs) {
-                    const log = activeCycle.dailyLogs[format(date, 'yyyy-MM-dd')];
-                    if (log) {
-                      switch (log.flow) {
-                        case 'spotting':
-                          flowIcon = <CircleDot className="h-2 w-2 text-red-300 absolute bottom-1.5" />;
-                          break;
-                        case 'light':
-                          flowIcon = <Droplet className="h-2 w-2 text-red-400 absolute bottom-1.5" />;
-                          break;
-                        case 'medium':
-                          flowIcon = <Droplets className="h-2 w-2 text-red-500 absolute bottom-1.5" />;
-                          break;
-                        case 'heavy':
-                          flowIcon = <Waves className="h-2 w-2 text-red-700 absolute bottom-1.5" />;
-                          break;
+                   if (isPeriod && cycles) {
+                      const relevantCycle = cycles.find(c => {
+                          const startDate = startOfDay(new Date(c.startDate.seconds * 1000));
+                          const endDate = c.endDate ? startOfDay(new Date(c.endDate.seconds * 1000)) : startOfDay(new Date());
+                          return (isSameDay(date, startDate) || isBefore(startDate, date)) && (isSameDay(date, endDate) || isBefore(date, endDate));
+                      });
+
+                      if (relevantCycle?.dailyLogs) {
+                          const log = relevantCycle.dailyLogs[format(date, 'yyyy-MM-dd')];
+                           if (log) {
+                            switch (log.flow) {
+                              case 'spotting':
+                                flowIcon = <CircleDot className="h-2 w-2 text-red-300 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
+                                break;
+                              case 'light':
+                                flowIcon = <Droplet className="h-2 w-2 text-red-400 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
+                                break;
+                              case 'medium':
+                                flowIcon = <Droplets className="h-2 w-2 text-red-500 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
+                                break;
+                              case 'heavy':
+                                flowIcon = <Waves className="h-2 w-2 text-red-700 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
+                                break;
+                            }
+                          }
                       }
-                    }
                   }
 
-                  const buttonClasses = cn(
-                    "h-9 w-9 p-0 font-normal relative",
-                    "hover:bg-accent hover:text-accent-foreground",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-                    props.className
-                  );
-                  
                   return (
-                    <button {...props} className={buttonClasses}>
+                     <div {...props} className={cn(props.className, 'relative')}>
                       {date.getDate()}
                       {flowIcon}
-                    </button>
+                    </div>
                   );
                 },
               }}
             />
           </CardContent>
+          <CardFooter className="flex justify-center border-t p-4">
+              <Button onClick={handleLogDayClick} disabled={!selectedDate || isLoadingCycles}>
+                  {t('logButton')}
+              </Button>
+          </CardFooter>
         </Card>
         
         <BleedingHistory cycles={cycles?.filter(c => c.endDate) || []} />
@@ -350,7 +351,7 @@ export default function PeriodTrackerPage() {
 
 function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boolean, onOpenChange: (open: boolean) => void, date?: Date, activeCycle?: CycleEntry }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const { user, firestore } = useFirebase();
+    const { user, firestore } = useMemoFirebase(useUser, []);
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -363,11 +364,6 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
         if(open && activeCycle && date) {
             const dayStr = format(date, 'yyyy-MM-dd');
             const log = activeCycle.dailyLogs?.[dayStr];
-            setFlow(log?.flow || 'light');
-            setNotes(log?.notes || '');
-        } else if (open) {
-            const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
-            const log = activeCycle?.dailyLogs?.[dayStr];
             setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
         }
@@ -515,5 +511,3 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-
-    

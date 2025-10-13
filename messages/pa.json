@@ -183,7 +183,7 @@
     "logPeriodTitle": "اپنا پیریڈ لاگ کرو",
     "startDateLabel": "شروع دی تاریخ",
     "endDateLabel": "آخری تاریخ",
-    "logButton": "پیریڈ لاگ کرو",
+    "logButton": "ایہہ دن لاگ کرو",
     "loggingButton": "لاگنگ...",
     "cycleHistoryTitle": "سائیکل دی ہسٹری",
     "noCyclesLogged": "حالے کوئی سائیکل لاگ نہیں ہویا۔",
@@ -194,7 +194,7 @@
     "toast": {
       "logSuccess": {
         "title": "پیریڈ لاگ ہو گیا",
-        "description": "تہاڈا سائیکل کامیابی نال ریکارڈ ہو گیا اے۔"
+        "description": "تہاڈا سائیکل کامیابی نال ریکارڈ हो گیا اے۔"
       },
       "logError": {
         "title": "اوہ!",
@@ -249,5 +249,4 @@
     }
   }
 }
-
   

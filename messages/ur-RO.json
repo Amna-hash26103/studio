@@ -183,7 +183,7 @@
     "logPeriodTitle": "Apna Period Log Karein",
     "startDateLabel": "Shuru ki Tareekh",
     "endDateLabel": "Aakhri Tareekh",
-    "logButton": "Period Log Karein",
+    "logButton": "Yeh Din Log Karein",
     "loggingButton": "Logging...",
     "cycleHistoryTitle": "Cycle History",
     "noCyclesLogged": "Abhi tak koi cycle log nahi hua.",
@@ -249,5 +249,4 @@
     }
   }
 }
-
   

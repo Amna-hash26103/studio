@@ -183,7 +183,7 @@
     "logPeriodTitle": "خپله دوره ثبت کړئ",
     "startDateLabel": "د پیل نیټه",
     "endDateLabel": "د پای نیټه",
-    "logButton": "دوره ثبت کړئ",
+    "logButton": "دا ورځ ثبت کړئ",
     "loggingButton": "ثبت کول...",
     "cycleHistoryTitle": "د سایکل تاریخ",
     "noCyclesLogged": "تر اوسه کوم سایکل ندی ثبت شوی.",
@@ -249,5 +249,4 @@
     }
   }
 }
-
   
