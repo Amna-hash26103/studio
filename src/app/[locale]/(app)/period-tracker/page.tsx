@@ -139,27 +139,27 @@ export default function PeriodTrackerPage() {
 
     const date = startOfDay(selectedDate);
     const dayStr = format(date, 'yyyy-MM-dd');
-    const isDayInAnyPeriod = periodDays.has(dayStr);
+    const isDayInPeriod = periodDays.has(dayStr);
 
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      const isDayInActivePeriod = isDayInAnyPeriod;
+      const isDayInActivePeriod = isDayInPeriod;
 
       if (isBefore(date, startDate)) {
+        // A date before the current active cycle. Treat as a new period for simplicity,
+        // although a more complex app might handle overlapping cycles.
         setStartPeriodPrompt({ open: true, date });
       } else if (isDayInActivePeriod) {
+        // A day within the current active cycle. Log flow.
         setLogFlowDialog({ open: true, date });
       } else {
+        // A day after the last logged day of the active cycle. Prompt to end it.
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-       if (isDayInAnyPeriod) {
-           // This day is part of a past, logged cycle. For simplicity, we can allow them to log a new cycle.
-           setStartPeriodPrompt({ open: true, date });
-       } else {
-           // No active cycle, and not part of a past cycle.
-           setStartPeriodPrompt({ open: true, date });
-       }
+       // No active cycle.
+       // We can allow starting a new period regardless of whether the day was in a *past* cycle.
+       setStartPeriodPrompt({ open: true, date });
     }
   };
 
@@ -396,7 +396,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
                         <Label>{t('flowTitle')}</Label>
                         <RadioGroup value={flow} onValueChange={(v) => setFlow(v as FlowIntensity)} className="flex gap-2">
                            {flowOptions.map(option => (
-                               <Label key={option.value} htmlFor={option.value} className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full data-[state=checked]:border-primary">
+                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", "data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary")}>
                                    <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
                                    {option.icon}
                                    <span className="mt-2 text-sm font-medium">{option.label}</span>
