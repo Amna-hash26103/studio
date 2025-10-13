@@ -51,11 +51,7 @@
           }
         }
       },
-      "required": [
-        "id",
-        "displayName",
-        "email"
-      ]
+      "required": ["id", "displayName", "email"]
     },
     "CommunityPost": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -123,163 +119,100 @@
       },
       "required": ["id", "authorId", "author", "time", "content", "lang"]
     },
-    "CycleEntry": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "CycleEntry",
+    "Period": {
+      "title": "Period",
+      "description": "Represents one complete menstrual cycle for a user.",
       "type": "object",
-      "description": "Represents a single menstrual cycle entry for a user, including daily logs.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the cycle entry."
-        },
-        "userId": {
-          "type": "string",
-          "description": "The ID of the user this entry belongs to."
-        },
-        "startDate": {
-          "type": "string",
-          "format": "date-time",
-          "description": "The start date of the menstrual period."
-        },
-        "endDate": {
-          "type": "string",
-          "format": "date-time",
-          "description": "The end date of the menstrual period (optional, indicates an ongoing cycle if not set)."
-        },
-        "duration": {
-            "type": "number",
-            "description": "The duration of the cycle in days. Calculated when the period ends."
-        },
-        "dailyLogs": {
-          "type": "object",
-          "description": "Object containing daily logs for flow and symptoms, keyed by date string (e.g., 'YYYY-MM-DD').",
-          "patternProperties": {
-            "^[0-9]{4}-[0-9]{2}-[0-9]{2}$": {
-              "type": "object",
-              "properties": {
-                "flow": {
-                  "type": "string",
-                  "enum": ["spotting", "light", "medium", "heavy"],
-                  "description": "The logged menstrual flow for the day."
-                },
-                "notes": {
-                  "type": "string",
-                  "description": "User-added notes for the day."
-                }
-              }
-            }
-          }
-        },
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" },
+        "duration": { "type": "number" },
         "flowPattern": {
-            "type": "array",
-            "description": "An ordered array representing the flow pattern for the cycle.",
-            "items": {
-                "type": "string",
-                "enum": ["Spotting", "Light", "Medium", "Heavy"]
-            }
-        }
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "userId", "startDate"]
+      "required": ["id", "userId", "startDate", "createdAt"]
+    },
+    "DailyLog": {
+      "title": "DailyLog",
+      "description": "Represents a daily log for a specific day within a period.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "flowLevel": {
+          "type": "string",
+          "enum": ["spotting", "light", "medium", "heavy"]
+        },
+        "painLevel": { "type": "number" },
+        "mood": { "type": "string" },
+        "symptoms": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "date", "flowLevel"]
+    },
+    "UserStats": {
+      "title": "UserStats",
+      "description": "Stores computed summary statistics for a user's cycles.",
+      "type": "object",
+      "properties": {
+        "averageCycleLength": { "type": "number" },
+        "averagePeriodDuration": { "type": "number" },
+        "averageFlowIntensity": { "type": "string" },
+        "predictedNextStart": { "type": "string", "format": "date-time" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["password", "anonymous"]
   },
   "firestore": {
     "structure": [
       {
-        "path": "/users/{userId}/profile",
+        "path": "/users/{userId}",
         "definition": {
           "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores user profile information. The 'userId' parameter corresponds to the Firebase Authentication UID. Enforces path-based ownership for private user data.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user."
-            }
-          ]
+          "schema": { "$ref": "#/entities/UserProfile" },
+          "description": "Stores user profile information. The 'userId' parameter corresponds to the Firebase Authentication UID."
         }
       },
       {
-        "path": "/users/{userId}/projects/{projectId}",
+        "path": "/users/{userId}/periods/{periodId}",
         "definition": {
-          "entityName": "Project",
-          "schema": {
-            "$ref": "#/backend/entities/Project"
-          },
-          "description": "Stores project data owned by a specific user. Enforces path-based ownership. Includes denormalized 'ownerId' field for security rules, enabling authorization independence.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the project owner."
-            },
-            {
-              "name": "projectId",
-              "description": "The unique identifier for the project."
-            }
-          ]
+          "entityName": "Period",
+          "schema": { "$ref": "#/entities/Period" },
+          "description": "Stores a user's menstrual cycle entries."
+        }
+      },
+      {
+        "path": "/users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}",
+        "definition": {
+          "entityName": "DailyLog",
+          "schema": { "$ref": "#/entities/DailyLog" },
+          "description": "Stores daily logs for a specific menstrual cycle."
+        }
+      },
+      {
+        "path": "/users/{userId}/stats/{statId}",
+        "definition": {
+          "entityName": "UserStats",
+          "schema": { "$ref": "#/entities/UserStats" },
+          "description": "Stores computed summary statistics for a user's cycles. Should be a singleton document, e.g., using a fixed statId like 'summary'."
         }
       },
       {
         "path": "/community_posts/{postId}",
         "definition": {
           "entityName": "CommunityPost",
-          "schema": {
-            "$ref": "#/backend/entities/CommunityPost"
-          },
-          "description": "Stores community posts accessible based on privacy settings. Includes a 'members' map (denormalized if subcollections are needed).",
-          "params": [
-            {
-              "name": "postId",
-              "description": "The unique identifier for the community post."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/chat_messages/{messageId}",
-        "definition": {
-          "entityName": "ChatMessage",
-          "schema": {
-            "$ref": "#/backend/entities/ChatMessage"
-          },
-          "description": "Stores chat messages for direct messaging.  Access control is managed either by path-based ownership if direct messages are associated with user pairs, or by a denormalized 'members' map if group chats are supported.",
-          "params": [
-            {
-              "name": "messageId",
-              "description": "The unique identifier for the chat message."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/users/{userId}/cycles/{cycleId}",
-        "definition": {
-          "entityName": "CycleEntry",
-          "schema": {
-            "$ref": "#/backend/entities/CycleEntry"
-          },
-          "description": "Stores menstrual cycle entries for a user. Enforces path-based ownership for private health data.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user."
-            },
-            {
-              "name": "cycleId",
-              "description": "The unique identifier for the cycle entry."
-            }
-          ]
+          "schema": { "$ref": "#/entities/CommunityPost" },
+          "description": "Stores community posts accessible based on privacy settings."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed to support user authentication and profile management, a community feed, AI-powered wellness chatbots, project collaboration, and media handling, aligning with FEMMORA's core objective. The structure emphasizes authorization independence by denormalizing authorization data where needed and segregating data based on access patterns to ensure secure `list` operations (QAPs). \n\n**Authorization Independence and QAPs:** User-specific data, such as profiles and projects, are stored under the `/users/{userId}` path, ensuring that security rules can be based solely on `request.auth.uid` for access control.  Collaborative data, such as community posts, use a membership map for managing access, with denormalization of this map into subcollections if needed to avoid `get()` calls in security rules. This approach ensures that document creation and updates are atomic.\n\n**Structural Segregation:** Different types of data are stored in separate collections based on their access requirements.  For example, user profiles are stored in `/users/{userId}/profile`, while community posts are stored in `/community_posts`, allowing for different security rules to be applied to each type of data.  \n\n**Access Modeling:** The design consistently uses path-based ownership for user-owned data and membership maps for collaborative data. This standardization simplifies security rule creation and maintenance."
+    ]
   }
 }

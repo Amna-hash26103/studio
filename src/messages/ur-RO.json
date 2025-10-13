@@ -181,16 +181,8 @@
     "title": "Cycle Tracker",
     "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
     "logPeriodTitle": "Apna Period Log Karein",
-    "startDateLabel": "Shuru ki Tareekh",
-    "endDateLabel": "Aakhri Tareekh",
-    "logButton": "Yeh Din Log Karein",
+    "logButton": "Period Log Karein",
     "loggingButton": "Logging...",
-    "cycleHistoryTitle": "Cycle History",
-    "noCyclesLogged": "Abhi tak koi cycle log nahi hua.",
-    "historyHeaderStartDate": "Shuru ki Tareekh",
-    "historyHeaderEndDate": "Aakhri Tareekh",
-    "historyHeaderDuration": "Muddat",
-    "days": "din",
     "toast": {
       "logSuccess": {
         "title": "Period Log Hogaya",
@@ -207,35 +199,7 @@
       "deleteError": {
         "title": "Delete Nakam",
         "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
-      },
-      "periodStarted": "Naya period {date} ko shuru hua.",
-      "periodEnded": "Period khatam ho gaya. Kul muddat: {duration} din.",
-      "periodUpdated": "Aapka {date} ka log update ho gaya hai."
-    },
-    "startPeriodPrompt": {
-      "title": "Period Shuru Karein?",
-      "description": "Kya aap {date} ko apna period shuru karna chahti hain?",
-      "cancel": "Cancel",
-      "confirm": "Confirm"
-    },
-    "endPeriodPrompt": {
-      "title": "Period Khatam Karein?",
-      "description": "Kya aap is din ko apne mojooda period ke ekhtamam ke tor par nishanzad karna chahti hain?",
-      "cancel": "Cancel",
-      "confirm": "Confirm karein aur Khatam karein"
-    },
-    "logFlowDialog": {
-      "title": "{date} ke liye Flow aur Notes Log Karein",
-      "flowTitle": "Flow ki Shiddat",
-      "notesTitle": "Notes",
-      "notesPlaceholder": "Maslan, 'Dard mamool se zyada tha'",
-      "spotting": "Dhabba",
-      "light": "Halka",
-      "medium": "Darmiyana",
-      "heavy": "Bhaari",
-      "cancel": "Cancel",
-      "save": "Log Save Karein",
-      "saving": "Saving..."
+      }
     },
     "bleedingHistory": {
       "title": "Bleeding ki History",
@@ -249,5 +213,3 @@
     }
   }
 }
-
-    

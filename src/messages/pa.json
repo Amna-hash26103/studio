@@ -181,16 +181,8 @@
     "title": "سائیکل ٹریکر",
     "description": "اپنے جسم نوں بہتر سمجھن لئی اپنے ماہواری دے چکر نوں ٹریک کرو۔",
     "logPeriodTitle": "اپنا پیریڈ لاگ کرو",
-    "startDateLabel": "شروع دی تاریخ",
-    "endDateLabel": "آخری تاریخ",
-    "logButton": "ایہہ دن لاگ کرو",
+    "logButton": "پیریڈ لاگ کرو",
     "loggingButton": "لاگنگ...",
-    "cycleHistoryTitle": "سائیکل دی ہسٹری",
-    "noCyclesLogged": "حالے کوئی سائیکل لاگ نہیں ہویا۔",
-    "historyHeaderStartDate": "شروع دی تاریخ",
-    "historyHeaderEndDate": "آخری تاریخ",
-    "historyHeaderDuration": "میعاد",
-    "days": "دن",
     "toast": {
       "logSuccess": {
         "title": "پیریڈ لاگ ہو گیا",
@@ -207,35 +199,7 @@
       "deleteError": {
         "title": "مٹان وچ ناکامی",
         "description": "سائیکل دی اینٹری نہیں مٹائی جا سکی۔ مہربانی کر کے دوبارہ کوشش کرو۔"
-      },
-      "periodStarted": "نواں پیریڈ {date} نوں شروع ہویا۔",
-      "periodEnded": "پیریڈ ختم ہو گیا۔ کل میعاد: {duration} دن۔",
-      "periodUpdated": "{date} لئی تہاڈا لاگ اپڈیٹ ہو گیا اے۔"
-    },
-    "startPeriodPrompt": {
-      "title": "پیریڈ شروع کرنا اے؟",
-      "description": "کی تسیں {date} نوں اپنا پیریڈ شروع کرنا چاہندے او؟",
-      "cancel": "منسوخ کرو",
-      "confirm": "تصدیق کرو"
-    },
-    "endPeriodPrompt": {
-      "title": "پیریڈ ختم کرنا اے؟",
-      "description": "کی تسیں ایس دن نوں اپنے موجودہ پیریڈ دے خاتمے دے طور تے نشان زد کرنا چاہندے او؟",
-      "cancel": "منسوخ کرو",
-      "confirm": "تصدیق کرو تے ختم کرو"
-    },
-    "logFlowDialog": {
-      "title": "{date} لئی فلو تے نوٹس لاگ کرو",
-      "flowTitle": "فلو دی شدت",
-      "notesTitle": "نوٹس",
-      "notesPlaceholder": "مثال: 'پیڑ معمول توں ودھ سی'",
-      "spotting": "دھبے",
-      "light": "ہلکا",
-      "medium": "درمیانہ",
-      "heavy": "بھاری",
-      "cancel": "منسوخ کرو",
-      "save": "لاگ محفوظ کرو",
-      "saving": "محفوظ ہو رہیا اے۔۔۔"
+      }
     },
     "bleedingHistory": {
       "title": "خون وگن دی ہسٹری",
@@ -249,5 +213,3 @@
     }
   }
 }
-
-    

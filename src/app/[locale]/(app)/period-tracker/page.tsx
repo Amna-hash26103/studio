@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -29,49 +29,19 @@ import { useTranslations } from 'next-intl';
 import {
   format,
   differenceInDays,
-  isSameDay,
   startOfDay,
-  addDays,
 } from 'date-fns';
 import { Loader2, CircleDot, Droplet, Droplets, Waves } from 'lucide-react';
 import type { DateRange } from 'react-day-picker';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
 
-type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
-
-type DailyLog = {
-  flow: FlowIntensity;
-  notes?: string;
-};
-
-type CycleEntry = {
+type Period = {
   id: string;
   userId: string;
   startDate: { seconds: number; nanoseconds: number };
   endDate?: { seconds: number; nanoseconds: number };
   duration?: number;
-  dailyLogs?: Record<string, DailyLog>;
   flowPattern?: string[];
+  notes?: string;
 };
 
 export default function PeriodTrackerPage() {
@@ -84,29 +54,28 @@ export default function PeriodTrackerPage() {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const cyclesCollectionRef = useMemoFirebase(() => {
+  const periodsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'cycles');
+    return collection(firestore, 'users', user.uid, 'periods');
   }, [firestore, user]);
 
-  const cyclesQuery = useMemoFirebase(() => {
-    if (!cyclesCollectionRef) return null;
-    return query(cyclesCollectionRef, orderBy('startDate', 'desc'));
-  }, [cyclesCollectionRef]);
+  const periodsQuery = useMemoFirebase(() => {
+    if (!periodsCollectionRef) return null;
+    return query(periodsCollectionRef, orderBy('startDate', 'desc'));
+  }, [periodsCollectionRef]);
 
-  const { data: cycles, isLoading: isLoadingCycles } =
-    useCollection<CycleEntry>(cyclesQuery);
+  const { data: periods, isLoading: isLoadingPeriods } =
+    useCollection<Period>(periodsQuery);
 
   const periodDays = useMemo(() => {
     const days = new Set<string>();
-    cycles?.forEach((cycle) => {
-      if (cycle.startDate) {
-        const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
-        const end = cycle.endDate
-          ? startOfDay(new Date(cycle.endDate.seconds * 1000))
+    periods?.forEach((period) => {
+      if (period.startDate) {
+        const start = startOfDay(new Date(period.startDate.seconds * 1000));
+        const end = period.endDate
+          ? startOfDay(new Date(period.endDate.seconds * 1000))
           : start;
         
-        // Create a new Date object for iteration to avoid modifying the original `start` date
         let current = new Date(start);
 
         while (current <= end) {
@@ -116,10 +85,10 @@ export default function PeriodTrackerPage() {
       }
     });
     return days;
-  }, [cycles]);
+  }, [periods]);
 
   const handleLogPeriod = async () => {
-    if (!dateRange?.from || !user || !firestore || !cyclesCollectionRef) return;
+    if (!dateRange?.from || !user || !firestore || !periodsCollectionRef) return;
     setIsProcessing(true);
 
     const startDate = startOfDay(dateRange.from);
@@ -128,35 +97,34 @@ export default function PeriodTrackerPage() {
     try {
       const batch = writeBatch(firestore);
 
-      // Find and delete any existing cycles that overlap with the new range
       const overlappingQuery = query(
-        cyclesCollectionRef,
+        periodsCollectionRef,
         where('startDate', '<=', endDate)
       );
       const overlappingSnap = await getDocs(overlappingQuery);
       overlappingSnap.forEach((docSnap) => {
-        const cycle = docSnap.data() as CycleEntry;
-        const cycleStart = startOfDay(
-          new Date(cycle.startDate.seconds * 1000)
+        const period = docSnap.data() as Period;
+        const periodStart = startOfDay(
+          new Date(period.startDate.seconds * 1000)
         );
-        const cycleEnd = cycle.endDate
-          ? startOfDay(new Date(cycle.endDate.seconds * 1000))
-          : cycleStart;
-        if (startDate <= cycleEnd && endDate >= cycleStart) {
+        const periodEnd = period.endDate
+          ? startOfDay(new Date(period.endDate.seconds * 1000))
+          : periodStart;
+        if (startDate <= periodEnd && endDate >= periodStart) {
           batch.delete(docSnap.ref);
         }
       });
 
-      // Create the new cycle
       const duration = differenceInDays(endDate, startDate) + 1;
-      const newCycleData = {
+      const newPeriodData = {
         userId: user.uid,
         startDate: startDate,
         endDate: endDate,
         duration: duration,
+        createdAt: serverTimestamp(),
       };
-      const newCycleRef = doc(cyclesCollectionRef);
-      batch.set(newCycleRef, newCycleData);
+      const newPeriodRef = doc(periodsCollectionRef);
+      batch.set(newPeriodRef, newPeriodData);
 
       await batch.commit();
 
@@ -164,7 +132,7 @@ export default function PeriodTrackerPage() {
         title: t('toast.logSuccess.title'),
         description: t('toast.logSuccess.description'),
       });
-      setDateRange(undefined); // Reset selection
+      setDateRange(undefined); 
     } catch (error) {
       console.error('Error logging period:', error);
       toast({
@@ -215,13 +183,13 @@ export default function PeriodTrackerPage() {
               modifiers={modifiers}
               modifiersStyles={modifiersStyles}
               className="w-full max-w-md"
-              disabled={isLoadingCycles || isProcessing}
+              disabled={isLoadingPeriods || isProcessing}
             />
           </CardContent>
           <CardFooter className="flex justify-center border-t p-4">
             <Button
               onClick={handleLogPeriod}
-              disabled={!dateRange?.from || isLoadingCycles || isProcessing}
+              disabled={!dateRange?.from || isLoadingPeriods || isProcessing}
             >
               {isProcessing ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -232,14 +200,14 @@ export default function PeriodTrackerPage() {
         </Card>
 
         <BleedingHistory
-          cycles={cycles?.filter((c) => c.endDate) || []}
+          periods={periods?.filter((c) => c.endDate) || []}
         />
       </div>
     </>
   );
 }
 
-function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
+function BleedingHistory({ periods }: { periods: Period[] }) {
   const t = useTranslations('PeriodTrackerPage.bleedingHistory');
 
   const flowIcons: Record<string, React.ReactNode> = {
@@ -249,7 +217,7 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
     heavy: <Waves className="h-4 w-4 text-red-700" title="Heavy" />,
   };
 
-  if (cycles.length === 0) {
+  if (periods.length === 0) {
     return (
       <Card>
         <CardHeader>
@@ -268,24 +236,19 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {cycles.map((cycle, index) => {
-          const startDate = new Date(cycle.startDate.seconds * 1000);
-          const endDate = cycle.endDate
-            ? new Date(cycle.endDate.seconds * 1000)
+        {periods.map((period, index) => {
+          const startDate = new Date(period.startDate.seconds * 1000);
+          const endDate = period.endDate
+            ? new Date(period.endDate.seconds * 1000)
             : new Date();
-          const allNotes = cycle.dailyLogs
-            ? Object.values(cycle.dailyLogs)
-                .map((log) => log.notes)
-                .filter(Boolean)
-                .join('\n')
-            : '';
+          const allNotes = period.notes || '';
 
           return (
-            <Card key={cycle.id} className="bg-secondary/50">
+            <Card key={period.id} className="bg-secondary/50">
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <p className="text-lg font-semibold">
-                    {t('cycle')} #{cycles.length - index}
+                    {t('cycle')} #{periods.length - index}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {format(startDate, 'MMM dd')} -{' '}
@@ -297,22 +260,22 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
                 <div className="flex justify-between items-baseline">
                   <span className="text-sm font-medium">{t('duration')}:</span>
                   <span className="text-sm">
-                    {cycle.duration || 0} {t('days')}
+                    {period.duration || 0} {t('days')}
                   </span>
                 </div>
-                {cycle.flowPattern && cycle.flowPattern.length > 0 && (
+                {period.flowPattern && period.flowPattern.length > 0 && (
                   <div className="space-y-1">
                     <span className="text-sm font-medium">
                       {t('flowPattern')}:
                     </span>
                     <div className="flex gap-2 flex-wrap">
-                      {cycle.flowPattern.map((flow, i) => (
+                      {period.flowPattern.map((flow, i) => (
                         <div
                           key={i}
                           className="flex items-center gap-1 p-1 rounded-md"
                           title={flow}
                         >
-                          {flowIcons[flow]}
+                          {flowIcons[flow.toLowerCase()]}
                         </div>
                       ))}
                     </div>
@@ -326,6 +289,9 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
                     </p>
                   </div>
                 )}
+                 {!allNotes && (!period.flowPattern || period.flowPattern.length === 0) && (
+                    <p className="text-sm text-muted-foreground">{t('noNotes')}</p>
+                )}
               </CardContent>
             </Card>
           );
@@ -334,5 +300,3 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
     </Card>
   );
 }
-
-    
