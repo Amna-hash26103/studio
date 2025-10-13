@@ -139,27 +139,20 @@ export default function PeriodTrackerPage() {
 
     const date = startOfDay(selectedDate);
     const dayStr = format(date, 'yyyy-MM-dd');
-    const isDayInPeriod = periodDays.has(dayStr);
-
+    
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      const isDayInActivePeriod = isDayInPeriod;
+      const isDayInActivePeriod = Array.from(periodDays).some(d => isSameDay(new Date(d), date)) && (isSameDay(date, startDate) || isBefore(startDate, date));
 
-      if (isBefore(date, startDate)) {
-        // A date before the current active cycle. Treat as a new period for simplicity,
-        // although a more complex app might handle overlapping cycles.
-        setStartPeriodPrompt({ open: true, date });
-      } else if (isDayInActivePeriod) {
-        // A day within the current active cycle. Log flow.
+      if (isDayInActivePeriod) {
         setLogFlowDialog({ open: true, date });
+      } else if (isBefore(date, startDate)) {
+        setStartPeriodPrompt({ open: true, date });
       } else {
-        // A day after the last logged day of the active cycle. Prompt to end it.
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-       // No active cycle.
-       // We can allow starting a new period regardless of whether the day was in a *past* cycle.
-       setStartPeriodPrompt({ open: true, date });
+      setStartPeriodPrompt({ open: true, date });
     }
   };
 
@@ -377,10 +370,10 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     };
     
     const flowOptions: {value: FlowIntensity, label: string, icon: React.ReactNode}[] = [
-        { value: 'spotting', label: t('spotting'), icon: <CircleDot className="h-5 w-5 text-red-300" /> },
-        { value: 'light', label: t('light'), icon: <Droplet className="h-5 w-5 text-red-400" /> },
-        { value: 'medium', label: t('medium'), icon: <Droplets className="h-5 w-5 text-red-500" /> },
-        { value: 'heavy', label: t('heavy'), icon: <Waves className="h-5 w-5 text-red-700" /> },
+        { value: 'spotting', label: t('spotting'), icon: <CircleDot className="h-5 w-5" /> },
+        { value: 'light', label: t('light'), icon: <Droplet className="h-5 w-5" /> },
+        { value: 'medium', label: t('medium'), icon: <Droplets className="h-5 w-5" /> },
+        { value: 'heavy', label: t('heavy'), icon: <Waves className="h-5 w-5" /> },
     ];
 
     if (!date) return null;
@@ -396,9 +389,9 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
                         <Label>{t('flowTitle')}</Label>
                         <RadioGroup value={flow} onValueChange={(v) => setFlow(v as FlowIntensity)} className="flex gap-2">
                            {flowOptions.map(option => (
-                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", "data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary")}>
+                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground", {"bg-primary text-primary-foreground": flow === option.value})}>
                                    <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
-                                   {option.icon}
+                                   {React.cloneElement(option.icon as React.ReactElement, { className: cn('h-5 w-5', flow === option.value ? 'text-primary-foreground' : 'text-red-500')})}
                                    <span className="mt-2 text-sm font-medium">{option.label}</span>
                                </Label>
                            ))}
@@ -494,5 +487,3 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-
-    
