@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -56,7 +56,6 @@ import {
   Droplets,
   Waves,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import type { DayProps } from 'react-day-picker';
 
 type FlowIntensity = 'spotting' | 'light' | 'medium' | 'heavy';
@@ -240,6 +239,17 @@ export default function PeriodTrackerPage() {
 
   const periodDaysModifier = Array.from(periodDays).map(dayStr => new Date(dayStr));
 
+  const modifiers = {
+    period: periodDaysModifier,
+  };
+
+  const modifiersStyles = {
+    period: {
+      backgroundColor: 'var(--accent)',
+      color: 'var(--accent-foreground)',
+    },
+  };
+
   return (
     <>
       <div className="mx-auto max-w-5xl space-y-8">
@@ -256,59 +266,12 @@ export default function PeriodTrackerPage() {
               onSelect={setSelectedDate}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
-              modifiers={{
-                period: periodDaysModifier,
-              }}
-              modifiersStyles={{
-                 period: { position: 'relative' },
-              }}
+              modifiers={modifiers}
               modifiersClassNames={{
                 period: 'bg-primary/20 text-primary-foreground',
               }}
               className="w-full max-w-md"
               disabled={isLoadingCycles || isProcessing}
-              components={{
-                Day: ({ date, ...props }) => {
-                  const { displayMonth, ...validProps } = props as DayProps & {displayMonth: Date};
-                  const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
-                  
-                  let flowIcon = null;
-                   if (isPeriod && cycles) {
-                      const relevantCycle = cycles.find(c => {
-                          const startDate = startOfDay(new Date(c.startDate.seconds * 1000));
-                          const endDate = c.endDate ? startOfDay(new Date(c.endDate.seconds * 1000)) : startOfDay(new Date());
-                          return (isSameDay(date, startDate) || isBefore(startDate, date)) && (isSameDay(date, endDate) || isBefore(date, endDate));
-                      });
-
-                      if (relevantCycle?.dailyLogs) {
-                          const log = relevantCycle.dailyLogs[format(date, 'yyyy-MM-dd')];
-                           if (log) {
-                            switch (log.flow) {
-                              case 'spotting':
-                                flowIcon = <CircleDot className="h-2 w-2 text-red-300 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
-                                break;
-                              case 'light':
-                                flowIcon = <Droplet className="h-2 w-2 text-red-400 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
-                                break;
-                              case 'medium':
-                                flowIcon = <Droplets className="h-2 w-2 text-red-500 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
-                                break;
-                              case 'heavy':
-                                flowIcon = <Waves className="h-2 w-2 text-red-700 absolute bottom-1.5 left-1/2 -translate-x-1/2" />;
-                                break;
-                            }
-                          }
-                      }
-                  }
-
-                  return (
-                     <div {...validProps} className={cn(validProps.className, 'relative')}>
-                      {date.getDate()}
-                      {flowIcon}
-                    </div>
-                  );
-                },
-              }}
             />
           </CardContent>
           <CardFooter className="flex justify-center border-t p-4">
@@ -367,15 +330,13 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
     const { user, firestore } = useUser();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
-
-    const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
-    
     const [flow, setFlow] = useState<FlowIntensity | undefined>();
     const [notes, setNotes] = useState('');
     
-    useEffect(() => {
+    const dayStr = date ? format(date, 'yyyy-MM-dd') : '';
+
+    useState(() => {
         if(open && activeCycle && date) {
-            const dayStr = format(date, 'yyyy-MM-dd');
             const log = activeCycle.dailyLogs?.[dayStr];
             setFlow(log?.flow || 'light');
             setNotes(log?.notes || '');
@@ -383,7 +344,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             setFlow('light');
             setNotes('');
         }
-    }, [open, activeCycle, date]);
+    });
 
     const handleSave = async () => {
         if (!user || !firestore || !activeCycle || !date || !flow) return;
@@ -429,7 +390,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
                         <Label>{t('flowTitle')}</Label>
                         <RadioGroup value={flow} onValueChange={(v) => setFlow(v as FlowIntensity)} className="flex gap-2">
                            {flowOptions.map(option => (
-                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full", flow === option.value && "border-primary")}>
+                               <Label key={option.value} htmlFor={option.value} className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full data-[state=checked]:border-primary">
                                    <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
                                    {option.icon}
                                    <span className="mt-2 text-sm font-medium">{option.label}</span>
@@ -527,5 +488,4 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
-
     
