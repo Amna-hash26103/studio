@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -96,7 +95,7 @@ export default function PeriodTrackerPage() {
     open: boolean;
     date?: Date;
   }>({ open: false });
-
+  
   const cyclesCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return collection(firestore, 'users', user.uid, 'cycles');
@@ -268,6 +267,41 @@ export default function PeriodTrackerPage() {
               }}
               className="w-full"
               disabled={isLoadingCycles}
+              components={{
+                Day: ({ date, ...props }) => {
+                  // Determine if the day is part of the current period
+                  const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
+
+                  // Get flow for this specific day
+                  let flowIcon = null;
+                  if (isPeriod && activeCycle?.dailyLogs) {
+                    const log = activeCycle.dailyLogs[format(date, 'yyyy-MM-dd')];
+                    if(log) {
+                      switch (log.flow) {
+                        case 'spotting':
+                          flowIcon = <CircleDot className="h-2 w-2 text-red-300 absolute bottom-1.5" />;
+                          break;
+                        case 'light':
+                          flowIcon = <Droplet className="h-2 w-2 text-red-400 absolute bottom-1.5" />;
+                          break;
+                        case 'medium':
+                          flowIcon = <Droplets className="h-2 w-2 text-red-500 absolute bottom-1.5" />;
+                          break;
+                        case 'heavy':
+                          flowIcon = <Waves className="h-2 w-2 text-red-700 absolute bottom-1.5" />;
+                          break;
+                      }
+                    }
+                  }
+                  
+                  return (
+                    <div {...props} className={cn(props.className, 'relative')}>
+                      {date.getDate()}
+                      {flowIcon}
+                    </div>
+                  );
+                },
+              }}
             />
           </CardContent>
         </Card>

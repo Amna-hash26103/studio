@@ -28,7 +28,6 @@
   },
   "AppShell": {
     "welcomeBack": "Khush Aamdeed 🌷",
-    "searchPlaceholder": "Talaash...",
     "notifications": "Notifications",
     "userMenu": "User menu",
     "nav": {
@@ -40,7 +39,8 @@
       "settings": "Settings",
       "logout": "Log Out",
       "mainGroup": "ASAL",
-      "accountGroup": "ACCOUNT"
+      "accountGroup": "ACCOUNT",
+      "periodTracker": "Period Tracker"
     },
     "toast": {
       "logoutSuccess": {
@@ -129,54 +129,3 @@
     "displayNamePlaceholder": "Aapka poora naam",
     "bioLabel": "Bio",
     "bioPlaceholder": "Humein apne baray mein kuch batayein",
-    "locationLabel": "Jagah",
-    "locationPlaceholder": "Aap duniya mein kahan hain?",
-    "cancelButton": "Cancel",
-    "saveButton": "Tabdeeliyan save karein",
-    "savingButton": "Saving...",
-    "toast": {
-      "avatarSuccess": {
-        "title": "Avatar update ho gaya!"
-      },
-      "avatarError": {
-        "title": "Upload nakam",
-        "description": "Aapka naya avatar upload karne mein masla hua. Barah-e-karam dobara koshish karein."
-      },
-      "profileSuccess": {
-        "title": "Profile Update Ho Gayi!",
-        "description": "Aapki tabdeeliyan kamyabi se save ho gayi hain."
-      },
-      "profileError": {
-        "title": "Update nakam",
-        "description": "Aapki profile save karne mein masla hua. Barah-e-karam dobara koshish karein."
-      }
-    }
-  },
-  "ChatInterface": {
-    "placeholders": {
-      "health": "Jaise, Main ghar par ek aasan warzish ka routine kaise shuru kar sakti hoon?",
-      "emotionalWellbeing": "Jaise, Main stress mehsoos kar rahi hoon, koi fori mindfulness tips?",
-      "nutrition": "Jaise, Kuch sehatmand snack ke ideas kya hain?"
-    },
-    "initialMessages": {
-      "health": "Hi! Main aapka Healthcare assistant hoon. Main aaj aapki kaise madad kar sakti hoon?",
-      "emotionalWellbeing": "Hello, Main yahan aapki jazbati behtari ke liye hoon. Aapke zehen mein kya hai?",
-      "nutrition": "Hey! Main aapka Diet guide hoon. Sehatmand khane ke baray mein kuch bhi poochein!"
-    },
-    "errorMessage": "Maaf kijiyega, kuch ghalat ho gaya. Barah-e-karam baad mein dobara koshish karein."
-  },
-  "DietPage": {
-    "title": "Diet AI",
-    "description": "Ghizaiyat aur sehatmand khane ke liye aapka zaati rehnuma."
-  },
-  "EmotionalHealthPage": {
-    "title": "Jazbati Sehat AI",
-    "description": "Mindfulness aur jazbati tawazun ke liye aapka zaati rehnuma."
-  },
-  "HealthcarePage": {
-    "title": "Healthcare AI",
-    "description": "Jismani sehat aur tandrusti ke liye aapka zaati rehnuma."
-  }
-}
-
-    
