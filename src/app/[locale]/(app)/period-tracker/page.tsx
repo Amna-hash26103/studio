@@ -48,6 +48,7 @@ import {
   isSameDay,
   isBefore,
   startOfDay,
+  isAfter,
 } from 'date-fns';
 import {
   Loader2,
@@ -116,24 +117,10 @@ export default function PeriodTrackerPage() {
   const periodDays = useMemo(() => {
     const days = new Set<string>();
     cycles?.forEach((cycle) => {
-      const start = startOfDay(new Date(cycle.startDate.seconds * 1000));
-      // Use today as the end date for the active cycle for UI purposes
-      const end = cycle.endDate
-        ? startOfDay(new Date(cycle.endDate.seconds * 1000))
-        : startOfDay(new Date());
-
-      let current = new Date(start);
-      let i = 0; // Safety break
-      while (i < 365 && (isBefore(current, end) || isSameDay(current, end))) {
-        // Only add days from active cycles or past cycles
-        if (!cycle.endDate || isSameDay(current, end) || isBefore(current, end)) {
-           const dayStr = format(current, 'yyyy-MM-dd');
-           if (cycle.dailyLogs && cycle.dailyLogs[dayStr]) {
-             days.add(dayStr);
-           }
-        }
-        current.setDate(current.getDate() + 1);
-        i++;
+      if (cycle.dailyLogs) {
+        Object.keys(cycle.dailyLogs).forEach(dayStr => {
+          days.add(dayStr);
+        });
       }
     });
     return days;
@@ -147,21 +134,24 @@ export default function PeriodTrackerPage() {
 
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      
-      // If the selected date is part of the active cycle's logged days
-      if (activeCycle.dailyLogs && activeCycle.dailyLogs[dayStr]) {
-        setLogFlowDialog({ open: true, date });
-      } 
-      // If selected date is after start, but not yet logged (potential end date)
-      else if (isBefore(startDate, date)) {
-        setEndPeriodPrompt({ open: true, date });
-      } 
-      // If it's a date before the active cycle, it could be a new cycle start
-      else {
+      const isDayInActiveCycle = isSameDay(date, startDate) || isAfter(date, startDate);
+      const isDayLogged = activeCycle.dailyLogs && activeCycle.dailyLogs[dayStr];
+
+      if (isDayInActiveCycle) {
+        if (isDayLogged) {
+          // Day is already logged in the active cycle, so allow editing.
+          setLogFlowDialog({ open: true, date });
+        } else {
+          // Day is after the start, but not logged. Propose ending the period.
+          setEndPeriodPrompt({ open: true, date });
+        }
+      } else {
+        // Selected date is before the current active cycle's start date.
+        // Assume the user wants to start a new cycle.
         setStartPeriodPrompt({ open: true, date });
       }
     } else {
-      // No active cycle, so any selection is a potential start
+      // No active cycle, so any selection is a potential new start.
       setStartPeriodPrompt({ open: true, date });
     }
   };
@@ -367,8 +357,11 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             const cycleDocRef = doc(firestore, 'users', user.uid, 'cycles', activeCycle.id);
             const newLog: DailyLog = { flow, notes };
 
+            // When a day is logged, it should become part of the period
+            const newDailyLogs = { ...(activeCycle.dailyLogs || {}), [dayStr]: newLog };
+
             await updateDoc(cycleDocRef, {
-                [`dailyLogs.${dayStr}`]: newLog
+                dailyLogs: newDailyLogs
             });
 
             toast({
@@ -403,7 +396,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
                         <Label>{t('flowTitle')}</Label>
                         <RadioGroup value={flow} onValueChange={(v) => setFlow(v as FlowIntensity)} className="flex gap-2">
                            {flowOptions.map(option => (
-                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"bg-primary text-primary-foreground border-primary": flow === option.value})}>
+                               <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"border-primary bg-primary text-primary-foreground": flow === option.value})}>
                                    <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
                                    {React.cloneElement(option.icon as React.ReactElement, { className: cn('h-5 w-5', flow === option.value ? 'text-primary-foreground' : 'text-red-500')})}
                                    <span className="mt-2 text-sm font-medium">{option.label}</span>
