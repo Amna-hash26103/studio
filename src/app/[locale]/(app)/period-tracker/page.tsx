@@ -82,7 +82,7 @@ export default function PeriodTrackerPage() {
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-
+  
   const [startPeriodPrompt, setStartPeriodPrompt] = useState<{
     open: boolean;
     date?: Date;
@@ -136,24 +136,18 @@ export default function PeriodTrackerPage() {
     
     if (activeCycle) {
       const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      // Date is within the ongoing cycle
       if (isBefore(date, startDate)) {
           // Date is before active cycle, do nothing for now
       } else if (isPeriod) {
-        // Log or edit existing day in active cycle
         setLogFlowDialog({ open: true, date });
       } else {
-        // A future date in an active cycle was clicked, ask to end it.
-        // The end date is considered the day *before* the clicked date.
         setEndPeriodPrompt({ open: true, date });
       }
     } else {
-      // No active cycle
       if (isPeriod) {
-        // A day in a past cycle was clicked. For now, do nothing.
-        // Could open a read-only view or edit view in the future.
+        // This can happen if data is inconsistent, for now, treat as starting a new period.
+        setStartPeriodPrompt({ open: true, date });
       } else {
-        // Not a period day, so prompt to start a new one.
         setStartPeriodPrompt({ open: true, date });
       }
     }
@@ -268,15 +262,13 @@ export default function PeriodTrackerPage() {
               className="w-full"
               disabled={isLoadingCycles}
               components={{
-                Day: ({ date, ...props }) => {
-                  // Determine if the day is part of the current period
+                Day: ({ date, displayMonth, ...props }) => {
                   const isPeriod = periodDays.has(format(date, 'yyyy-MM-dd'));
 
-                  // Get flow for this specific day
                   let flowIcon = null;
                   if (isPeriod && activeCycle?.dailyLogs) {
                     const log = activeCycle.dailyLogs[format(date, 'yyyy-MM-dd')];
-                    if(log) {
+                    if (log) {
                       switch (log.flow) {
                         case 'spotting':
                           flowIcon = <CircleDot className="h-2 w-2 text-red-300 absolute bottom-1.5" />;
@@ -293,12 +285,19 @@ export default function PeriodTrackerPage() {
                       }
                     }
                   }
+
+                  const buttonClasses = cn(
+                    "h-9 w-9 p-0 font-normal relative",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                    props.className
+                  );
                   
                   return (
-                    <div {...props} className={cn(props.className, 'relative')}>
+                    <button {...props} className={buttonClasses}>
                       {date.getDate()}
                       {flowIcon}
-                    </div>
+                    </button>
                   );
                 },
               }}
@@ -387,12 +386,12 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle } : { open: boole
             });
 
             toast({
-                description: t('PeriodTrackerPage.toast.periodUpdated', { date: format(date, 'LLL dd') }),
+                description: t('toast.periodUpdated', { date: format(date, 'LLL dd') }),
             });
             onOpenChange(false);
         } catch (error) {
             console.error('Error saving log:', error);
-             toast({ variant: 'destructive', title: t('PeriodTrackerPage.toast.logError.title'), description: t('PeriodTrackerPage.toast.logError.description') });
+             toast({ variant: 'destructive', title: t('toast.logError.title'), description: t('toast.logError.description') });
         } finally {
             setIsLoading(false);
         }
@@ -516,3 +515,5 @@ function BleedingHistory({ cycles }: { cycles: CycleEntry[] }) {
         </Card>
     );
 }
+
+    
