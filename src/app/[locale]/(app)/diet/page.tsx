@@ -193,15 +193,14 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
       </CardHeader>
       <CardContent className="space-y-4">
         {logs.map((log) => (
-          <MealLogCard key={log.id} log={log} />
+          <MealLogCard key={log.id} log={log} t={t} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function MealLogCard({ log }: { log: MealLog }) {
-  const t = useTranslations('DietPage.mealHistory');
+function MealLogCard({ log, t }: { log: MealLog, t: ReturnType<typeof useTranslations> }) {
 
   const nutritionInfo = [
     { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
@@ -241,3 +240,5 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   )
 }
+
+    
