@@ -129,10 +129,6 @@
         "startDate": { "type": "string", "format": "date-time" },
         "endDate": { "type": "string", "format": "date-time" },
         "duration": { "type": "number" },
-        "flowPattern": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
         "notes": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" }
       },
@@ -151,7 +147,8 @@
         },
         "painLevel": { "type": "number" },
         "mood": { "type": "string" },
-        "symptoms": { "type": "array", "items": { "type": "string" } }
+        "symptoms": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" }
       },
       "required": ["id", "date", "flowLevel"]
     },
@@ -166,6 +163,23 @@
         "predictedNextStart": { "type": "string", "format": "date-time" },
         "lastUpdated": { "type": "string", "format": "date-time" }
       }
+    },
+    "MealLog": {
+      "title": "MealLog",
+      "description": "Represents a single meal logged by the user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "description": { "type": "string", "description": "The user's description of the meal." },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "calories": { "type": "number" },
+        "protein": { "type": "number", "description": "in grams" },
+        "carbs": { "type": "number", "description": "in grams" },
+        "fat": { "type": "number", "description": "in grams" },
+        "fiber": { "type": "number", "description": "in grams" }
+      },
+      "required": ["id", "userId", "description", "createdAt"]
     }
   },
   "auth": {
@@ -211,6 +225,14 @@
           "entityName": "CommunityPost",
           "schema": { "$ref": "#/entities/CommunityPost" },
           "description": "Stores community posts accessible based on privacy settings."
+        }
+      },
+      {
+        "path": "/users/{userId}/mealLogs/{mealLogId}",
+        "definition": {
+          "entityName": "MealLog",
+          "schema": { "$ref": "#/entities/MealLog" },
+          "description": "Stores a user's meal log entries."
         }
       }
     ]

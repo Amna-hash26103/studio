@@ -166,8 +166,39 @@
     "errorMessage": "I’m sorry, something went wrong. Please try again later."
   },
   "DietPage": {
-    "title": "Diet AI",
-    "description": "Your personal guide to mindful nutrition and balanced eating."
+    "title": "Nourish AI",
+    "description": "Your personal guide to mindful nutrition and balanced eating.",
+    "logMeal": {
+      "title": "Log a Meal",
+      "description": "Describe what you ate, and our AI will estimate the nutritional content.",
+      "mealDescriptionLabel": "Meal Description",
+      "mealDescriptionPlaceholder": "e.g., A bowl of oatmeal with blueberries and almonds",
+      "logButton": "Analyze & Log Meal",
+      "loggingButton": "Analyzing..."
+    },
+    "mealHistory": {
+      "title": "Meal History",
+      "noHistory": "You haven't logged any meals yet. Add one above to get started!",
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat",
+      "fiber": "Fiber"
+    },
+    "aiChat": {
+      "title": "Ask Your Diet Guide",
+      "description": "Have questions about nutrition? Ask your AI assistant below."
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "Meal Logged!",
+        "description": "Your meal and its nutritional info have been saved."
+      },
+      "logError": {
+        "title": "Analysis Failed",
+        "description": "We couldn't analyze your meal right now. Please try again."
+      }
+    }
   },
   "EmotionalHealthPage": {
     "title": "Emotional Health AI",
