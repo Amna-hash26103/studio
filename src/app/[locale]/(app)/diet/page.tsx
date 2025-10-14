@@ -23,6 +23,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
+import { ChatInterface } from '@/components/chat-interface';
 
 type MealLog = {
   id: string;
@@ -44,7 +45,6 @@ const formSchema = z.object({
 
 export default function DietPage() {
   const t = useTranslations('DietPage');
-  const tToast = useTranslations('DietPage.toast');
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -84,16 +84,16 @@ export default function DietPage() {
       });
 
       toast({
-        title: tToast('logSuccess.title'),
-        description: tToast('logSuccess.description'),
+        title: t('toast.logSuccess.title'),
+        description: t('toast.logSuccess.description'),
       });
       form.reset();
     } catch (error) {
       console.error('Error logging meal:', error);
       toast({
         variant: 'destructive',
-        title: tToast('logError.title'),
-        description: tToast('logError.description'),
+        title: t('toast.logError.title'),
+        description: t('toast.logError.description'),
       });
     }
   };
@@ -241,6 +241,3 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   )
 }
-
-
-import { ChatInterface } from '@/components/chat-interface';
