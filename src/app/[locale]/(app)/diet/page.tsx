@@ -233,5 +233,3 @@ function MealLogCard({ log, t }: { log: MealLog, t: ReturnType<typeof useTransla
     </Card>
   )
 }
-
-    
