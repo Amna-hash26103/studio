@@ -181,8 +181,6 @@
     "title": "Cycle Tracker",
     "description": "Track your menstrual cycle to understand your body better.",
     "logPeriodTitle": "Log Your Period",
-    "logButton": "Log Period",
-    "loggingButton": "Logging...",
     "dialogs": {
       "start": {
         "title": "Start Period?",

@@ -181,8 +181,6 @@
     "title": "Cycle Tracker",
     "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
     "logPeriodTitle": "Apna Period Log Karein",
-    "logButton": "Period Log Karein",
-    "loggingButton": "Logging...",
     "dialogs": {
       "start": {
         "title": "Period Shuru Karein?",
