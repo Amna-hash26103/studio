@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -297,7 +296,7 @@ export default function PeriodTrackerPage() {
           </CardContent>
         </Card>
 
-        <BleedingHistory periods={pastCycles} />
+        <BleedingHistory periods={pastCycles} t={t} />
       </div>
 
        <AlertDialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
@@ -442,19 +441,15 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
 }
 
 
-function BleedingHistory({ periods }: { periods: Period[] }) {
-  const t = useTranslations('PeriodTrackerPage.bleedingHistory');
-  const firestore = useFirestore();
-  const { user } = useUser();
-
+function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string) => string }) {
   if (periods.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
+          <CardTitle>{t('bleedingHistory.title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('noHistory')}</p>
+          <p>{t('bleedingHistory.noHistory')}</p>
         </CardContent>
       </Card>
     );
@@ -463,7 +458,7 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
+        <CardTitle>{t('bleedingHistory.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {periods.map((period, index) => (
@@ -553,5 +548,3 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
     </Card>
   );
 }
-
-    
