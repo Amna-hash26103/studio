@@ -249,8 +249,10 @@
       "duration": "Muddat",
       "flowPattern": "Flow ka Pattern",
       "notes": "Notes",
-      "noNotes": "Is cycle ke liye koi logs nahi.",
+      "noNotes": "Is cycle ke liye koi notes nahi.",
       "days": "din"
     }
   }
 }
+
+    

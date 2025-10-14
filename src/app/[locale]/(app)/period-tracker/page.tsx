@@ -145,19 +145,12 @@ export default function PeriodTrackerPage() {
     if (activeCycle) {
       const activeCycleStart = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
       if (isBefore(dayStart, activeCycleStart)) {
-        // Clicked before the current active cycle, ask to start a new one (which will delete the old one)
         setDialogState({ showStart: true, date: dayStart });
       } else {
-        // It's within the active cycle range
         const isLogged = dailyLogs?.some(log => isSameDay(new Date(log.date.seconds * 1000), dayStart));
         if (isLogged) {
-          // If a log exists for this day, show the log dialog to edit it.
           setDialogState({ showLog: true, date: dayStart });
         } else if (isSameDay(dayStart, activeCycleStart) || isBefore(activeCycleStart, dayStart)) {
-            // Ask to log the day OR end the period. We'll simplify to two main prompts.
-            // If it's a new day in the cycle, ask to log. If they want to end it, they can pick a date.
-            // A simpler UX might be to just show the log dialog, and have an "end period" button inside.
-            // For now, let's have two distinct actions.
              if (isSameDay(dayStart, new Date(activeCycle.startDate.seconds * 1000)) || dailyLogs?.find(l => isSameDay(new Date(l.date.seconds * 1000), dayStart))) {
                  setDialogState({ showLog: true, date: dayStart });
              } else {
@@ -166,7 +159,6 @@ export default function PeriodTrackerPage() {
         }
       }
     } else {
-      // No active cycle, so any click is a potential start date.
       setDialogState({ showStart: true, date: dayStart });
     }
   };
@@ -203,7 +195,6 @@ export default function PeriodTrackerPage() {
 
         setDialogState({});
         setSelectedDate(startDate);
-        // Prompt to log the first day
         setTimeout(() => setDialogState({ showLog: true, date: startDate }), 500);
 
     } catch (error) {
@@ -388,11 +379,9 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
             };
 
             if (dailyLog) {
-                // Update existing log
                 const logDocRef = doc(dailyLogsColRef, dailyLog.id);
                 await updateDoc(logDocRef, logData);
             } else {
-                // Create new log
                 await addDoc(dailyLogsColRef, logData);
             }
 
@@ -540,8 +529,8 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
               {flowPattern.map((flow, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-1 p-1 rounded-md"
                   title={flow}
+                  className="flex items-center gap-1 p-1 rounded-md"
                 >
                   {flowIcons[flow.toLowerCase()]}
                 </div>
@@ -564,3 +553,5 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
     </Card>
   );
 }
+
+    
