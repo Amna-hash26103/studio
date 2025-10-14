@@ -518,10 +518,10 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
   const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
 
   const flowIcons: Record<string, React.ReactNode> = {
-    spotting: <CircleDot className="h-4 w-4 text-red-300" title={t('flowLevels.spotting')} />,
-    light: <Droplet className="h-4 w-4 text-red-400" title={t('flowLevels.light')} />,
-    medium: <Droplets className="h-4 w-4 text-red-500" title={t('flowLevels.medium')} />,
-    heavy: <Waves className="h-4 w-4 text-red-700" title={t('flowLevels.heavy')} />,
+    spotting: <span title={t('flowLevels.spotting')}><CircleDot className="h-4 w-4 text-red-300" /></span>,
+    light: <span title={t('flowLevels.light')}><Droplet className="h-4 w-4 text-red-400" /></span>,
+    medium: <span title={t('flowLevels.medium')}><Droplets className="h-4 w-4 text-red-500" /></span>,
+    heavy: <span title={t('flowLevels.heavy')}><Waves className="h-4 w-4 text-red-700" /></span>,
   };
   
   const startDate = new Date(period.startDate.seconds * 1000);
@@ -583,3 +583,4 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
     </Card>
   );
 }
+
