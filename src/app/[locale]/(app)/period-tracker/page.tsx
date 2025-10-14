@@ -346,7 +346,7 @@ export default function PeriodTrackerPage() {
                     <AlertDialogCancel disabled={isProcessing}>{t('dialogs.cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleStartPeriod} disabled={isProcessing}>
                         {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t('dialogs.start.confirm')}
+                        {t(dialogs.start.confirm)}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
