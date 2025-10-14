@@ -73,10 +73,7 @@
       },
       "error": {
         "title": "Login Nakam",
-        "default": "Ek na maloom ghalti hui. Barah-e-karam dobara koshish karein.",
-        "invalidCredential": "Aapka dakhil karda email ya password ghalat hai. Barah-e-karam apni credentials check karein aur dobara koshish karein.",
-        "userNotFound": "Is email address ke sath koi account nahi mila. Kya aap sign up karna chahenge?",
-        "wrongPassword": "Aapka dakhil karda password ghalat hai. Barah-e-karam dobara koshish karein."
+        "description": "Aapka dakhil karda email ya password ghalat hai. Barah-e-karam apni credentials check karein aur dobara koshish karein."
       }
     }
   },

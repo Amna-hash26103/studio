@@ -73,10 +73,7 @@
       },
       "error": {
         "title": "Login Failed",
-        "default": "An unknown error occurred. Please try again.",
-        "invalidCredential": "The email or password you entered is incorrect. Please check your credentials and try again.",
-        "userNotFound": "No account found with this email address. Would you like to sign up?",
-        "wrongPassword": "The password you entered is incorrect. Please try again."
+        "description": "The email or password you entered is incorrect. Please check your credentials and try again."
       }
     }
   },
