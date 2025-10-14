@@ -441,7 +441,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
 }
 
 
-function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string) => string }) {
+function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string, values?: any) => string }) {
   if (periods.length === 0) {
     return (
       <Card>
