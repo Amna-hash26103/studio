@@ -150,18 +150,16 @@ export default function PeriodTrackerPage() {
     if (activeCycle) {
       const activeCycleStart = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
       
-      // A day before the current cycle starts can only be a start date for a new cycle
       if (isBefore(dayStart, activeCycleStart)) {
         setDialogState({ showStart: true, date: dayStart });
       } 
-      // A day within the current cycle
       else {
-        // If it's not the start date, it could be the end date
-        if (!isSameDay(dayStart, activeCycleStart)) {
-            setDialogState({ showEnd: true, date: dayStart });
+        // A day on or after the current cycle's start can either be a log entry or an end date
+        if (isSameDay(dayStart, activeCycleStart)) {
+          setDialogState({ showLog: true, date: dayStart });
+        } else {
+          setDialogState({ showEnd: true, date: dayStart }); // This dialog will also have a log button
         }
-        // Always allow logging on or after the start date
-        // setDialogState({ showLog: true, date: dayStart });
       }
     } else {
       // No active cycle, so any day can be a start date
@@ -178,8 +176,6 @@ export default function PeriodTrackerPage() {
     try {
         const batch = writeBatch(firestore);
 
-        // If there's an active cycle, we assume this new start date means the old one was a mistake.
-        // This will delete the previous unterminated cycle. A more complex UI could ask the user.
         if (activeCycle) {
             const activeDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
             batch.delete(activeDocRef);
@@ -191,7 +187,6 @@ export default function PeriodTrackerPage() {
             createdAt: serverTimestamp(),
         };
 
-        // Create a new period document
         const newPeriodRef = doc(periodsCollectionRef);
         batch.set(newPeriodRef, newPeriodData);
         
@@ -202,10 +197,8 @@ export default function PeriodTrackerPage() {
             description: t('toast.logSuccess.description'),
         });
 
-        // Close the dialog and open the logging dialog for the new start date
         setDialogState({});
         setSelectedDate(startDate);
-        // Delay to allow state to update and avoid dialog race conditions
         setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
 
     } catch (error) {
@@ -217,6 +210,7 @@ export default function PeriodTrackerPage() {
         });
     } finally {
         setIsProcessing(false);
+        setDialogState({});
     }
   };
 
@@ -261,8 +255,15 @@ export default function PeriodTrackerPage() {
           });
       } finally {
           setIsProcessing(false);
+          setDialogState({});
       }
   };
+  
+  const handleOpenLogDialog = () => {
+    const date = dialogState.date;
+    setDialogState({ showLog: true, date: date });
+  };
+
 
   const periodDaysModifier = Array.from(periodDays).map(
     (dayStr) => new Date(`${dayStr}T00:00:00`)
@@ -360,6 +361,7 @@ export default function PeriodTrackerPage() {
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
+                    <Button variant="outline" onClick={handleOpenLogDialog} disabled={isProcessing}>{t('logFlowDialog.title', { date: '' }).replace(' for ', '')}</Button>
                     <AlertDialogCancel disabled={isProcessing}>{t('dialogs.cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleEndPeriod} disabled={isProcessing}>
                         {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
