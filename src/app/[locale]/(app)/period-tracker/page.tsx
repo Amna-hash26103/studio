@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -15,11 +16,7 @@ import {
   orderBy,
   doc,
   writeBatch,
-  where,
-  getDocs,
   serverTimestamp,
-  getDoc,
-  setDoc,
   deleteDoc,
 } from 'firebase/firestore';
 import { Calendar } from '@/components/ui/calendar';
@@ -29,7 +26,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -54,19 +50,13 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
-import { format, differenceInDays, startOfDay, isBefore } from 'date-fns';
+import { format, differenceInDays, startOfDay, isBefore, isSameDay, addDays } from 'date-fns';
 import {
   Loader2,
   CircleDot,
   Droplet,
   Droplets,
   Waves,
-  HeartCrack,
-  Smile,
-  Meh,
-  Frown,
-  Plus,
-  Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -76,13 +66,12 @@ type Period = {
   startDate: { seconds: number; nanoseconds: number };
   endDate?: { seconds: number; nanoseconds: number };
   duration?: number;
-  flowPattern?: string[];
   notes?: string;
-  dailyLogs?: Record<string, DailyLog>;
+  createdAt: { seconds: number; nanoseconds: number };
 };
 
 type DailyLog = {
-  id?: string; // Not always present on the sub-object
+  id: string;
   date: { seconds: number; nanoseconds: number };
   flowLevel: 'spotting' | 'light' | 'medium' | 'heavy';
   painLevel?: number;
@@ -117,54 +106,66 @@ export default function PeriodTrackerPage() {
     return query(periodsCollectionRef, orderBy('startDate', 'desc'));
   }, [periodsCollectionRef]);
 
-  const { data: periods, isLoading: isLoadingPeriods } = useCollection<Period>(
-    periodsQuery
-  );
+  const { data: periods, isLoading: isLoadingPeriods } = useCollection<Period>(periodsQuery);
 
-  const { activeCycle, pastCycles } = useMemo(() => {
-    const active = periods?.find((p) => !p.endDate) || null;
-    const past = periods?.filter((p) => p.endDate) || [];
-    return { activeCycle: active, pastCycles: past };
-  }, [periods]);
+  const activeCycle = useMemo(() => periods?.find((p) => !p.endDate) || null, [periods]);
+  const pastCycles = useMemo(() => periods?.filter((p) => p.endDate) || [], [periods]);
+
+  const dailyLogsCollectionRef = useMemoFirebase(() => {
+      if (!firestore || !user || !activeCycle) return null;
+      return collection(firestore, 'users', user.uid, 'periods', activeCycle.id, 'dailyLogs');
+  }, [firestore, user, activeCycle]);
+  
+  const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
+
 
   const periodDays = useMemo(() => {
     const days = new Set<string>();
     periods?.forEach((period) => {
-      if (period.startDate) {
-        const start = startOfDay(new Date(period.startDate.seconds * 1000));
-        const end = period.endDate
-          ? startOfDay(new Date(period.endDate.seconds * 1000))
-          : activeCycle ? (dialogState.date ? dialogState.date : new Date()) : start;
+      const start = startOfDay(new Date(period.startDate.seconds * 1000));
+      const end = period.endDate
+        ? startOfDay(new Date(period.endDate.seconds * 1000))
+        : startOfDay(new Date());
 
-        let current = new Date(start);
-        while (current <= end) {
-          days.add(format(current, 'yyyy-MM-dd'));
-          current.setDate(current.getDate() + 1);
-        }
+      let current = new Date(start);
+      while (current <= end) {
+        days.add(format(current, 'yyyy-MM-dd'));
+        current = addDays(current, 1);
       }
     });
     return days;
-  }, [periods, activeCycle, dialogState.date]);
+  }, [periods]);
 
   const handleDayClick = (day: Date) => {
-    setSelectedDate(day);
-    const dayStr = format(day, 'yyyy-MM-dd');
-    const startOfDayClicked = startOfDay(day);
-    
+    const dayStart = startOfDay(day);
+    setSelectedDate(dayStart);
+
     if (activeCycle) {
       const activeCycleStart = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-      if (isBefore(startOfDayClicked, activeCycleStart)) {
-         setDialogState({ showStart: true, date: day });
+      if (isBefore(dayStart, activeCycleStart)) {
+        // Clicked before the current active cycle, ask to start a new one (which will delete the old one)
+        setDialogState({ showStart: true, date: dayStart });
       } else {
-         const isLogged = activeCycle.dailyLogs && activeCycle.dailyLogs[dayStr];
-         if(isLogged) {
-            setDialogState({ showLog: true, date: day });
-         } else {
-            setDialogState({ showEnd: true, date: day });
-         }
+        // It's within the active cycle range
+        const isLogged = dailyLogs?.some(log => isSameDay(new Date(log.date.seconds * 1000), dayStart));
+        if (isLogged) {
+          // If a log exists for this day, show the log dialog to edit it.
+          setDialogState({ showLog: true, date: dayStart });
+        } else if (isSameDay(dayStart, activeCycleStart) || isBefore(activeCycleStart, dayStart)) {
+            // Ask to log the day OR end the period. We'll simplify to two main prompts.
+            // If it's a new day in the cycle, ask to log. If they want to end it, they can pick a date.
+            // A simpler UX might be to just show the log dialog, and have an "end period" button inside.
+            // For now, let's have two distinct actions.
+             if (isSameDay(dayStart, new Date(activeCycle.startDate.seconds * 1000)) || dailyLogs?.find(l => isSameDay(new Date(l.date.seconds * 1000), dayStart))) {
+                 setDialogState({ showLog: true, date: dayStart });
+             } else {
+                 setDialogState({ showEnd: true, date: dayStart });
+             }
+        }
       }
     } else {
-      setDialogState({ showStart: true, date: day });
+      // No active cycle, so any click is a potential start date.
+      setDialogState({ showStart: true, date: dayStart });
     }
   };
 
@@ -177,18 +178,15 @@ export default function PeriodTrackerPage() {
     try {
         const batch = writeBatch(firestore);
 
-        // If there's an active cycle, delete it to start a new one.
         if (activeCycle) {
             const activeDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
             batch.delete(activeDocRef);
         }
         
-        // Overwrite any existing period that this new one might overlap with
         const newPeriodData = {
             userId: user.uid,
             startDate: startDate,
             createdAt: serverTimestamp(),
-            dailyLogs: {},
         };
 
         const newPeriodRef = doc(periodsCollectionRef);
@@ -203,6 +201,8 @@ export default function PeriodTrackerPage() {
 
         setDialogState({});
         setSelectedDate(startDate);
+        // Prompt to log the first day
+        setTimeout(() => setDialogState({ showLog: true, date: startDate }), 500);
 
     } catch (error) {
         console.error('Error starting period:', error);
@@ -214,52 +214,51 @@ export default function PeriodTrackerPage() {
     } finally {
         setIsProcessing(false);
     }
-};
+  };
 
-const handleEndPeriod = async () => {
-    if (!dialogState.date || !user || !firestore || !activeCycle) return;
-    setIsProcessing(true);
+  const handleEndPeriod = async () => {
+      if (!dialogState.date || !user || !firestore || !activeCycle) return;
+      setIsProcessing(true);
 
-    const endDate = startOfDay(dialogState.date);
-    const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
-    
-    if (isBefore(endDate, startDate)) {
-        toast({
-            variant: 'destructive',
-            title: t('toast.endDateError.title'),
-            description: t('toast.endDateError.description'),
-        });
-        setIsProcessing(false);
-        return;
-    }
+      const endDate = startOfDay(dialogState.date);
+      const startDate = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+      
+      if (isBefore(endDate, startDate)) {
+          toast({
+              variant: 'destructive',
+              title: t('toast.endDateError.title'),
+              description: t('toast.endDateError.description'),
+          });
+          setIsProcessing(false);
+          return;
+      }
 
-    try {
-        const periodDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
-        const duration = differenceInDays(endDate, startDate) + 1;
-        
-        await updateDoc(periodDocRef, {
-            endDate: endDate,
-            duration: duration,
-        });
+      try {
+          const periodDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
+          const duration = differenceInDays(endDate, startDate) + 1;
+          
+          await updateDoc(periodDocRef, {
+              endDate: endDate,
+              duration: duration,
+          });
 
-        toast({
-            title: t('toast.logSuccess.title'),
-            description: "Your period has been marked as ended.",
-        });
+          toast({
+              title: t('toast.logSuccess.title'),
+              description: "Your period has been marked as ended.",
+          });
 
-        setDialogState({});
-    } catch (error) {
-        console.error('Error ending period:', error);
-        toast({
-            variant: 'destructive',
-            title: t('toast.logError.title'),
-            description: t('toast.logError.description'),
-        });
-    } finally {
-        setIsProcessing(false);
-    }
-};
-
+          setDialogState({});
+      } catch (error) {
+          console.error('Error ending period:', error);
+          toast({
+              variant: 'destructive',
+              title: t('toast.logError.title'),
+              description: t('toast.logError.description'),
+          });
+      } finally {
+          setIsProcessing(false);
+      }
+  };
 
   const periodDaysModifier = Array.from(periodDays).map(
     (dayStr) => new Date(`${dayStr}T00:00:00`)
@@ -314,7 +313,7 @@ const handleEndPeriod = async () => {
         <BleedingHistory periods={pastCycles} />
       </div>
 
-       <AlertDialog open={dialogState.showStart} onOpenChange={() => setDialogState({})}>
+       <AlertDialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>{t('dialogs.start.title')}</AlertDialogTitle>
@@ -332,7 +331,7 @@ const handleEndPeriod = async () => {
             </AlertDialogContent>
         </AlertDialog>
 
-        <AlertDialog open={dialogState.showEnd} onOpenChange={() => setDialogState({})}>
+        <AlertDialog open={dialogState.showEnd} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>{t('dialogs.end.title')}</AlertDialogTitle>
@@ -353,20 +352,21 @@ const handleEndPeriod = async () => {
         {dialogState.date && activeCycle && (
             <LogFlowDialog
                 open={!!dialogState.showLog}
-                onOpenChange={() => setDialogState({})}
+                onOpenChange={(isOpen) => !isOpen && setDialogState({})}
                 date={dialogState.date}
                 activeCycle={activeCycle}
+                dailyLog={dailyLogs?.find(log => isSameDay(new Date(log.date.seconds * 1000), dialogState.date!))}
             />
         )}
     </>
   );
 }
 
-function LogFlowDialog({ open, onOpenChange, date, activeCycle }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period }) {
+function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog }) {
     const t = useTranslations('PeriodTrackerPage.logFlowDialog');
-    const { user, firestore } = useFirebase();
+    const { user } = useUser();
+    const firestore = useFirestore();
     const { toast } = useToast();
-    const dayStr = format(date, 'yyyy-MM-dd');
     
     const [flow, setFlow] = useState<'spotting' | 'light' | 'medium' | 'heavy'>('light');
     const [notes, setNotes] = useState('');
@@ -374,26 +374,31 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle }: { open: boolea
     
     React.useEffect(() => {
         if(open && date) {
-            const log = activeCycle?.dailyLogs?.[dayStr];
-            setFlow(log?.flowLevel || 'light');
-            setNotes(log?.notes || '');
+            setFlow(dailyLog?.flowLevel || 'light');
+            setNotes(dailyLog?.notes || '');
         }
-    }, [open, date, activeCycle, dayStr]);
+    }, [open, date, dailyLog]);
     
     const handleSave = async () => {
         if (!user || !firestore) return;
         setIsSaving(true);
         try {
-            const periodDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
-            const newLog: DailyLog = {
-                date: date,
+            const dailyLogsColRef = collection(firestore, 'users', user.uid, 'periods', activeCycle.id, 'dailyLogs');
+            
+            const logData = {
+                date: startOfDay(date),
                 flowLevel: flow,
                 notes: notes,
             };
 
-            await updateDoc(periodDocRef, {
-                [`dailyLogs.${dayStr}`]: newLog
-            });
+            if (dailyLog) {
+                // Update existing log
+                const logDocRef = doc(dailyLogsColRef, dailyLog.id);
+                await updateDoc(logDocRef, logData);
+            } else {
+                // Create new log
+                await addDoc(dailyLogsColRef, logData);
+            }
 
             toast({ title: t('toast.logSuccess.title') });
             onOpenChange(false);
@@ -425,10 +430,10 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle }: { open: boolea
                         <Label>{t('flow.label')}</Label>
                         <RadioGroup value={flow} onValueChange={(value) => setFlow(value as any)} className="grid grid-cols-2 gap-4">
                             {flowOptions.map(option => (
-                                <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground", {"bg-primary text-primary-foreground": flow === option.value})}>
+                                <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"border-primary bg-primary/10 text-primary": flow === option.value})}>
                                     <RadioGroupItem value={option.value} id={option.value} className="sr-only" />
-                                    {React.cloneElement(option.icon as React.ReactElement, { className: cn('h-5 w-5', flow === option.value ? 'text-primary-foreground' : 'text-red-500')})}
-                                    <span className="mt-2 text-sm font-medium">{option.label}</span>
+                                    {React.cloneElement(option.icon as React.ReactElement, { className: cn('h-5 w-5 mb-2', flow === option.value ? 'text-primary' : 'text-red-500/50')})}
+                                    <span className="text-sm font-medium">{option.label}</span>
                                 </Label>
                            ))}
                         </RadioGroup>
@@ -451,15 +456,11 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle }: { open: boolea
     )
 }
 
+
 function BleedingHistory({ periods }: { periods: Period[] }) {
   const t = useTranslations('PeriodTrackerPage.bleedingHistory');
-
-  const flowIcons: Record<string, React.ReactNode> = {
-    spotting: <CircleDot className="h-4 w-4 text-red-300" title="Spotting" />,
-    light: <Droplet className="h-4 w-4 text-red-400" title="Light" />,
-    medium: <Droplets className="h-4 w-4 text-red-500" title="Medium" />,
-    heavy: <Waves className="h-4 w-4 text-red-700" title="Heavy" />,
-  };
+  const firestore = useFirestore();
+  const { user } = useUser();
 
   if (periods.length === 0) {
     return (
@@ -480,70 +481,92 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
         <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {periods.map((period, index) => {
-          const startDate = new Date(period.startDate.seconds * 1000);
-          const endDate = period.endDate
-            ? new Date(period.endDate.seconds * 1000)
-            : new Date();
-          
-          const dailyLogs = period.dailyLogs ? Object.values(period.dailyLogs).sort((a,b) => a.date.seconds - b.date.seconds) : [];
-          const allNotes = dailyLogs.map(log => log.notes).filter(Boolean).join('\n');
-          const flowPattern = dailyLogs.map(log => log.flowLevel);
-
-          return (
-            <Card key={period.id} className="bg-secondary/50">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <p className="text-lg font-semibold">
-                    {t('cycle')} #{periods.length - index}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {format(startDate, 'MMM dd')} -{' '}
-                    {format(endDate, 'MMM dd, yyyy')}
-                  </p>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between items-baseline">
-                  <span className="text-sm font-medium">{t('duration')}:</span>
-                  <span className="text-sm">
-                    {period.duration || 0} {t('days')}
-                  </span>
-                </div>
-                {flowPattern && flowPattern.length > 0 && (
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium">
-                      {t('flowPattern')}:
-                    </span>
-                    <div className="flex gap-2 flex-wrap">
-                      {flowPattern.map((flow, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center gap-1 p-1 rounded-md"
-                          title={flow}
-                        >
-                          {flowIcons[flow.toLowerCase()]}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                {allNotes && (
-                  <div className="space-y-1">
-                    <span className="text-sm font-medium">{t('notes')}:</span>
-                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {allNotes || t('noNotes')}
-                    </p>
-                  </div>
-                )}
-                 {!allNotes && (!flowPattern || flowPattern.length === 0) && (
-                    <p className="text-sm text-muted-foreground">{t('noNotes')}</p>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+        {periods.map((period, index) => (
+          <PastCycleCard key={period.id} period={period} index={periods.length - index} />
+        ))}
       </CardContent>
     </Card>
   );
 }
+
+function PastCycleCard({ period, index }: { period: Period, index: number }) {
+  const t = useTranslations('PeriodTrackerPage.bleedingHistory');
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const dailyLogsCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'users', user.uid, 'periods', period.id, 'dailyLogs');
+  }, [firestore, user, period.id]);
+
+  const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
+
+  const flowIcons: Record<string, React.ReactNode> = {
+    spotting: <CircleDot className="h-4 w-4 text-red-300" title="Spotting" />,
+    light: <Droplet className="h-4 w-4 text-red-400" title="Light" />,
+    medium: <Droplets className="h-4 w-4 text-red-500" title="Medium" />,
+    heavy: <Waves className="h-4 w-4 text-red-700" title="Heavy" />,
+  };
+  
+  const startDate = new Date(period.startDate.seconds * 1000);
+  const endDate = period.endDate ? new Date(period.endDate.seconds * 1000) : new Date();
+  
+  const sortedLogs = useMemo(() => dailyLogs?.sort((a,b) => a.date.seconds - b.date.seconds) || [], [dailyLogs]);
+  const allNotes = sortedLogs.map(log => log.notes).filter(Boolean).join('\n');
+  const flowPattern = sortedLogs.map(log => log.flowLevel);
+
+  return (
+    <Card className="bg-secondary/50">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <p className="text-lg font-semibold">
+            {t('cycle')} #{index}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            {format(startDate, 'MMM dd')} -{' '}
+            {format(endDate, 'MMM dd, yyyy')}
+          </p>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div className="flex justify-between items-baseline">
+          <span className="text-sm font-medium">{t('duration')}:</span>
+          <span className="text-sm">
+            {period.duration || 0} {t('days')}
+          </span>
+        </div>
+        {flowPattern.length > 0 && (
+          <div className="space-y-1">
+            <span className="text-sm font-medium">
+              {t('flowPattern')}:
+            </span>
+            <div className="flex gap-2 flex-wrap">
+              {flowPattern.map((flow, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-1 p-1 rounded-md"
+                  title={flow}
+                >
+                  {flowIcons[flow.toLowerCase()]}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {allNotes && (
+          <div className="space-y-1">
+            <span className="text-sm font-medium">{t('notes')}:</span>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {allNotes}
+            </p>
+          </div>
+        )}
+        {!allNotes && flowPattern.length === 0 && (
+            <p className="text-sm text-muted-foreground">{t('noNotes')}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+    

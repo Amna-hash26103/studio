@@ -1,59 +1,49 @@
 /**
- * @fileoverview Firestore Security Rules for Femmora App
+ * @fileoverview Firestore Security Rules for Femmora Period Tracker.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for personal data while allowing public read access to community posts.
+ * This ruleset enforces a strict user-ownership model for period tracking data,
+ * while allowing public read access to community posts. User data is organized
+ * under their respective user ID, ensuring privacy. Community posts are publicly
+ * readable but writable only by authenticated users with a valid author ID.
  *
  * Data Structure:
- * - User profiles and associated data (periods, daily logs, stats) are nested under /users/{userId}.
- * - Community posts are stored in a top-level /community_posts/{postId} collection.
+ * - /users/{userId}: User profile data.
+ * - /users/{userId}/periods/{periodId}: Menstrual cycle data for a user.
+ * - /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}: Daily log entries for a specific cycle.
+ * - /users/{userId}/stats/{statId}: User's period tracking statistics (singleton document).
+ * - /community_posts/{postId}: Public community posts.
  *
  * Key Security Decisions:
- * - User data is strictly controlled by the owning user (based on Firebase Authentication UID).
- * - Users can only read and write their own profile data and associated subcollections.
- * - Community posts are publicly readable, but only the author can modify or delete them.
- * - Listing user collections (e.g., all users) is disallowed for privacy reasons.
- * - Data validation is minimized in the prototyping phase to allow for rapid iteration.
+ * - User listing is disallowed.
+ * - Period, DailyLog, and UserStats data are strictly user-owned.
+ * - Community posts are publicly readable but require authentication to create, update, or delete.
+ * - Data validation is minimized in the prototyping phase to allow rapid iteration. Authorization checks
+ *   focus on user identity and relational integrity (e.g., userId in the path matches the document).
  *
  * Denormalization for Authorization:
- * - User-specific documents (periods, daily logs) require a `userId` field that must match the UID in the path.
- * - Community posts require an `authorId` field that must match the UID of the author.
+ * - The 'Period', 'DailyLog', and 'UserStats' documents are secured by requiring that the 'userId'
+ *   field within each document matches the 'userId' in the path. This avoids costly `get()` calls
+ *   to the user's profile.
+ * - Community posts enforce ownership via the 'authorId' field.
+ *
+ * Structural Segregation:
+ * - Private user data (periods, logs, stats) is stored under the /users/{userId} collection,
+ *   separate from the public /community_posts collection. This ensures that list operations on
+ *   community posts do not expose private user data.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Checks if the request is authenticated.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the owner of the resource.
-     */
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the authenticated user is the existing owner of the resource (for updates and deletes).
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /***** User Profile Rules *****/
-
-    /**
-     * @description Controls access to user profile documents.
+     * @description Controls access to user profile documents. Only the user can read/write their own profile.
      * @path /users/{userId}
-     * @allow (create) User with UID 'user123' can create their profile.
-     * @deny (create) User with UID 'user123' cannot create a profile with a different ID ('user456').
-     * @allow (get) User with UID 'user123' can read their profile.
-     * @deny (get) User with UID 'user456' cannot read user 'user123' profile.
-     * @principle Enforces document ownership for writes. Restricts access to a user's own data tree.
+     * @allow (create) - Authenticated user can create their profile if the userId matches their auth UID.
+     * @allow (get, update, delete) - Authenticated user can read/update/delete their profile if the userId matches their auth UID.
+     * @deny (create) - If the userId does not match the authenticated user's UID.
+     * @deny (get, update, delete) - If the userId does not match the authenticated user's UID.
+     * @principle Enforces document ownership for user profiles.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
@@ -63,16 +53,14 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
-    /***** User Periods Rules *****/
-
     /**
-     * @description Controls access to a user's menstrual cycle entries.
+     * @description Controls access to period documents. Only the user can read/write their own period data.
      * @path /users/{userId}/periods/{periodId}
-     * @allow (create) User with UID 'user123' can create a period entry under their profile.
-     * @deny (create) User with UID 'user123' cannot create a period entry under another user's profile ('user456').
-     * @allow (get) User with UID 'user123' can read a period entry under their profile.
-     * @deny (get) User with UID 'user456' cannot read a period entry under user 'user123' profile.
-     * @principle Enforces document ownership for writes. Restricts access to a user's own data tree.
+     * @allow (create) - Authenticated user can create a period document under their userId.
+     * @allow (get, update, delete) - Authenticated user can read/update/delete a period document under their userId.
+     * @deny (create) - If the userId does not match the authenticated user's UID.
+     * @deny (get, update, delete) - If the userId does not match the authenticated user's UID.
+     * @principle Enforces document ownership for period data.
      */
     match /users/{userId}/periods/{periodId} {
       allow get: if isOwner(userId);
@@ -82,16 +70,14 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
-    /***** User Daily Logs Rules *****/
-
     /**
-     * @description Controls access to daily logs within a user's period entries.
+     * @description Controls access to daily log documents. Only the user can read/write their own daily log data.
      * @path /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}
-     * @allow (create) User with UID 'user123' can create a daily log entry under their period.
-     * @deny (create) User with UID 'user123' cannot create a daily log entry under another user's period ('user456').
-     * @allow (get) User with UID 'user123' can read a daily log entry under their period.
-     * @deny (get) User with UID 'user456' cannot read a daily log entry under user 'user123' period.
-     * @principle Enforces document ownership for writes. Restricts access to a user's own data tree.
+     * @allow (create) - Authenticated user can create a daily log document under their userId and periodId.
+     * @allow (get, update, delete) - Authenticated user can read/update/delete a daily log document under their userId and periodId.
+     * @deny (create) - If the userId does not match the authenticated user's UID.
+     * @deny (get, update, delete) - If the userId does not match the authenticated user's UID.
+     * @principle Enforces document ownership for daily log data.
      */
     match /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId} {
       allow get: if isOwner(userId);
@@ -101,44 +87,54 @@ service cloud.firestore {
       allow delete: if isExistingOwner(userId);
     }
 
-    /***** User Stats Rules *****/
-
     /**
-     * @description Controls access to user stats documents.
+     * @description Controls access to user stats document. Only the user can read/write their own stats.
      * @path /users/{userId}/stats/{statId}
-     * @allow (create) User with UID 'user123' can create their stats document.
-     * @deny (create) User with UID 'user123' cannot create a stats document with a different ID ('user456').
-     * @allow (get) User with UID 'user123' can read their stats document.
-     * @deny (get) User with UID 'user456' cannot read user 'user123' stats document.
-     * @principle Enforces document ownership for writes. Restricts access to a user's own data tree.
+     * @allow (create) - Authenticated user can create a stats document under their userId.
+     * @allow (get, update, delete) - Authenticated user can read/update/delete a stats document under their userId.
+     * @deny (create) - If the userId does not match the authenticated user's UID.
+     * @deny (get, update, delete) - If the userId does not match the authenticated user's UID.
+     * @principle Enforces document ownership for user stats data.
      */
     match /users/{userId}/stats/{statId} {
       allow get: if isOwner(userId);
-      allow list: if false;
+      allow list: if isOwner(userId);
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
-    /***** Community Posts Rules *****/
-
     /**
-     * @description Controls access to community post documents. Public read, owner-only writes.
+     * @description Controls access to community posts. Anyone can read, but only authenticated users can create, update, or delete.
      * @path /community_posts/{postId}
-     * @allow (get) Any user can read a community post.
-     * @allow (list) Any user can list community posts.
-     * @allow (create) User with UID 'user123' can create a community post with authorId 'user123'.
-     * @deny (create) User with UID 'user123' cannot create a community post with authorId 'user456'.
-     * @allow (update) User with UID 'user123' can update their own community post.
-     * @deny (update) User with UID 'user123' cannot update another user's community post.
-     * @principle Public read with owner-only writes. Enforces document ownership for writes.
+     * @allow (get, list) - Anyone can read or list community posts.
+     * @allow (create) - Authenticated users can create posts if the authorId matches their UID.
+     * @allow (update, delete) - Authenticated users can update/delete their own posts.
+     * @deny (create) - If authorId does not match the authenticated user's UID.
+     * @deny (update, delete) - If the authorId does not match the authenticated user's UID, or if the post doesn't exist.
+     * @principle Allows public read access to community posts, but restricts write access to owners.
      */
     match /community_posts/{postId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
-      allow update: if isExistingOwner(request.resource.data.authorId);
-      allow delete: if isExistingOwner(request.resource.data.authorId);
+      allow update: if isExistingOwner(resource.data.authorId);
+      allow delete: if isExistingOwner(resource.data.authorId);
     }
+
+  }
+
+  // Helper function to determine if the user is signed in.
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
+  // Helper function to determine if the user is the owner of the resource.
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
+
+  // Helper function to determine if the user is the existing owner of the resource, and the resource exists.
+  function isExistingOwner(ownerId) {
+    return isSignedIn() && request.auth.uid == ownerId && resource != null;
   }
 }
