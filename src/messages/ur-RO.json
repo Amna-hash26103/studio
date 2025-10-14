@@ -72,8 +72,11 @@
         "description": "Wapsi par khush aamdeed!"
       },
       "error": {
-        "title": "Oh no! Kuch ghalat ho gaya.",
-        "description": "Ghalat email ya password. Barah-e-karam dobara koshish karein."
+        "title": "Login Nakam",
+        "default": "Ek na maloom ghalti hui. Barah-e-karam dobara koshish karein.",
+        "invalidCredential": "Aapka dakhil karda email ya password ghalat hai. Barah-e-karam apni credentials check karein aur dobara koshish karein.",
+        "userNotFound": "Is email address ke sath koi account nahi mila. Kya aap sign up karna chahenge?",
+        "wrongPassword": "Aapka dakhil karda password ghalat hai. Barah-e-karam dobara koshish karein."
       }
     }
   },
@@ -182,23 +185,37 @@
     "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
     "logPeriodTitle": "Apna Period Log Karein",
     "dialogs": {
+      "cancel": "Cancel",
       "start": {
-        "title": "Period Shuru Karein?",
-        "description": "Kya aap {date} ko naya period shuru karna chahti hain?",
-        "confirm": "Haan, Period Shuru Karein"
+        "title": "Naya Period Shuru Karein?",
+        "description": "Kya aap {date} ko apna period shuru karna chahti hain?",
+        "confirm": "Period Shuru Karein"
       },
       "end": {
         "title": "Period Khatam Karein?",
-        "description": "Kya aap apna mojooda period {date} ko khatam karna chahti hain?",
-        "confirm": "Haan, Period Khatam Karein"
+        "description": "Kya aap {date} ko apna period khatam karna chahti hain?",
+        "confirm": "Period Khatam Karein"
+      }
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "Success",
+        "description": "Aapka data save ho gaya hai."
       },
-      "cancel": "Cancel"
+      "logError": {
+        "title": "Error",
+        "description": "Kuch ghalat ho gaya. Barah-e-karam dobara koshish karein."
+      },
+      "endDateError": {
+        "title": "Ghalat End Date",
+        "description": "End date start date se pehle nahi ho sakti."
+      }
     },
     "logFlowDialog": {
       "title": "{date} ke liye Log",
-      "description": "Is din ke liye apna flow, alamat, aur koi bhi notes record karein.",
+      "description": "Apna flow level select karein aur optional notes shamil karein.",
       "flow": {
-        "label": "Flow ki Shiddat",
+        "label": "Flow Level",
         "spotting": "Dhabba",
         "light": "Halka",
         "medium": "Darmiyana",
@@ -206,40 +223,16 @@
       },
       "notes": {
         "label": "Notes",
-        "placeholder": "Is din ke liye yaad rakhne ke liye kuch bhi..."
+        "placeholder": "Koi alamat ya tabsira shamil karein..."
       },
-      "save": "Log Save Karein",
       "cancel": "Cancel",
+      "save": "Save",
       "toast": {
-        "logSuccess": {
-          "title": "Log Save Hogaya"
-        },
+        "logSuccess": { "title": "Kamyabi se save ho gaya" },
         "logError": {
-          "title": "Oh No!",
-          "description": "Aapka log save nahi ho saka. Barah-e-karam dobara koshish karein."
+          "title": "Save karne mein nakami",
+          "description": "Barah-e-karam apna connection check karein aur dobara koshish karein."
         }
-      }
-    },
-    "toast": {
-      "logSuccess": {
-        "title": "Period Log Hogaya",
-        "description": "Aapka cycle kamyabi se record ho gaya hai."
-      },
-      "logError": {
-        "title": "Oh No!",
-        "description": "Aapka cycle save nahi ho saka. Barah-e-karam dobara koshish karein."
-      },
-      "endDateError": {
-        "title": "Ghalat Tareekh",
-        "description": "End date start date se pehle nahi ho sakti."
-      },
-      "deleteSuccess": {
-        "title": "Entry Delete Hogayi",
-        "description": "Cycle ki entry hata di gayi hai."
-      },
-      "deleteError": {
-        "title": "Delete Nakam",
-        "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
       }
     },
     "bleedingHistory": {

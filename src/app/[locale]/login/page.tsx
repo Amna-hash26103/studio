@@ -60,10 +60,19 @@ export default function LoginPage() {
       router.push('/feed');
     } catch (error: any) {
       console.error('Error signing in:', error);
+      let description = t('toast.error.default');
+      if (error.code === 'auth/invalid-credential') {
+        description = t('toast.error.invalidCredential');
+      } else if (error.code === 'auth/user-not-found') {
+        description = t('toast.error.userNotFound');
+      } else if (error.code === 'auth/wrong-password') {
+        description = t('toast.error.wrongPassword');
+      }
+      
       toast({
         variant: 'destructive',
         title: t('toast.error.title'),
-        description: t('toast.error.description'),
+        description: description,
       });
     }
   }
