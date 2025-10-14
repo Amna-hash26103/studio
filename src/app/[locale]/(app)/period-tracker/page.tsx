@@ -509,7 +509,6 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
 
 function PastCycleCard({ period, index }: { period: Period, index: number }) {
   const t = useTranslations('PeriodTrackerPage.bleedingHistory');
-  const tFlows = useTranslations('PeriodTrackerPage.bleedingHistory.flowLevels');
   const { user } = useUser();
   const firestore = useFirestore();
 
@@ -561,7 +560,7 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
             </span>
             <div className="flex gap-2 flex-wrap">
               {flowPattern.map((flow, i) => (
-                <span key={i} title={tFlows(flow)}>
+                <span key={i} title={t(`flowLevels.${flow}`)}>
                   {flowIcons[flow.toLowerCase()]}
                 </span>
               ))}
@@ -583,5 +582,3 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
     </Card>
   );
 }
-
-    
