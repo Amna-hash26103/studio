@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -191,15 +192,15 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
       </CardHeader>
       <CardContent className="space-y-4">
         {logs.map((log) => (
-          <MealLogCard key={log.id} log={log} t={t} />
+          <MealLogCard key={log.id} log={log} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function MealLogCard({ log, t }: { log: MealLog, t: ReturnType<typeof useTranslations> }) {
-
+function MealLogCard({ log }: { log: MealLog }) {
+  const t = useTranslations('DietPage.mealHistory');
   const nutritionInfo = [
     { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
     { label: t('protein'), value: log.protein.toFixed(1), unit: 'g' },
@@ -233,3 +234,5 @@ function MealLogCard({ log, t }: { log: MealLog, t: ReturnType<typeof useTransla
     </Card>
   )
 }
+
+    
