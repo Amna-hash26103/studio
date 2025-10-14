@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -13,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -21,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { analyzeNutrition } from '@/ai/flows/nutrition-analysis-flow';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ChatInterface } from '@/components/chat-interface';
 
@@ -220,11 +218,6 @@ function MealLogCard({ log, t }: { log: MealLog, t: ReturnType<typeof useTransla
                 {format(new Date(log.createdAt.seconds * 1000), 'MMMM d, yyyy, h:mm a')}
               </p>
             </div>
-            {/* Future delete button
-            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
-                <Trash2 className="h-4 w-4" />
-            </Button>
-            */}
           </div>
       </CardHeader>
       <CardContent>
