@@ -557,7 +557,7 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
             </p>
           </div>
         )}
-        {!allNotes && flowPattern.length === 0 && (
+        {!allNotes && (
             <p className="text-sm text-muted-foreground">{t('noNotes')}</p>
         )}
       </CardContent>
