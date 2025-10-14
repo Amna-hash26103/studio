@@ -184,43 +184,43 @@
     "logButton": "Log Period",
     "loggingButton": "Logging...",
     "dialogs": {
-        "start": {
-            "title": "Start Period?",
-            "description": "Would you like to start a new period on {date}?",
-            "confirm": "Yes, Start Period"
-        },
-        "end": {
-            "title": "End Period?",
-            "description": "Would you like to end your current period on {date}?",
-            "confirm": "Yes, End Period"
-        },
-        "cancel": "Cancel"
+      "start": {
+        "title": "Start Period?",
+        "description": "Would you like to start a new period on {date}?",
+        "confirm": "Yes, Start Period"
+      },
+      "end": {
+        "title": "End Period?",
+        "description": "Would you like to end your current period on {date}?",
+        "confirm": "Yes, End Period"
+      },
+      "cancel": "Cancel"
     },
     "logFlowDialog": {
-        "title": "Log for {date}",
-        "description": "Record your flow, symptoms, and any notes for this day.",
-        "flow": {
-            "label": "Flow Intensity",
-            "spotting": "Spotting",
-            "light": "Light",
-            "medium": "Medium",
-            "heavy": "Heavy"
+      "title": "Log for {date}",
+      "description": "Record your flow, symptoms, and any notes for this day.",
+      "flow": {
+        "label": "Flow Intensity",
+        "spotting": "Spotting",
+        "light": "Light",
+        "medium": "Medium",
+        "heavy": "Heavy"
+      },
+      "notes": {
+        "label": "Notes",
+        "placeholder": "Anything to remember for this day..."
+      },
+      "save": "Save Log",
+      "cancel": "Cancel",
+      "toast": {
+        "logSuccess": {
+          "title": "Log Saved"
         },
-        "notes": {
-            "label": "Notes",
-            "placeholder": "Anything to remember for this day..."
-        },
-        "save": "Save Log",
-        "cancel": "Cancel",
-        "toast": {
-            "logSuccess": {
-                "title": "Log Saved"
-            },
-            "logError": {
-                "title": "Uh oh!",
-                "description": "Could not save your log. Please try again."
-            }
+        "logError": {
+          "title": "Uh oh!",
+          "description": "Could not save your log. Please try again."
         }
+      }
     },
     "toast": {
       "logSuccess": {
@@ -256,3 +256,5 @@
     }
   }
 }
+
+    

@@ -184,43 +184,43 @@
     "logButton": "Period Log Karein",
     "loggingButton": "Logging...",
     "dialogs": {
-        "start": {
-            "title": "Period Shuru Karein?",
-            "description": "Kya aap {date} ko naya period shuru karna chahti hain?",
-            "confirm": "Haan, Period Shuru Karein"
-        },
-        "end": {
-            "title": "Period Khatam Karein?",
-            "description": "Kya aap apna mojooda period {date} ko khatam karna chahti hain?",
-            "confirm": "Haan, Period Khatam Karein"
-        },
-        "cancel": "Cancel"
+      "start": {
+        "title": "Period Shuru Karein?",
+        "description": "Kya aap {date} ko naya period shuru karna chahti hain?",
+        "confirm": "Haan, Period Shuru Karein"
+      },
+      "end": {
+        "title": "Period Khatam Karein?",
+        "description": "Kya aap apna mojooda period {date} ko khatam karna chahti hain?",
+        "confirm": "Haan, Period Khatam Karein"
+      },
+      "cancel": "Cancel"
     },
     "logFlowDialog": {
-        "title": "{date} ke liye Log",
-        "description": "Is din ke liye apna flow, alamat, aur koi bhi notes record karein.",
-        "flow": {
-            "label": "Flow ki Shiddat",
-            "spotting": "Dhabba",
-            "light": "Halka",
-            "medium": "Darmiyana",
-            "heavy": "Bhaari"
+      "title": "{date} ke liye Log",
+      "description": "Is din ke liye apna flow, alamat, aur koi bhi notes record karein.",
+      "flow": {
+        "label": "Flow ki Shiddat",
+        "spotting": "Dhabba",
+        "light": "Halka",
+        "medium": "Darmiyana",
+        "heavy": "Bhaari"
+      },
+      "notes": {
+        "label": "Notes",
+        "placeholder": "Is din ke liye yaad rakhne ke liye kuch bhi..."
+      },
+      "save": "Log Save Karein",
+      "cancel": "Cancel",
+      "toast": {
+        "logSuccess": {
+          "title": "Log Save Hogaya"
         },
-        "notes": {
-            "label": "Notes",
-            "placeholder": "Is din ke liye yaad rakhne ke liye kuch bhi..."
-        },
-        "save": "Log Save Karein",
-        "cancel": "Cancel",
-        "toast": {
-            "logSuccess": {
-                "title": "Log Save Hogaya"
-            },
-            "logError": {
-                "title": "Oh No!",
-                "description": "Aapka log save nahi ho saka. Barah-e-karam dobara koshish karein."
-            }
+        "logError": {
+          "title": "Oh No!",
+          "description": "Aapka log save nahi ho saka. Barah-e-karam dobara koshish karein."
         }
+      }
     },
     "toast": {
       "logSuccess": {
@@ -231,7 +231,7 @@
         "title": "Oh No!",
         "description": "Aapka cycle save nahi ho saka. Barah-e-karam dobara koshish karein."
       },
-       "endDateError": {
+      "endDateError": {
         "title": "Ghalat Tareekh",
         "description": "End date start date se pehle nahi ho sakti."
       },
@@ -256,3 +256,5 @@
     }
   }
 }
+
+    
