@@ -59,6 +59,8 @@ import {
   Waves,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { DayModifiers } from 'react-day-picker';
+
 
 type Period = {
   id: string;
@@ -264,9 +266,8 @@ export default function PeriodTrackerPage() {
     (dayStr) => new Date(`${dayStr}T00:00:00`)
   );
 
-  const modifiers = {
+  const modifiers: DayModifiers = {
     period: periodDaysModifier,
-    selected: selectedDate,
   };
 
   const modifiersStyles = {
@@ -275,11 +276,6 @@ export default function PeriodTrackerPage() {
       color: 'hsl(var(--primary-foreground))',
       opacity: 0.8,
     },
-    selected: {
-        backgroundColor: 'hsl(var(--primary))',
-        color: 'hsl(var(--primary-foreground))',
-        opacity: 1,
-    }
   };
 
   return (
@@ -568,3 +564,6 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
     </Card>
   );
 }
+
+
+    
