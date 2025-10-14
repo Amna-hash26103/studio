@@ -564,5 +564,3 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
     </Card>
   );
 }
-
-    
