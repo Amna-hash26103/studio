@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   useUser,
   useFirestore,
@@ -57,6 +57,7 @@ import {
   Droplet,
   Droplets,
   Waves,
+  Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DayModifiers } from 'react-day-picker';
@@ -125,14 +126,18 @@ export default function PeriodTrackerPage() {
     const days = new Set<string>();
     periods?.forEach((period) => {
       const start = startOfDay(new Date(period.startDate.seconds * 1000));
+      // Use today as the end date for the active cycle for UI highlighting
       const end = period.endDate
         ? startOfDay(new Date(period.endDate.seconds * 1000))
         : startOfDay(new Date());
 
-      let current = new Date(start);
-      while (current <= end) {
+      let current = start;
+      // Ensure we don't create an infinite loop if dates are invalid
+      let i = 0;
+      while (current <= end && i < 365) {
         days.add(format(current, 'yyyy-MM-dd'));
         current = addDays(current, 1);
+        i++;
       }
     });
     return days;
@@ -144,21 +149,22 @@ export default function PeriodTrackerPage() {
 
     if (activeCycle) {
       const activeCycleStart = startOfDay(new Date(activeCycle.startDate.seconds * 1000));
+      
+      // A day before the current cycle starts can only be a start date for a new cycle
       if (isBefore(dayStart, activeCycleStart)) {
         setDialogState({ showStart: true, date: dayStart });
-      } else {
-        const isLogged = dailyLogs?.some(log => isSameDay(new Date(log.date.seconds * 1000), dayStart));
-        if (isLogged) {
-          setDialogState({ showLog: true, date: dayStart });
-        } else if (isSameDay(dayStart, activeCycleStart) || isBefore(activeCycleStart, dayStart)) {
-             if (isSameDay(dayStart, new Date(activeCycle.startDate.seconds * 1000)) || dailyLogs?.find(l => isSameDay(new Date(l.date.seconds * 1000), dayStart))) {
-                 setDialogState({ showLog: true, date: dayStart });
-             } else {
-                 setDialogState({ showEnd: true, date: dayStart });
-             }
+      } 
+      // A day within the current cycle
+      else {
+        // If it's not the start date, it could be the end date
+        if (!isSameDay(dayStart, activeCycleStart)) {
+            setDialogState({ showEnd: true, date: dayStart });
         }
+        // Always allow logging on or after the start date
+        // setDialogState({ showLog: true, date: dayStart });
       }
     } else {
+      // No active cycle, so any day can be a start date
       setDialogState({ showStart: true, date: dayStart });
     }
   };
@@ -172,6 +178,8 @@ export default function PeriodTrackerPage() {
     try {
         const batch = writeBatch(firestore);
 
+        // If there's an active cycle, we assume this new start date means the old one was a mistake.
+        // This will delete the previous unterminated cycle. A more complex UI could ask the user.
         if (activeCycle) {
             const activeDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
             batch.delete(activeDocRef);
@@ -183,6 +191,7 @@ export default function PeriodTrackerPage() {
             createdAt: serverTimestamp(),
         };
 
+        // Create a new period document
         const newPeriodRef = doc(periodsCollectionRef);
         batch.set(newPeriodRef, newPeriodData);
         
@@ -193,9 +202,11 @@ export default function PeriodTrackerPage() {
             description: t('toast.logSuccess.description'),
         });
 
+        // Close the dialog and open the logging dialog for the new start date
         setDialogState({});
         setSelectedDate(startDate);
-        setTimeout(() => setDialogState({ showLog: true, date: startDate }), 500);
+        // Delay to allow state to update and avoid dialog race conditions
+        setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
 
     } catch (error) {
         console.error('Error starting period:', error);
@@ -237,7 +248,7 @@ export default function PeriodTrackerPage() {
 
           toast({
               title: t('toast.logSuccess.title'),
-              description: "Your period has been marked as ended.",
+              description: t('toast.endSuccessDescription'),
           });
 
           setDialogState({});
@@ -259,19 +270,36 @@ export default function PeriodTrackerPage() {
 
   const modifiers: DayModifiers = {
     period: periodDaysModifier,
+    ...(activeCycle && { active: [new Date(activeCycle.startDate.seconds * 1000)] }),
   };
 
   const modifiersStyles = {
     period: {
-      backgroundColor: 'hsl(var(--primary))',
-      color: 'hsl(var(--primary-foreground))',
-      opacity: 0.8,
+      backgroundColor: 'var(--period-day-bg)',
+      color: 'var(--period-day-fg)',
+    },
+    active: {
+      backgroundColor: 'var(--active-day-bg)',
+      color: 'var(--active-day-fg)',
+      fontWeight: 'bold',
     },
   };
 
   return (
     <>
       <div className="mx-auto max-w-5xl space-y-8">
+        <style>{`
+          :root {
+            --period-day-bg: hsl(var(--primary) / 0.2);
+            --period-day-fg: hsl(var(--primary-foreground) / 0.9);
+            --active-day-bg: hsl(var(--primary));
+            --active-day-fg: hsl(var(--primary-foreground));
+          }
+          .dark {
+             --period-day-bg: hsl(var(--primary) / 0.3);
+             --period-day-fg: hsl(var(--primary-foreground));
+          }
+        `}</style>
         <div>
           <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
           <p className="text-muted-foreground">{t('description')}</p>
@@ -285,14 +313,19 @@ export default function PeriodTrackerPage() {
             <Calendar
               mode="single"
               selected={selectedDate}
-              onSelect={setSelectedDate}
-              onDayClick={handleDayClick}
+              onSelect={(day) => day && handleDayClick(day)}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
               modifiers={modifiers}
               modifiersStyles={modifiersStyles}
               className="w-full max-w-md"
               disabled={isLoadingPeriods || isProcessing}
+              footer={
+                activeCycle &&
+                <div className="text-center text-sm text-muted-foreground pt-2">
+                    {t('activeCycleFooter', {date: format(new Date(activeCycle.startDate.seconds * 1000), 'MMMM d')})}
+                </div>
+              }
             />
           </CardContent>
         </Card>
@@ -312,7 +345,7 @@ export default function PeriodTrackerPage() {
                     <AlertDialogCancel disabled={isProcessing}>{t('dialogs.cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={handleStartPeriod} disabled={isProcessing}>
                         {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t("dialogs.start.confirm")}
+                        {t('dialogs.start.confirm')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
@@ -359,7 +392,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
     const [notes, setNotes] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     
-    React.useEffect(() => {
+    useEffect(() => {
         if(open && date) {
             setFlow(dailyLog?.flowLevel || 'light');
             setNotes(dailyLog?.notes || '');
@@ -376,6 +409,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
                 date: startOfDay(date),
                 flowLevel: flow,
                 notes: notes,
+                userId: user.uid,
             };
 
             if (dailyLog) {
@@ -484,10 +518,10 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
   const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
 
   const flowIcons: Record<string, React.ReactNode> = {
-    spotting: <CircleDot className="h-4 w-4 text-red-300" />,
-    light: <Droplet className="h-4 w-4 text-red-400" />,
-    medium: <Droplets className="h-4 w-4 text-red-500" />,
-    heavy: <Waves className="h-4 w-4 text-red-700" />,
+    spotting: <CircleDot className="h-4 w-4 text-red-300" title={t('flowLevels.spotting')} />,
+    light: <Droplet className="h-4 w-4 text-red-400" title={t('flowLevels.light')} />,
+    medium: <Droplets className="h-4 w-4 text-red-500" title={t('flowLevels.medium')} />,
+    heavy: <Waves className="h-4 w-4 text-red-700" title={t('flowLevels.heavy')} />,
   };
   
   const startDate = new Date(period.startDate.seconds * 1000);
@@ -506,7 +540,7 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
           </p>
           <p className="text-sm text-muted-foreground">
             {format(startDate, 'MMM dd')} -{' '}
-            {format(endDate, 'MMM dd, yyyy')}
+            {period.endDate ? format(endDate, 'MMM dd, yyyy') : t('ongoing')}
           </p>
         </div>
       </CardHeader>
@@ -526,7 +560,6 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
               {flowPattern.map((flow, i) => (
                 <div
                   key={i}
-                  title={flow}
                   className="flex items-center gap-1 p-1 rounded-md"
                 >
                   {flowIcons[flow.toLowerCase()]}

@@ -184,36 +184,46 @@
     "title": "Cycle Tracker",
     "description": "Track your menstrual cycle to understand your body better.",
     "logPeriodTitle": "Log Your Period",
+    "activeCycleFooter": "Active cycle started {date}",
     "dialogs": {
       "cancel": "Cancel",
       "start": {
         "title": "Start New Period?",
-        "description": "Do you want to start your period on {date}?",
-        "confirm": "Start Period"
+        "description": "This will start a new period cycle on {date}. If you have an active cycle, it will be replaced. Do you want to continue?",
+        "confirm": "Start New Period"
       },
       "end": {
-        "title": "End Period?",
-        "description": "Do you want to end your period on {date}?",
+        "title": "End Current Period?",
+        "description": "Do you want to mark {date} as the end of your current period?",
         "confirm": "End Period"
       }
     },
     "toast": {
       "logSuccess": {
-        "title": "Success",
-        "description": "Your data has been saved."
+        "title": "Period Logged",
+        "description": "Your new cycle has been successfully recorded."
       },
+      "endSuccessDescription": "Your period has been marked as ended.",
       "logError": {
-        "title": "Error",
-        "description": "Something went wrong. Please try again."
+        "title": "Uh oh!",
+        "description": "Could not save your cycle data. Please try again."
+      },
+      "deleteSuccess": {
+        "title": "Entry Deleted",
+        "description": "The cycle entry has been removed."
+      },
+      "deleteError": {
+        "title": "Delete Failed",
+        "description": "Could not delete the cycle entry. Please try again."
       },
       "endDateError": {
         "title": "Invalid End Date",
-        "description": "End date cannot be before start date."
+        "description": "The end date cannot be before the start date."
       }
     },
     "logFlowDialog": {
-      "title": "Log Flow for {date}",
-      "description": "Select your flow level and add optional notes.",
+      "title": "Log Details for {date}",
+      "description": "Record your flow and any other symptoms or notes.",
       "flow": {
         "label": "Flow Level",
         "spotting": "Spotting",
@@ -223,27 +233,36 @@
       },
       "notes": {
         "label": "Notes",
-        "placeholder": "Add any symptoms or comments..."
+        "placeholder": "Add symptoms, mood, or anything else..."
       },
       "cancel": "Cancel",
-      "save": "Save",
+      "save": "Save Log",
       "toast": {
-        "logSuccess": { "title": "Saved successfully" },
+        "logSuccess": {
+          "title": "Log Saved"
+        },
         "logError": {
-          "title": "Failed to save",
+          "title": "Failed to save log",
           "description": "Please check your connection and try again."
         }
       }
     },
     "bleedingHistory": {
       "title": "Cycle History",
-      "noHistory": "No cycles yet — log your first period to begin tracking.",
+      "noHistory": "No completed cycles yet. Log your first period to get started!",
       "cycle": "Cycle",
       "duration": "Duration",
       "flowPattern": "Flow Pattern",
       "notes": "Notes",
-      "noNotes": "No notes recorded for this cycle.",
-      "days": "days"
+      "noNotes": "No notes for this cycle.",
+      "days": "days",
+      "ongoing": "Ongoing",
+      "flowLevels": {
+        "spotting": "Spotting",
+        "light": "Light",
+        "medium": "Medium",
+        "heavy": "Heavy"
+      }
     }
   }
 }

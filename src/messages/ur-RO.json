@@ -184,27 +184,37 @@
     "title": "Cycle Tracker",
     "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
     "logPeriodTitle": "Apna Period Log Karein",
+    "activeCycleFooter": "Fa'al cycle {date} ko shuru hua",
     "dialogs": {
       "cancel": "Cancel",
       "start": {
         "title": "Naya Period Shuru Karein?",
-        "description": "Kya aap {date} ko apna period shuru karna chahti hain?",
-        "confirm": "Period Shuru Karein"
+        "description": "Yeh {date} ko ek naya period cycle shuru kar dega. Agar aapka koi fa'al cycle hai, to woh tabdeel ho jayega. Kya aap jari rakhna chahti hain?",
+        "confirm": "Naya Period Shuru Karein"
       },
       "end": {
-        "title": "Period Khatam Karein?",
-        "description": "Kya aap {date} ko apna period khatam karna chahti hain?",
+        "title": "Mojooda Period Khatam Karein?",
+        "description": "Kya aap {date} ko apne mojooda period ka ekhtetam mark karna chahti hain?",
         "confirm": "Period Khatam Karein"
       }
     },
     "toast": {
       "logSuccess": {
-        "title": "Success",
-        "description": "Aapka data save ho gaya hai."
+        "title": "Period Log Ho Gaya",
+        "description": "Aapka naya cycle kamyabi se record ho gaya hai."
       },
+      "endSuccessDescription": "Aapka period khatam mark kar diya gaya hai.",
       "logError": {
-        "title": "Error",
-        "description": "Kuch ghalat ho gaya. Barah-e-karam dobara koshish karein."
+        "title": "Oh No!",
+        "description": "Aapka cycle data save nahi ho saka. Barah-e-karam dobara koshish karein."
+      },
+      "deleteSuccess": {
+        "title": "Entry Delete Ho Gayi",
+        "description": "Cycle ki entry hata di gayi hai."
+      },
+      "deleteError": {
+        "title": "Delete Nakam",
+        "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
       },
       "endDateError": {
         "title": "Ghalat End Date",
@@ -212,8 +222,8 @@
       }
     },
     "logFlowDialog": {
-      "title": "{date} ke liye Log",
-      "description": "Apna flow level select karein aur optional notes shamil karein.",
+      "title": "{date} ke liye Tafseelat Log Karein",
+      "description": "Apna flow aur koi doosri alamat ya notes record karein.",
       "flow": {
         "label": "Flow Level",
         "spotting": "Dhabba",
@@ -223,14 +233,16 @@
       },
       "notes": {
         "label": "Notes",
-        "placeholder": "Koi alamat ya tabsira shamil karein..."
+        "placeholder": "Alamat, mood, ya kuch aur shamil karein..."
       },
       "cancel": "Cancel",
-      "save": "Save",
+      "save": "Log Save Karein",
       "toast": {
-        "logSuccess": { "title": "Kamyabi se save ho gaya" },
+        "logSuccess": {
+          "title": "Log Save Ho Gaya"
+        },
         "logError": {
-          "title": "Save karne mein nakami",
+          "title": "Log save karne mein nakami",
           "description": "Barah-e-karam apna connection check karein aur dobara koshish karein."
         }
       }
@@ -243,7 +255,14 @@
       "flowPattern": "Flow ka Pattern",
       "notes": "Notes",
       "noNotes": "Is cycle ke liye koi notes nahi.",
-      "days": "din"
+      "days": "din",
+      "ongoing": "Jari Hai",
+      "flowLevels": {
+        "spotting": "Dhabba",
+        "light": "Halka",
+        "medium": "Darmiyana",
+        "heavy": "Bhaari"
+      }
     }
   }
 }
