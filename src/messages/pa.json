@@ -40,7 +40,7 @@
       "logout": "لاگ آؤٹ",
       "mainGroup": "مکھ",
       "accountGroup": "کھاتہ",
-      "periodTracker": "پیریڈ ٹریکر"
+      "periodTracker": "سائیکل ٹریکر"
     },
     "toast": {
       "logoutSuccess": {
@@ -82,7 +82,7 @@
   },
   "SignupPage": {
     "title": "فیمورا وچ شامل ਹੋਵੋ",
-    "description": "اپنا کھاتہ بناओ تے طاقتوری دا اپنا سفر शुरू کرو۔",
+    "description": "اپنا کھاتہ बनाओ تے طاقتوری دا اپنا سفر शुरू کرو۔",
     "displayNameLabel": "ڈسپلے ناں",
     "displayNamePlaceholder": "تہاڈا ناں",
     "emailLabel": "ایمیل",

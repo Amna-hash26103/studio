@@ -40,7 +40,7 @@
       "logout": "Log Out",
       "mainGroup": "ASAL",
       "accountGroup": "ACCOUNT",
-      "periodTracker": "Period Tracker"
+      "periodTracker": "Cycle Tracker"
     },
     "toast": {
       "logoutSuccess": {

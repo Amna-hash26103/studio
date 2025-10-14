@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -296,7 +297,7 @@ export default function PeriodTrackerPage() {
           </CardContent>
         </Card>
 
-        <BleedingHistory periods={pastCycles} t={t} />
+        <BleedingHistory periods={pastCycles} />
       </div>
 
        <AlertDialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
@@ -441,15 +442,16 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
 }
 
 
-function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string, values?: any) => string }) {
+function BleedingHistory({ periods }: { periods: Period[] }) {
+  const t = useTranslations('PeriodTrackerPage.bleedingHistory');
   if (periods.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('bleedingHistory.title')}</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('bleedingHistory.noHistory')}</p>
+          <p>{t('noHistory')}</p>
         </CardContent>
       </Card>
     );
@@ -458,7 +460,7 @@ function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string, v
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('bleedingHistory.title')}</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {periods.map((period, index) => (

@@ -182,7 +182,7 @@
   },
   "PeriodTrackerPage": {
     "title": "Cycle Tracker",
-    "description": "Track your menstrual cycle and understand your body better.",
+    "description": "Track your menstrual cycle to understand your body better.",
     "logPeriodTitle": "Log Your Period",
     "dialogs": {
       "cancel": "Cancel",
