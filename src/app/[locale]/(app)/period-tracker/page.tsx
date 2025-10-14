@@ -509,6 +509,7 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
 
 function PastCycleCard({ period, index }: { period: Period, index: number }) {
   const t = useTranslations('PeriodTrackerPage.bleedingHistory');
+  const tFlows = useTranslations('PeriodTrackerPage.bleedingHistory.flowLevels');
   const { user } = useUser();
   const firestore = useFirestore();
 
@@ -520,10 +521,10 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
   const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
 
   const flowIcons: Record<string, React.ReactNode> = {
-    spotting: <span title={t('flowLevels.spotting')}><CircleDot className="h-4 w-4 text-red-300" /></span>,
-    light: <span title={t('flowLevels.light')}><Droplet className="h-4 w-4 text-red-400" /></span>,
-    medium: <span title={t('flowLevels.medium')}><Droplets className="h-4 w-4 text-red-500" /></span>,
-    heavy: <span title={t('flowLevels.heavy')}><Waves className="h-4 w-4 text-red-700" /></span>,
+    spotting: <CircleDot className="h-4 w-4 text-red-300" />,
+    light: <Droplet className="h-4 w-4 text-red-400" />,
+    medium: <Droplets className="h-4 w-4 text-red-500" />,
+    heavy: <Waves className="h-4 w-4 text-red-700" />,
   };
   
   const startDate = new Date(period.startDate.seconds * 1000);
@@ -560,12 +561,9 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
             </span>
             <div className="flex gap-2 flex-wrap">
               {flowPattern.map((flow, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-1 p-1 rounded-md"
-                >
+                <span key={i} title={tFlows(flow)}>
                   {flowIcons[flow.toLowerCase()]}
-                </div>
+                </span>
               ))}
             </div>
           </div>
