@@ -526,5 +526,3 @@ function PastCycleCard({ period, dailyLogs, index }: { period: Period, dailyLogs
 }
 
 export default PeriodTrackerPage;
-
-    
