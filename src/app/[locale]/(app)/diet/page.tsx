@@ -229,5 +229,3 @@ function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
     </Card>
   )
 }
-
-    
