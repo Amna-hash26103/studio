@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { Bot, HeartHandshake, Lightbulb, Users, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed, Circle } from 'lucide-react';
+import { HeartHandshake, Users, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import {
   DropdownMenu,
@@ -14,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
@@ -22,6 +24,9 @@ export default function LandingPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const router = useRouter();
+  const pathname = usePathname();
+
 
   useEffect(() => {
     const loadVoices = () => {
@@ -166,22 +171,6 @@ export default function LandingPage() {
           <Button asChild>
             <Link href="/signup">Sign Up</Link>
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {localeItems.map((item) => (
-                <DropdownMenuItem key={item.locale} asChild>
-                  <Link href={`/`} locale={item.locale}>
-                    {item.label}
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </nav>
       </header>
 

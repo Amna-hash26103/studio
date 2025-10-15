@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Monitor, Moon, Sun } from 'lucide-react';
 
