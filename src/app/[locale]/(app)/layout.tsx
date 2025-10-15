@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTranslations, useLocale } from 'next-intl';
 
-export default function AppLayout({
+export function AppLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -40,3 +40,5 @@ export default function AppLayout({
   
   return <AppShell>{children}</AppShell>;
 }
+
+export default AppLayout;

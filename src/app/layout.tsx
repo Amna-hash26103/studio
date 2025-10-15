@@ -4,10 +4,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode } from 'react';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
-import { notFound } from 'next/navigation';
-import { locales } from '@/navigation';
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",
@@ -16,20 +12,15 @@ export const metadata: Metadata = {
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-  params: {locale}
+  params,
 }: Readonly<{
-  children: React.ReactNode;
-  params: {locale: string};
+  children: ReactNode;
+  params: { locale: string };
 }>) {
-  const isValidLocale = locales.includes(locale as any);
-  if (!isValidLocale) notFound();
- 
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={params.locale || 'en'} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -43,12 +34,10 @@ export default async function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased h-screen flex flex-col')}>
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <FirebaseClientProvider>
-              {children}
-              <Toaster />
-            </FirebaseClientProvider>
-          </NextIntlClientProvider>
+        <FirebaseClientProvider>
+          {children}
+          <Toaster />
+        </FirebaseClientProvider>
       </body>
     </html>
   );

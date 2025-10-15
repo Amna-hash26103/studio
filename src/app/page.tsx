@@ -1,16 +1,18 @@
-
 'use client';
-import { useLocale } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { defaultLocale } from '@/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function RootPage() {
-  const locale = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    router.replace(`/${locale}`);
-  }, [locale, router]);
+    // Only redirect if the current path is the root
+    if (pathname === '/') {
+      router.replace(`/${defaultLocale}`);
+    }
+  }, [router, pathname]);
 
   return null;
 }
