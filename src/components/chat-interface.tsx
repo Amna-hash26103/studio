@@ -16,7 +16,6 @@ import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import { dietAgent } from '@/ai/flows/diet-agent-flow';
-import { useTranslations } from 'next-intl';
 
 const healthAvatar = PlaceHolderImages.find(
   (img) => img.id === 'health-avatar'
@@ -37,7 +36,6 @@ interface Message {
 }
 
 export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, useDietAgent?: boolean }) {
-  const t = useTranslations('ChatInterface');
   
   const avatars: Record<Topic, typeof healthAvatar> = {
     health: healthAvatar,
@@ -46,23 +44,23 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
   };
   
   const placeholders: Record<Topic, string> = {
-    health: t('placeholders.health'),
-    emotionalWellbeing: t('placeholders.emotionalWellbeing'),
-    nutrition: t('placeholders.nutrition'),
+    health: "e.g., How can I start a simple home workout routine?",
+    emotionalWellbeing: "e.g., I feel stressed, any quick mindfulness tips?",
+    nutrition: "e.g., What are some healthy snack ideas?",
   };
   
   const initialMessages: Record<Topic, Message> = {
       health: {
           role: 'assistant',
-          content: t('initialMessages.health'),
+          content: "Hi! I'm your Healthcare assistant. How can I help you today?",
       },
       emotionalWellbeing: {
           role: 'assistant',
-          content: t('initialMessages.emotionalWellbeing'),
+          content: "Hello, I'm here to support your emotional well-being. What's on your mind?",
       },
       nutrition: {
           role: 'assistant',
-          content: t('initialMessages.nutrition'),
+          content: "Hey there! I'm your Diet guide. Ask me anything about healthy eating!",
       },
   }
   
@@ -112,7 +110,7 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
     } catch (error) {
       const errorMessage: Message = {
         role: 'assistant',
-        content: t('errorMessage'),
+        content: "I'm sorry, something went wrong. Please try again later.",
       };
       setMessages((prev) => [...prev, errorMessage]);
       console.error('Error calling AI:', error);
@@ -190,5 +188,3 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
     </Card>
   );
 }
-
-    

@@ -16,7 +16,8 @@ import {
   SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Link, useRouter, usePathname } from '@/navigation';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Bell,
   HeartPulse,
@@ -34,44 +35,42 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslations } from 'next-intl';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
   const router = useRouter();
   const auth = useAuth();
   const { user } = useUser();
-  const t = useTranslations('AppShell');
   const pathname = usePathname();
   const { toast } = useToast();
 
   const mainNavItems = [
-    { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: `/healthcare`, icon: <HeartPulse />, label: t('nav.healthcare') },
-    { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
-    { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
-    { href: `/period-tracker`, icon: <Droplets />, label: t('nav.periodTracker') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: "Feed" },
+    { href: `/healthcare`, icon: <HeartPulse />, label: "Healthcare" },
+    { href: `/emotional-health`, icon: <Smile />, label: "Emotional Health" },
+    { href: `/diet`, icon: <Salad />, label: "Diet" },
+    { href: `/period-tracker`, icon: <Droplets />, label: "Period Tracker" },
   ];
 
   const accountNavItems = [
-      { href: `/profile`, icon: <User />, label: t('nav.profile') },
-      { href: `/settings`, icon: <Settings />, label: t('nav.settings') },
+      { href: `/profile`, icon: <User />, label: "Profile" },
+      { href: `/settings`, icon: <Settings />, label: "Settings" },
   ];
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       toast({
-        title: t('toast.logoutSuccess.title'),
-        description: t('toast.logoutSuccess.description'),
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
       });
       router.push(`/login`);
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
         variant: 'destructive',
-        title: t('toast.logoutError.title'),
-        description: t('toast.logoutError.description'),
+        title: "Uh oh!",
+        description: "Could not log you out. Please try again.",
       });
     }
   };
@@ -90,13 +89,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </Avatar>
             <div className='group-data-[collapsible=icon]:hidden text-center'>
                  <p className="font-semibold">{user?.displayName}</p>
-                 <p className="text-xs text-muted-foreground">{t('welcomeBack')}</p>
+                 <p className="text-xs text-muted-foreground">Welcome back 🌷</p>
             </div>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarGroup>
-            <SidebarGroupLabel>{t('nav.mainGroup')}</SidebarGroupLabel>
+            <SidebarGroupLabel>MAIN</SidebarGroupLabel>
             <SidebarMenu>
             {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -116,7 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarGroup>
         <SidebarSeparator />
         <SidebarGroup>
-            <SidebarGroupLabel>{t('nav.accountGroup')}</SidebarGroupLabel>
+            <SidebarGroupLabel>ACCOUNT</SidebarGroupLabel>
             <SidebarMenu>
             {accountNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -138,9 +137,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <SidebarFooter className="p-2">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton onClick={handleLogout} tooltip={{ children: t('nav.logout') }}>
+            <SidebarMenuButton onClick={handleLogout} tooltip={{ children: "Log Out" }}>
               <LogOut />
-              <span>{t('nav.logout')}</span>
+              <span>Log Out</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -160,17 +159,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
       <Button variant="ghost" size="icon" className="rounded-full">
         <Bell className="h-5 w-5" />
-        <span className="sr-only">{t('notifications')}</span>
+        <span className="sr-only">Notifications</span>
       </Button>
     </header>
   );
   
   const mobileNavItems = [
-    { href: `/feed`, icon: <LayoutDashboard />, label: t('nav.feed') },
-    { href: `/period-tracker`, icon: <Droplets />, label: t('nav.periodTracker') },
-    { href: `/emotional-health`, icon: <Smile />, label: t('nav.emotionalHealth') },
-    { href: `/diet`, icon: <Salad />, label: t('nav.diet') },
-    { href: `/profile`, icon: <User />, label: t('nav.profile') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: "Feed" },
+    { href: `/period-tracker`, icon: <Droplets />, label: "Period Tracker" },
+    { href: `/emotional-health`, icon: <Smile />, label: "Emotional Health" },
+    { href: `/diet`, icon: <Salad />, label: "Diet" },
+    { href: `/profile`, icon: <User />, label: "Profile" },
   ]
 
   const mobileNav = (

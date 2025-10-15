@@ -21,13 +21,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-  params,
 }: Readonly<{
   children: ReactNode;
-  params: { locale: string };
 }>) {
   return (
-    <html lang={params.locale || 'en'} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

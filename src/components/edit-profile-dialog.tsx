@@ -30,7 +30,6 @@ import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { Loader2, User as UserIcon } from 'lucide-react';
 import { updateProfile } from 'firebase/auth';
-import { useTranslations } from 'next-intl';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -61,7 +60,6 @@ export function EditProfileDialog({
   open,
   onOpenChange,
 }: EditProfileDialogProps) {
-  const t = useTranslations('EditProfileDialog');
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -111,16 +109,16 @@ export function EditProfileDialog({
       }
 
       toast({
-        title: t('toast.profileSuccess.title'),
-        description: t('toast.profileSuccess.description'),
+        title: "Profile Updated!",
+        description: "Your changes have been saved successfully.",
       });
       onOpenChange(false);
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
         variant: 'destructive',
-        title: t('toast.profileError.title'),
-        description: t('toast.profileError.description'),
+        title: "Update failed",
+        description: "There was a problem saving your profile. Please try again.",
       });
     } finally {
       setIsSaving(false);
@@ -131,8 +129,8 @@ export function EditProfileDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{t('description')}</DialogDescription>
+          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form id="edit-profile-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -145,7 +143,7 @@ export function EditProfileDialog({
                 </Avatar>
               
               <div className="w-full">
-                <FormLabel>{t('changePictureButton')}</FormLabel>
+                <FormLabel>Change Picture</FormLabel>
                 <div className="mt-2 grid grid-cols-4 gap-2">
                     {avatarOptions.map(avatar => (
                         <button
@@ -169,9 +167,9 @@ export function EditProfileDialog({
               name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('displayNameLabel')}</FormLabel>
+                  <FormLabel>Display Name</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('displayNamePlaceholder')} {...field} />
+                    <Input placeholder="Your full name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,9 +180,9 @@ export function EditProfileDialog({
               name="bio"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('bioLabel')}</FormLabel>
+                  <FormLabel>Bio</FormLabel>
                   <FormControl>
-                    <Textarea placeholder={t('bioPlaceholder')} {...field} />
+                    <Textarea placeholder="Tell us a little about yourself" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -195,9 +193,9 @@ export function EditProfileDialog({
               name="location"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('locationLabel')}</FormLabel>
+                  <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder={t('locationPlaceholder')} {...field} />
+                    <Input placeholder="Where are you in the world?" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -207,11 +205,11 @@ export function EditProfileDialog({
         </Form>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            {t('cancelButton')}
+            Cancel
           </Button>
           <Button type="submit" form="edit-profile-form" disabled={isSaving}>
             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-            {isSaving ? t('savingButton') : t('saveButton')}
+            {isSaving ? "Saving..." : "Save changes"}
           </Button>
         </DialogFooter>
       </DialogContent>
