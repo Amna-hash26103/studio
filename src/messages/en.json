@@ -1,297 +1,202 @@
-
 {
-  "LandingPage": {
-    "login": "Log In",
-    "signup": "Sign Up",
-    "mainHeading": "Empower Your Journey — Together.",
-    "subHeading": "FEMMORA is your sanctuary to connect, express, and grow. Discover wellness, creativity, and community in a space made with you in mind.",
-    "joinButton": "Join the Community",
-    "thriveHeading": "A Space to Thrive",
-    "thriveParagraph": "At FEMMORA, we believe in collective strength and shared stories. This isn’t just an app — it’s a movement to celebrate every woman’s path toward wellness, purpose, and joy.",
-    "featuresHeading": "Features Made for You",
-    "featuresSubHeading": "A harmonious blend of tools and care to support your mind, body, and soul — all in one place.",
-    "featureSoulSpaceTitle": "SoulSpace: Emotional Wellness Companion",
-    "featureSoulSpaceDescription": "A gentle corner of calm where your emotions are understood. Whether you feel reflective, overwhelmed, or in need of comfort, SoulSpace listens — guiding you with reflections, affirmations, and mindful support.",
-    "featureHerHealthTitle": "HerHealth: Smart Health Insights",
-    "featureHerHealthDescription": "Track your cycles, sleep, and stress effortlessly. HerHealth learns with you, offering nurturing reminders, body-positive insights, and wellness tips that honor your natural rhythm.",
-    "featureNourishTitle": "Nourish: Personalized Nutrition Guide",
-    "featureNourishDescription": "Food that loves you back — curated to your goals, mood, and culture. Nourish provides heartfelt meal suggestions that promote strength and self-care, never restriction.",
-    "featureEvolveTitle": "Evolve: Mindful Movement & Energy Flow",
-    "featureEvolveDescription": "Move gracefully at your pace. From yoga to soft fitness sessions, Evolve aligns movement with your energy and emotions — celebrating what your body can do, not what it must.",
-    "featureCircleTitle": "Circle: The FEMMORA Community",
-    "featureCircleDescription": "A warm, supportive circle where women connect, share, and lift each other up. From daily reflections to creative moments, Circle nurtures unity without comparison — a digital sisterhood of strength.",
-    "featureFEMMindTitle": "FEMMind: Your AI-Guided Growth Partner",
-    "featureFEMMindDescription": "Three empathetic AI minds — tailored for Health, Emotional Wellness, and Life Guidance. FEMMind understands, responds, and uplifts, combining science and empathy to support your everyday life.",
-    "footerPrivacy": "Privacy",
-    "footerTerms": "Terms",
-    "footerContact": "Contact"
-  },
-  "AppShell": {
-    "welcomeBack": "Welcome back 🌷",
-    "notifications": "Notifications",
-    "userMenu": "User Menu",
-    "nav": {
-      "feed": "Feed",
-      "healthcare": "Healthcare",
-      "emotionalHealth": "Emotional Health",
-      "diet": "Diet",
-      "profile": "Profile",
-      "settings": "Settings",
-      "logout": "Log Out",
-      "mainGroup": "MAIN",
-      "accountGroup": "ACCOUNT",
-      "periodTracker": "Cycle Tracker"
-    },
-    "toast": {
-      "logoutSuccess": {
-        "title": "Logged Out",
-        "description": "You’ve been safely logged out."
-      },
-      "logoutError": {
-        "title": "Oh no!",
-        "description": "Couldn’t log you out. Please try again."
-      }
-    }
-  },
-  "AppLayout": {
-    "loading": "Loading your space..."
-  },
-  "LoginPage": {
-    "title": "Welcome Back",
-    "description": "Log in to continue your journey with FEMMORA.",
-    "emailLabel": "Email",
-    "passwordLabel": "Password",
-    "forgotPasswordLink": "Forgot password?",
-    "logInButton": "Log In",
-    "loggingInButton": "Logging In...",
-    "noAccountPrompt": "Don’t have an account?",
-    "signUpLink": "Sign Up",
-    "toast": {
-      "success": {
-        "title": "Logged In!",
-        "description": "Welcome back to your space of calm and connection."
-      },
-      "error": {
-        "title": "Login Failed",
-        "description": "The email or password you entered is incorrect. Please check your credentials and try again."
-      }
-    }
-  },
-  "SignupPage": {
-    "title": "Join FEMMORA",
-    "description": "Create your account and begin your journey of empowerment.",
-    "displayNameLabel": "Display Name",
-    "displayNamePlaceholder": "Your Name",
-    "emailLabel": "Email",
-    "passwordLabel": "Password",
-    "createAccountButton": "Create Account",
-    "creatingAccountButton": "Processing...",
-    "hasAccountPrompt": "Already have an account?",
-    "logInLink": "Log In",
-    "toast": {
-      "success": {
-        "title": "Account Created!",
-        "description": "Welcome to FEMMORA — we’re so happy to have you here 💜"
-      },
-      "error": {
-        "title": "Signup Failed",
-        "description": "We couldn’t create your account. Please try again.",
-        "emailInUse": "This email is already in use. Please log in instead."
-      }
-    }
-  },
-  "FeedPage": {
-    "postPlaceholder": "What’s on your mind today?",
-    "postButton": "Post",
-    "shareButton": "Share",
-    "commentPlaceholder": "Write a comment..."
-  },
-  "ProfilePage": {
-    "editProfileButton": "Edit Profile",
-    "coverImageAlt": "Cover image",
-    "noBio": "No bio yet.",
-    "joined": "Joined",
-    "posts": "Posts",
-    "followers": "Followers",
-    "following": "Following",
-    "postsTab": "Posts",
-    "projectsTab": "Projects",
-    "mediaTab": "Media",
-    "postsTabContent": "User’s posts will be displayed here.",
-    "projectsTabContent": "User’s projects will be displayed here.",
-    "profileLoadError": "Could not load this profile. It may not exist yet."
-  },
-  "EditProfileDialog": {
-    "title": "Edit Profile",
-    "description": "Update your details and click save when you’re done.",
-    "changePictureButton": "Change Picture",
-    "displayNameLabel": "Display Name",
-    "displayNamePlaceholder": "Your full name",
-    "bioLabel": "Bio",
-    "bioPlaceholder": "Tell us a little about yourself...",
-    "locationLabel": "Location",
-    "locationPlaceholder": "Where are you in the world?",
-    "cancelButton": "Cancel",
-    "saveButton": "Save Changes",
-    "savingButton": "Saving...",
-    "toast": {
-      "avatarSuccess": {
-        "title": "Avatar Updated!"
-      },
-      "avatarError": {
-        "title": "Upload Failed",
-        "description": "There was a problem uploading your picture. Please try again."
-      },
-      "profileSuccess": {
-        "title": "Profile Updated!",
-        "description": "Your changes have been saved."
-      },
-      "profileError": {
-        "title": "Update Failed",
-        "description": "Couldn’t save your profile. Please try again."
-      }
-    }
-  },
-  "ChatInterface": {
-    "placeholders": {
-      "health": "e.g., How can I start a gentle home workout?",
-      "emotionalWellbeing": "e.g., I feel anxious — any mindfulness tips?",
-      "nutrition": "e.g., What are some healthy snack ideas?"
-    },
-    "initialMessages": {
-      "health": "Hi! I’m your Healthcare assistant. How can I help you today?",
-      "emotionalWellbeing": "Hello, I’m here to support your emotional wellness. What’s on your mind?",
-      "nutrition": "Hey there! I’m your Diet guide. Ask me anything about healthy eating!"
-    },
-    "errorMessage": "I’m sorry, something went wrong. Please try again later."
-  },
-  "DietPage": {
-    "title": "Nourish AI",
-    "description": "Your personal guide to mindful nutrition and balanced eating.",
-    "logMeal": {
-      "title": "Log a Meal",
-      "description": "Describe what you ate, and our AI will estimate the nutritional content.",
-      "mealDescriptionLabel": "Meal Description",
-      "mealDescriptionPlaceholder": "e.g., A bowl of oatmeal with blueberries and almonds",
-      "logButton": "Analyze & Log Meal",
-      "loggingButton": "Analyzing..."
-    },
-    "mealHistory": {
-      "title": "Meal History",
-      "noHistory": "You haven't logged any meals yet. Add one above to get started!",
-      "calories": "Calories",
-      "protein": "Protein",
-      "carbs": "Carbs",
-      "fat": "Fat",
-      "fiber": "Fiber"
-    },
-    "aiChat": {
-      "title": "Ask Your Diet Guide",
-      "description": "Have questions about nutrition? Ask your AI assistant below."
-    },
-    "toast": {
-      "logSuccess": {
-        "title": "Meal Logged!",
-        "description": "Your meal and its nutritional info have been saved."
-      },
-      "logError": {
-        "title": "Analysis Failed",
-        "description": "We couldn't analyze your meal right now. Please try again."
-      }
-    }
-  },
-  "EmotionalHealthPage": {
-    "title": "Emotional Health AI",
-    "description": "Your supportive companion for mindfulness and emotional balance."
-  },
-  "HealthcarePage": {
-    "title": "Healthcare AI",
-    "description": "Your caring assistant for physical health and wellness."
-  },
-  "PeriodTrackerPage": {
-    "title": "Cycle Tracker",
-    "description": "Track your menstrual cycle to understand your body better.",
-    "logPeriodTitle": "Log Your Period",
-    "activeCycleFooter": "Active cycle started {date}",
-    "dialogs": {
-      "cancel": "Cancel",
-      "start": {
-        "title": "Start New Period?",
-        "description": "This will start a new period cycle on {date}. Do you want to continue?",
-        "confirm": "Start New Period"
-      },
-      "end": {
-        "title": "End Current Period?",
-        "description": "Do you want to mark {date} as the end of your current period?",
-        "confirm": "End Period"
-      }
-    },
-    "toast": {
-      "logSuccess": {
-        "title": "Period Logged",
-        "description": "Your new cycle has been successfully recorded."
-      },
-      "endSuccessDescription": "Your period has been marked as ended.",
-      "logError": {
-        "title": "Uh oh!",
-        "description": "Could not save your cycle data. Please try again."
-      },
-      "deleteSuccess": {
-        "title": "Entry Deleted",
-        "description": "The cycle entry has been removed."
-      },
-      "deleteError": {
-        "title": "Delete Failed",
-        "description": "Could not delete the cycle entry. Please try again."
-      },
-      "endDateError": {
-        "title": "Invalid End Date",
-        "description": "The end date cannot be before the start date."
-      }
-    },
-    "logFlowDialog": {
-      "title": "Log Daily Details",
-      "description": "Record your flow for {date}",
-      "flow": {
-        "label": "Flow Level",
-        "spotting": "Spotting",
-        "light": "Light",
-        "medium": "Medium",
-        "heavy": "Heavy"
-      },
-      "notes": {
-        "label": "Notes",
-        "placeholder": "Add symptoms, mood, or anything else..."
-      },
-      "save": "Save Log",
-      "toast": {
-        "logSuccess": {
-          "title": "Log Saved"
-        },
-        "logError": {
-          "title": "Failed to save log",
-          "description": "Please check your connection and try again."
-        }
-      }
-    },
-    "bleedingHistory": {
-      "title": "Cycle History",
-      "noHistory": "No completed cycles yet. Log your first period to get started!",
-      "cycle": "Cycle",
-      "duration": "Duration",
-      "flowPattern": "Flow Pattern",
-      "notes": "Notes",
-      "noNotes": "No notes for this cycle.",
-      "days": "days",
-      "ongoing": "Ongoing",
-      "flowLevels": {
-        "spotting": "Spotting",
-        "light": "Light",
-        "medium": "Medium",
-        "heavy": "Heavy"
-      }
-    }
-  }
+  "LandingPage_login": "Log In",
+  "LandingPage_signup": "Sign Up",
+  "LandingPage_mainHeading": "Empower Your Journey — Together.",
+  "LandingPage_subHeading": "FEMMORA is your sanctuary to connect, express, and grow. Discover wellness, creativity, and community in a space made with you in mind.",
+  "LandingPage_joinButton": "Join the Community",
+  "LandingPage_thriveHeading": "A Space to Thrive",
+  "LandingPage_thriveParagraph": "At FEMMORA, we believe in collective strength and shared stories. This isn’t just an app — it’s a movement to celebrate every woman’s path toward wellness, purpose, and joy.",
+  "LandingPage_featuresHeading": "Features Made for You",
+  "LandingPage_featuresSubHeading": "A harmonious blend of tools and care to support your mind, body, and soul — all in one place.",
+  "LandingPage_featureSoulSpaceTitle": "SoulSpace: Emotional Wellness Companion",
+  "LandingPage_featureSoulSpaceDescription": "A gentle corner of calm where your emotions are understood. Whether you feel reflective, overwhelmed, or in need of comfort, SoulSpace listens — guiding you with reflections, affirmations, and mindful support.",
+  "LandingPage_featureHerHealthTitle": "HerHealth: Smart Health Insights",
+  "LandingPage_featureHerHealthDescription": "Track your cycles, sleep, and stress effortlessly. HerHealth learns with you, offering nurturing reminders, body-positive insights, and wellness tips that honor your natural rhythm.",
+  "LandingPage_featureNourishTitle": "Nourish: Personalized Nutrition Guide",
+  "LandingPage_featureNourishDescription": "Food that loves you back — curated to your goals, mood, and culture. Nourish provides heartfelt meal suggestions that promote strength and self-care, never restriction.",
+  "LandingPage_featureEvolveTitle": "Evolve: Mindful Movement & Energy Flow",
+  "LandingPage_featureEvolveDescription": "Move gracefully at your pace. From yoga to soft fitness sessions, Evolve aligns movement with your energy and emotions — celebrating what your body can do, not what it must.",
+  "LandingPage_featureCircleTitle": "Circle: The FEMMORA Community",
+  "LandingPage_featureCircleDescription": "A warm, supportive circle where women connect, share, and lift each other up. From daily reflections to creative moments, Circle nurtures unity without comparison — a digital sisterhood of strength.",
+  "LandingPage_featureFEMMindTitle": "FEMMind: Your AI-Guided Growth Partner",
+  "LandingPage_featureFEMMindDescription": "Three empathetic AI minds — tailored for Health, Emotional Wellness, and Life Guidance. FEMMind understands, responds, and uplifts, combining science and empathy to support your everyday life.",
+  "LandingPage_footerPrivacy": "Privacy",
+  "LandingPage_footerTerms": "Terms",
+  "LandingPage_footerContact": "Contact",
+
+  "AppShell_welcomeBack": "Welcome back 🌷",
+  "AppShell_notifications": "Notifications",
+  "AppShell_userMenu": "User Menu",
+  "AppShell_nav_feed": "Feed",
+  "AppShell_nav_healthcare": "Healthcare",
+  "AppShell_nav_emotionalHealth": "Emotional Health",
+  "AppShell_nav_diet": "Diet",
+  "AppShell_nav_profile": "Profile",
+  "AppShell_nav_settings": "Settings",
+  "AppShell_nav_logout": "Log Out",
+  "AppShell_nav_mainGroup": "MAIN",
+  "AppShell_nav_accountGroup": "ACCOUNT",
+  "AppShell_nav_periodTracker": "Cycle Tracker",
+  "AppShell_toast_logoutSuccess_title": "Logged Out",
+  "AppShell_toast_logoutSuccess_description": "You’ve been safely logged out.",
+  "AppShell_toast_logoutError_title": "Oh no!",
+  "AppShell_toast_logoutError_description": "Couldn’t log you out. Please try again.",
+
+  "AppLayout_loading": "Loading your space...",
+
+  "LoginPage_title": "Welcome Back",
+  "LoginPage_description": "Log in to continue your journey with FEMMORA.",
+  "LoginPage_emailLabel": "Email",
+  "LoginPage_passwordLabel": "Password",
+  "LoginPage_forgotPasswordLink": "Forgot password?",
+  "LoginPage_logInButton": "Log In",
+  "LoginPage_loggingInButton": "Logging In...",
+  "LoginPage_noAccountPrompt": "Don’t have an account?",
+  "LoginPage_signUpLink": "Sign Up",
+  "LoginPage_toast_success_title": "Logged In!",
+  "LoginPage_toast_success_description": "Welcome back to your space of calm and connection.",
+  "LoginPage_toast_error_title": "Login Failed",
+  "LoginPage_toast_error_description": "The email or password you entered is incorrect. Please check your credentials and try again.",
+
+  "SignupPage_title": "Join FEMMORA",
+  "SignupPage_description": "Create your account and begin your journey of empowerment.",
+  "SignupPage_displayNameLabel": "Display Name",
+  "SignupPage_displayNamePlaceholder": "Your Name",
+  "SignupPage_emailLabel": "Email",
+  "SignupPage_passwordLabel": "Password",
+  "SignupPage_createAccountButton": "Create Account",
+  "SignupPage_creatingAccountButton": "Processing...",
+  "SignupPage_hasAccountPrompt": "Already have an account?",
+  "SignupPage_logInLink": "Log In",
+  "SignupPage_toast_success_title": "Account Created!",
+  "SignupPage_toast_success_description": "Welcome to FEMMORA — we’re so happy to have you here 💜",
+  "SignupPage_toast_error_title": "Signup Failed",
+  "SignupPage_toast_error_description": "We couldn’t create your account. Please try again.",
+  "SignupPage_toast_error_emailInUse": "This email is already in use. Please log in instead.",
+
+  "FeedPage_postPlaceholder": "What’s on your mind today?",
+  "FeedPage_postButton": "Post",
+  "FeedPage_shareButton": "Share",
+  "FeedPage_commentPlaceholder": "Write a comment...",
+
+  "ProfilePage_editProfileButton": "Edit Profile",
+  "ProfilePage_coverImageAlt": "Cover image",
+  "ProfilePage_noBio": "No bio yet.",
+  "ProfilePage_joined": "Joined",
+  "ProfilePage_posts": "Posts",
+  "ProfilePage_followers": "Followers",
+  "ProfilePage_following": "Following",
+  "ProfilePage_postsTab": "Posts",
+  "ProfilePage_projectsTab": "Projects",
+  "ProfilePage_mediaTab": "Media",
+  "ProfilePage_postsTabContent": "User’s posts will be displayed here.",
+  "ProfilePage_projectsTabContent": "User’s projects will be displayed here.",
+  "ProfilePage_profileLoadError": "Could not load this profile. It may not exist yet.",
+
+  "EditProfileDialog_title": "Edit Profile",
+  "EditProfileDialog_description": "Update your details and click save when you’re done.",
+  "EditProfileDialog_changePictureButton": "Change Picture",
+  "EditProfileDialog_displayNameLabel": "Display Name",
+  "EditProfileDialog_displayNamePlaceholder": "Your full name",
+  "EditProfileDialog_bioLabel": "Bio",
+  "EditProfileDialog_bioPlaceholder": "Tell us a little about yourself...",
+  "EditProfileDialog_locationLabel": "Location",
+  "EditProfileDialog_locationPlaceholder": "Where are you in the world?",
+  "EditProfileDialog_cancelButton": "Cancel",
+  "EditProfileDialog_saveButton": "Save Changes",
+  "EditProfileDialog_savingButton": "Saving...",
+  "EditProfileDialog_toast_avatarSuccess_title": "Avatar Updated!",
+  "EditProfileDialog_toast_avatarError_title": "Upload Failed",
+  "EditProfileDialog_toast_avatarError_description": "There was a problem uploading your picture. Please try again.",
+  "EditProfileDialog_toast_profileSuccess_title": "Profile Updated!",
+  "EditProfileDialog_toast_profileSuccess_description": "Your changes have been saved.",
+  "EditProfileDialog_toast_profileError_title": "Update Failed",
+  "EditProfileDialog_toast_profileError_description": "Couldn’t save your profile. Please try again.",
+
+  "ChatInterface_placeholders_health": "e.g., How can I start a gentle home workout?",
+  "ChatInterface_placeholders_emotionalWellbeing": "e.g., I feel anxious — any mindfulness tips?",
+  "ChatInterface_placeholders_nutrition": "e.g., What are some healthy snack ideas?",
+  "ChatInterface_initialMessages_health": "Hi! I’m your Healthcare assistant. How can I help you today?",
+  "ChatInterface_initialMessages_emotionalWellbeing": "Hello, I’m here to support your emotional wellness. What’s on your mind?",
+  "ChatInterface_initialMessages_nutrition": "Hey there! I’m your Diet guide. Ask me anything about healthy eating!",
+  "ChatInterface_errorMessage": "I’m sorry, something went wrong. Please try again later.",
+
+  "DietPage_title": "Nourish AI",
+  "DietPage_description": "Your personal guide to mindful nutrition and balanced eating.",
+  "DietPage_logMeal_title": "Log a Meal",
+  "DietPage_logMeal_description": "Describe what you ate, and our AI will estimate the nutritional content.",
+  "DietPage_logMeal_mealDescriptionLabel": "Meal Description",
+  "DietPage_logMeal_mealDescriptionPlaceholder": "e.g., A bowl of oatmeal with blueberries and almonds",
+  "DietPage_logMeal_logButton": "Analyze & Log Meal",
+  "DietPage_logMeal_loggingButton": "Analyzing...",
+  "DietPage_mealHistory_title": "Meal History",
+  "DietPage_mealHistory_noHistory": "You haven't logged any meals yet. Add one above to get started!",
+  "DietPage_mealHistory_calories": "Calories",
+  "DietPage_mealHistory_protein": "Protein",
+  "DietPage_mealHistory_carbs": "Carbs",
+  "DietPage_mealHistory_fat": "Fat",
+  "DietPage_mealHistory_fiber": "Fiber",
+  "DietPage_aiChat_title": "Ask Your Diet Guide",
+  "DietPage_aiChat_description": "Have questions about nutrition? Ask your AI assistant below.",
+  "DietPage_toast_logSuccess_title": "Meal Logged!",
+  "DietPage_toast_logSuccess_description": "Your meal and its nutritional info have been saved.",
+  "DietPage_toast_logError_title": "Analysis Failed",
+  "DietPage_toast_logError_description": "We couldn't analyze your meal right now. Please try again.",
+
+  "EmotionalHealthPage_title": "Emotional Health AI",
+  "EmotionalHealthPage_description": "Your supportive companion for mindfulness and emotional balance.",
+
+  "HealthcarePage_title": "Healthcare AI",
+  "HealthcarePage_description": "Your caring assistant for physical health and wellness.",
+
+  "PeriodTrackerPage_title": "Cycle Tracker",
+  "PeriodTrackerPage_description": "Track your menstrual cycle to understand your body better.",
+  "PeriodTrackerPage_logPeriodTitle": "Log Your Period",
+  "PeriodTrackerPage_activeCycleFooter": "Active cycle started {date}",
+  "PeriodTrackerPage_dialogs_cancel": "Cancel",
+  "PeriodTrackerPage_dialogs_start_title": "Start New Period?",
+  "PeriodTrackerPage_dialogs_start_description": "This will start a new period cycle on {date}. Do you want to continue?",
+  "PeriodTrackerPage_dialogs_start_confirm": "Start New Period",
+  "PeriodTrackerPage_dialogs_end_title": "End Current Period?",
+  "PeriodTrackerPage_dialogs_end_description": "Do you want to mark {date} as the end of your current period?",
+  "PeriodTrackerPage_dialogs_end_confirm": "End Period",
+  "PeriodTrackerPage_logFlowDialog_title": "Log Daily Details",
+  "PeriodTrackerPage_logFlowDialog_description": "Record your flow for {date}",
+  "PeriodTrackerPage_logFlowDialog_flow_label": "Flow Level",
+  "PeriodTrackerPage_logFlowDialog_flow_spotting": "Spotting",
+  "PeriodTrackerPage_logFlowDialog_flow_light": "Light",
+  "PeriodTrackerPage_logFlowDialog_flow_medium": "Medium",
+  "PeriodTrackerPage_logFlowDialog_flow_heavy": "Heavy",
+  "PeriodTrackerPage_logFlowDialog_notes_label": "Notes",
+  "PeriodTrackerPage_logFlowDialog_notes_placeholder": "Add symptoms, mood, or anything else...",
+  "PeriodTrackerPage_logFlowDialog_save": "Save Log",
+  "PeriodTrackerPage_logFlowDialog_toast_logSuccess_title": "Log Saved",
+  "PeriodTrackerPage_logFlowDialog_toast_logError_title": "Failed to save log",
+  "PeriodTrackerPage_logFlowDialog_toast_logError_description": "Please check your connection and try again.",
+  "PeriodTrackerPage_toast_logSuccess_title": "Period Logged",
+  "PeriodTrackerPage_toast_logSuccess_description": "Your new cycle has been successfully recorded.",
+  "PeriodTrackerPage_toast_endSuccessDescription": "Your period has been marked as ended.",
+  "PeriodTrackerPage_toast_logError_title": "Uh oh!",
+  "PeriodTrackerPage_toast_logError_description": "Could not save your cycle data. Please try again.",
+  "PeriodTrackerPage_toast_deleteSuccess_title": "Entry Deleted",
+  "PeriodTrackerPage_toast_deleteSuccess_description": "The cycle entry has been removed.",
+  "PeriodTrackerPage_toast_deleteError_title": "Delete Failed",
+  "PeriodTrackerPage_toast_deleteError_description": "Could not delete the cycle entry. Please try again.",
+  "PeriodTrackerPage_toast_endDateError_title": "Invalid End Date",
+  "PeriodTrackerPage_toast_endDateError_description": "The end date cannot be before the start date.",
+  "PeriodTrackerPage_bleedingHistory_title": "Cycle History",
+  "PeriodTrackerPage_bleedingHistory_noHistory": "No completed cycles yet. Log your first period to get started!",
+  "PeriodTrackerPage_bleedingHistory_cycle": "Cycle",
+  "PeriodTrackerPage_bleedingHistory_duration": "Duration",
+  "PeriodTrackerPage_bleedingHistory_flowPattern": "Flow Pattern",
+  "PeriodTrackerPage_bleedingHistory_notes": "Notes",
+  "PeriodTrackerPage_bleedingHistory_noNotes": "No notes for this cycle.",
+  "PeriodTrackerPage_bleedingHistory_days": "days",
+  "PeriodTrackerPage_bleedingHistory_ongoing": "Ongoing",
+  "PeriodTrackerPage_bleedingHistory_flowLevels_spotting": "Spotting",
+  "PeriodTrackerPage_bleedingHistory_flowLevels_light": "Light",
+  "PeriodTrackerPage_bleedingHistory_flowLevels_medium": "Medium",
+  "PeriodTrackerPage_bleedingHistory_flowLevels_heavy": "Heavy"
 }
 
     

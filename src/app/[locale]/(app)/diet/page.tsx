@@ -68,7 +68,7 @@ const formSchema = z.object({
 });
 
 export default function DietPage() {
-  const t = useTranslations('DietPage');
+  const t = useTranslations();
   const { toast } = useToast();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
@@ -102,16 +102,16 @@ export default function DietPage() {
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
-        title: t('toast.logSuccess.title'),
-        description: t('toast.logSuccess.description'),
+        title: t('DietPage_toast_logSuccess_title'),
+        description: t('DietPage_toast_logSuccess_description'),
       });
       form.reset();
     } catch (error) {
       console.error('Error logging meal:', error);
       toast({
         variant: 'destructive',
-        title: t('toast.logError.title'),
-        description: t('toast.logError.description'),
+        title: t('DietPage_toast_logError_title'),
+        description: t('DietPage_toast_logError_description'),
       });
     }
   };
@@ -119,14 +119,14 @@ export default function DietPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground">{t('description')}</p>
+        <h1 className="font-headline text-3xl font-bold">{t('DietPage_title')}</h1>
+        <p className="text-muted-foreground">{t('DietPage_description')}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('logMeal.title')}</CardTitle>
-          <CardDescription>{t('logMeal.description')}</CardDescription>
+          <CardTitle>{t('DietPage_logMeal_title')}</CardTitle>
+          <CardDescription>{t('DietPage_logMeal_description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -136,10 +136,10 @@ export default function DietPage() {
                 name="mealDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('logMeal.mealDescriptionLabel')}</FormLabel>
+                    <FormLabel>{t('DietPage_logMeal_mealDescriptionLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('logMeal.mealDescriptionPlaceholder')}
+                        placeholder={t('DietPage_logMeal_mealDescriptionPlaceholder')}
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -150,7 +150,7 @@ export default function DietPage() {
               />
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {form.formState.isSubmitting ? t('logMeal.loggingButton') : t('logMeal.logButton')}
+                {form.formState.isSubmitting ? t('DietPage_logMeal_loggingButton') : t('DietPage_logMeal_logButton')}
               </Button>
             </form>
           </Form>
@@ -160,8 +160,8 @@ export default function DietPage() {
       <MealHistory logs={mealLogs} isLoading={isLoadingLogs} />
       
       <div className="mt-8">
-        <h2 className="font-headline text-2xl font-bold">{t('aiChat.title')}</h2>
-        <p className="text-muted-foreground">{t('aiChat.description')}</p>
+        <h2 className="font-headline text-2xl font-bold">{t('DietPage_aiChat_title')}</h2>
+        <p className="text-muted-foreground">{t('DietPage_aiChat_description')}</p>
         <div className="mt-4">
           <ChatInterface topic="nutrition" />
         </div>
@@ -171,7 +171,7 @@ export default function DietPage() {
 }
 
 function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
-  const t = useTranslations('DietPage.mealHistory');
+  const t = useTranslations();
   console.log('--- MealHistory Render ---');
   console.log('Props received by MealHistory - logs:', logs);
   console.log('Props received by MealHistory - isLoading:', isLoading);
@@ -180,7 +180,7 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
+          <CardTitle>{t('DietPage_mealHistory_title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {[...Array(3)].map((_, i) => (
@@ -198,10 +198,10 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
+          <CardTitle>{t('DietPage_mealHistory_title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('noHistory')}</p>
+          <p>{t('DietPage_mealHistory_noHistory')}</p>
         </CardContent>
       </Card>
     );
@@ -210,7 +210,7 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
+        <CardTitle>{t('DietPage_mealHistory_title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {logs.map((log) => (
@@ -222,16 +222,16 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
 }
 
 function MealLogCard({ log }: { log: MealLog }) {
-  const t = useTranslations('DietPage.mealHistory');
+  const t = useTranslations();
   console.log('--- MealLogCard Render ---');
   console.log('Prop received by MealLogCard - log:', log);
 
   const nutritionInfo = [
-    { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
-    { label: t('protein'), value: log.protein.toFixed(1), unit: 'g' },
-    { label: t('carbs'), value: log.carbs.toFixed(1), unit: 'g' },
-    { label: t('fat'), value: log.fat.toFixed(1), unit: 'g' },
-    { label: t('fiber'), value: log.fiber.toFixed(1), unit: 'g' },
+    { label: t('DietPage_mealHistory_calories'), value: log.calories.toFixed(0), unit: '' },
+    { label: t('DietPage_mealHistory_protein'), value: log.protein.toFixed(1), unit: 'g' },
+    { label: t('DietPage_mealHistory_carbs'), value: log.carbs.toFixed(1), unit: 'g' },
+    { label: t('DietPage_mealHistory_fat'), value: log.fat.toFixed(1), unit: 'g' },
+    { label: t('DietPage_mealHistory_fiber'), value: log.fiber.toFixed(1), unit: 'g' },
   ];
 
   return (
@@ -257,5 +257,7 @@ function MealLogCard({ log }: { log: MealLog }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
+
+    
