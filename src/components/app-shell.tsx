@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -56,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const accountNavItems = [
       { href: `/profile`, icon: <User />, label: t('nav.profile') },
-      { href: '#', icon: <Settings />, label: t('nav.settings') },
+      { href: `/settings`, icon: <Settings />, label: t('nav.settings') },
   ];
 
   const handleLogout = async () => {

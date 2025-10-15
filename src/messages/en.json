@@ -166,8 +166,35 @@
     "errorMessage": "I'm sorry, something went wrong. Please try again later."
   },
   "DietPage": {
-    "title": "Diet AI",
-    "description": "Your personal guide for nutrition and healthy eating.",
+    "title": "Diet & Digestion",
+    "description": "Track your meals, hydration, and digestive health.",
+    "waterTracker": {
+      "title": "Water Intake",
+      "description": "Log your daily water intake. Aim for 8 glasses a day!",
+      "glasses": "glasses"
+    },
+    "poopTracker": {
+      "title": "Bowel Movement Tracker",
+      "description": "Log your movements using the Bristol Stool Chart.",
+      "logPrompt": "Log a new movement...",
+      "todaysLogs": "Today's Logs",
+      "noLogs": "No movements logged today.",
+      "bristol": {
+        "1": "Type 1: Separate hard lumps",
+        "2": "Type 2: Lumpy and sausage-like",
+        "3": "Type 3: Sausage shape with cracks",
+        "4": "Type 4: Smooth, soft sausage",
+        "5": "Type 5: Soft blobs with clear edges",
+        "6": "Type 6: Mushy, ragged edges",
+        "7": "Type 7: Liquid consistency"
+      },
+      "toast": {
+        "success": {
+          "title": "Bowel Movement Logged",
+          "description": "You've logged a Type {type} movement."
+        }
+      }
+    },
     "logMeal": {
       "title": "Log a Meal",
       "description": "Describe what you ate, and our AI will estimate the nutritional content.",
@@ -212,24 +239,54 @@
     "title": "Cycle Tracker",
     "description": "Track your menstrual cycle to understand your body better.",
     "logPeriodTitle": "Log Your Period",
-    "logButton": "Log Period",
-    "loggingButton": "Logging...",
+    "startCycleButton": "Start Cycle",
+    "endCycleButton": "End Cycle",
+    "logFlowButton": "Log Flow",
+    "activeCycleLabel": "Active cycle started on {date}",
+    "dialogs": {
+      "start": {
+        "title": "Start New Cycle?",
+        "description": "Do you want to start a new period cycle on {date}?"
+      },
+      "end": {
+        "title": "End Current Cycle?",
+        "description": "Do you want to end your current cycle on {date}? You can also log your flow for this day."
+      },
+      "logFlow": {
+        "title": "Log Flow",
+        "description": "Log your menstrual flow for {date}",
+        "flowLabel": "Flow",
+        "notesLabel": "Notes (optional)",
+        "notesPlaceholder": "e.g., cramps, fatigue, etc.",
+        "saveButton": "Save Log",
+        "flowLevels": {
+          "spotting": "Spotting",
+          "light": "Light",
+          "medium": "Medium",
+          "heavy": "Heavy"
+        }
+      },
+      "cancelButton": "Cancel"
+    },
     "toast": {
       "logSuccess": {
         "title": "Period Logged",
         "description": "Your cycle has been successfully recorded."
       },
+      "endSuccess": {
+        "title": "Period Ended",
+        "description": "Your cycle has been successfully ended."
+      },
       "logError": {
         "title": "Uh oh!",
         "description": "Could not save your cycle. Please try again."
       },
-      "deleteSuccess": {
-        "title": "Entry Deleted",
-        "description": "The cycle entry has been removed."
+      "endDateError": {
+        "title": "End Date Error",
+        "description": "End date cannot be before the start date."
       },
-      "deleteError": {
-        "title": "Delete Failed",
-        "description": "Could not delete the cycle entry. Please try again."
+      "logFlowSuccess": {
+        "title": "Daily log saved!"
       }
     },
     "bleedingHistory": {
@@ -241,6 +298,40 @@
       "notes": "Notes",
       "noNotes": "No notes for this cycle.",
       "days": "days"
+    }
+  },
+  "SettingsPage": {
+    "title": "Settings",
+    "description": "Manage your account, preferences, and app settings.",
+    "account": {
+      "title": "Account",
+      "description": "Update your profile information and manage your account.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "changePasswordButton": "Change Password",
+      "manageProfileButton": "Manage Profile"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Customize the look and feel of the app.",
+      "theme": {
+        "title": "Theme",
+        "description": "Select a theme for the application.",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      },
+      "language": {
+        "title": "Language",
+        "description": "Choose your preferred language.",
+        "languages": {
+          "en": "English",
+          "ur": "اردو",
+          "ur-RO": "Roman Urdu",
+          "ps": "پښتو",
+          "pa": "پنجابی"
+        }
+      }
     }
   }
 }

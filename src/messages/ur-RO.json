@@ -166,8 +166,35 @@
     "errorMessage": "Maaf kijiyega, kuch ghalat ho gaya. Barah-e-karam baad mein dobara koshish karein."
   },
   "DietPage": {
-    "title": "Diet AI",
-    "description": "Ghizaiyat aur sehatmand khane ke liye aapka zaati rehnuma.",
+    "title": "Diet & Digestion",
+    "description": "Apne khane, hydration, aur hazmay ki sehat ko track karein.",
+    "waterTracker": {
+      "title": "Pani ka Istemal",
+      "description": "Rozana pani ke istemal ko log karein. Din mein 8 glass ka hadaf rakhein!",
+      "glasses": "glass"
+    },
+    "poopTracker": {
+      "title": "Pakhana Tracker",
+      "description": "Bristol Stool Chart ka istemal karke apni harkaat ko log karein.",
+      "logPrompt": "Nayi harkat log karein...",
+      "todaysLogs": "Aaj ke Logs",
+      "noLogs": "Aaj koi harkat log nahi ki gayi.",
+      "bristol": {
+        "1": "Type 1: Alag sakht tukray",
+        "2": "Type 2: Guthli wala aur sausage jaisa",
+        "3": "Type 3: Dararon wala sausage ki shakal",
+        "4": "Type 4: Hamwar, naram sausage",
+        "5": "Type 5: Wazeh kinaron wale naram dhabbe",
+        "6": "Type 6: Geela, phate hue kinaray",
+        "7": "Type 7: Maye ki consistentcy"
+      },
+      "toast": {
+        "success": {
+          "title": "Pakhana Log Hogaya",
+          "description": "Aap ne Type {type} ki harkat log karli hai."
+        }
+      }
+    },
     "logMeal": {
       "title": "Khana Log Karein",
       "description": "Aap ne kya khaya, usay bayan karein, aur hamara AI ghizai ajza ka andaza lagaye ga.",
@@ -212,24 +239,54 @@
     "title": "Cycle Tracker",
     "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
     "logPeriodTitle": "Apna Period Log Karein",
-    "logButton": "Period Log Karein",
-    "loggingButton": "Logging...",
+    "startCycleButton": "Cycle Shuru Karein",
+    "endCycleButton": "Cycle Khatam Karein",
+    "logFlowButton": "Flow Log Karein",
+    "activeCycleLabel": "Active cycle {date} ko shuru hua",
+    "dialogs": {
+      "start": {
+        "title": "Naya Cycle Shuru Karein?",
+        "description": "Kya aap {date} ko naya period cycle shuru karna chahti hain?"
+      },
+      "end": {
+        "title": "Mojooda Cycle Khatam Karein?",
+        "description": "Kya aap apna mojooda cycle {date} ko khatam karna chahti hain? Aap is din ke liye apna flow bhi log kar sakti hain."
+      },
+      "logFlow": {
+        "title": "Flow Log Karein",
+        "description": "{date} ke liye apna mahwari ka flow log karein",
+        "flowLabel": "Flow",
+        "notesLabel": "Notes (ikhtiyari)",
+        "notesPlaceholder": "maslan, cramps, thakawat, etc.",
+        "saveButton": "Log Save Karein",
+        "flowLevels": {
+          "spotting": "Spotting",
+          "light": "Halka",
+          "medium": "Darmiyana",
+          "heavy": "Bhaari"
+        }
+      },
+      "cancelButton": "Cancel"
+    },
     "toast": {
       "logSuccess": {
         "title": "Period Log Hogaya",
         "description": "Aapka cycle kamyabi se record ho gaya hai."
       },
+      "endSuccess": {
+        "title": "Period Khatam Hogaya",
+        "description": "Aapka cycle kamyabi se khatam ho gaya hai."
+      },
       "logError": {
         "title": "Oh No!",
         "description": "Aapka cycle save nahi ho saka. Barah-e-karam dobara koshish karein."
       },
-      "deleteSuccess": {
-        "title": "Entry Delete Hogayi",
-        "description": "Cycle ki entry hata di gayi hai."
+      "endDateError": {
+        "title": "End Date Mein Ghalati",
+        "description": "End date start date se pehle nahi ho sakti."
       },
-      "deleteError": {
-        "title": "Delete Nakam",
-        "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
+      "logFlowSuccess": {
+        "title": "Rozana ka log save ho gaya!"
       }
     },
     "bleedingHistory": {
@@ -241,6 +298,40 @@
       "notes": "Notes",
       "noNotes": "Is cycle ke liye koi notes nahi.",
       "days": "din"
+    }
+  },
+  "SettingsPage": {
+    "title": "Settings",
+    "description": "Apna account, tarjehat, aur app settings manage karein.",
+    "account": {
+      "title": "Account",
+      "description": "Apni profile ki maloomat update karein aur apna account manage karein.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "changePasswordButton": "Password Badlein",
+      "manageProfileButton": "Profile Manage Karein"
+    },
+    "appearance": {
+      "title": "Zahiri Shakal",
+      "description": "App ki zahiri shakal aur ehsaas ko customize karein.",
+      "theme": {
+        "title": "Theme",
+        "description": "Application ke liye ek theme chunein.",
+        "light": "Light",
+        "dark": "Dark",
+        "system": "System"
+      },
+      "language": {
+        "title": "Zaban",
+        "description": "Apni pasandeeda zaban chunein.",
+        "languages": {
+          "en": "English",
+          "ur": "اردو",
+          "ur-RO": "Roman Urdu",
+          "ps": "پښتو",
+          "pa": "پنجابی"
+        }
+      }
     }
   }
 }
