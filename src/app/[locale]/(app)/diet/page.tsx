@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { dietAgent } from '@/ai/flows/diet-agent-flow';
-import { Loader2, Minus, Plus, GlassWater, PersonStanding, Poop, Waves, Wind } from 'lucide-react';
+import { Loader2, Minus, Plus, GlassWater, Waves, Bean } from 'lucide-react';
 import { format } from 'date-fns';
 import { ChatInterface } from '@/components/chat-interface';
 import { v4 as uuidv4 } from 'uuid';
@@ -88,7 +88,7 @@ export default function DietPage() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>>) => {
     try {
       const response = await dietAgent(`Analyze this meal: ${values.mealDescription}`);
       
@@ -251,7 +251,7 @@ function PoopTracker({ logs, onLog }: { logs: PoopLog[], onLog: (type: string) =
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Poop /> Bowel Movement Tracker
+                    <Bean /> Bowel Movement Tracker
                 </CardTitle>
                 <CardDescription>Log your movements using the Bristol Stool Chart.</CardDescription>
             </CardHeader>
@@ -371,3 +371,4 @@ function MealLogCard({ log }: { log: MealLog }) {
   );
 }
 
+    
