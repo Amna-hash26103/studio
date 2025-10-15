@@ -23,10 +23,12 @@ import {
 } from '@/components/ui/select';
 import Link from 'next/link';
 import { Monitor, Moon, Sun } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
+  const router = useRouter();
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -122,3 +124,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    

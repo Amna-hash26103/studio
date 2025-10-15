@@ -149,14 +149,6 @@ export default function LandingPage() {
     );
   }
 
-  const localeItems = [
-    { locale: 'en', label: 'English' },
-    { locale: 'ur', label: 'اردو' },
-    { locale: 'ur-RO', label: 'Roman Urdu' },
-    { locale: 'ps', label: 'پښتو' },
-    { locale: 'pa', label: 'پنجابی' },
-  ];
-
   return (
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
@@ -284,3 +276,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
