@@ -69,11 +69,6 @@ const formSchema = z.object({
 
 export default function DietPage() {
   const t = useTranslations('DietPage');
-  const t_logMeal = useTranslations('DietPage.logMeal');
-  const t_history = useTranslations('DietPage.mealHistory');
-  const t_aiChat = useTranslations('DietPage.aiChat');
-  const t_toast = useTranslations('DietPage.toast');
-
   const { toast } = useToast();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
@@ -97,22 +92,26 @@ export default function DietPage() {
         ...nutritionData,
       };
 
+      console.log('New Meal Log Object:', newLog);
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
-        title: t_toast('logSuccess.title'),
-        description: t_toast('logSuccess.description'),
+        title: t('toast.logSuccess.title'),
+        description: t('toast.logSuccess.description'),
       });
       form.reset();
     } catch (error) {
       console.error('Error logging meal:', error);
       toast({
         variant: 'destructive',
-        title: t_toast('logError.title'),
-        description: t_toast('logError.description'),
+        title: t('toast.logError.title'),
+        description: t('toast.logError.description'),
       });
     }
   };
+  
+  console.log('DietPage mealLogs state:', mealLogs);
+  console.log('DietPage isLoadingLogs state:', isLoadingLogs);
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -123,8 +122,8 @@ export default function DietPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t_logMeal('title')}</CardTitle>
-          <CardDescription>{t_logMeal('description')}</CardDescription>
+          <CardTitle>{t('logMeal.title')}</CardTitle>
+          <CardDescription>{t('logMeal.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -134,10 +133,10 @@ export default function DietPage() {
                 name="mealDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t_logMeal('mealDescriptionLabel')}</FormLabel>
+                    <FormLabel>{t('logMeal.mealDescriptionLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t_logMeal('mealDescriptionPlaceholder')}
+                        placeholder={t('logMeal.mealDescriptionPlaceholder')}
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -148,7 +147,7 @@ export default function DietPage() {
               />
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {form.formState.isSubmitting ? t_logMeal('loggingButton') : t_logMeal('logButton')}
+                {form.formState.isSubmitting ? t('logMeal.loggingButton') : t('logMeal.logButton')}
               </Button>
             </form>
           </Form>
@@ -158,8 +157,8 @@ export default function DietPage() {
       <MealHistory logs={mealLogs} isLoading={isLoadingLogs} />
       
       <div className="mt-8">
-        <h2 className="font-headline text-2xl font-bold">{t_aiChat('title')}</h2>
-        <p className="text-muted-foreground">{t_aiChat('description')}</p>
+        <h2 className="font-headline text-2xl font-bold">{t('aiChat.title')}</h2>
+        <p className="text-muted-foreground">{t('aiChat.description')}</p>
         <div className="mt-4">
           <ChatInterface topic="nutrition" />
         </div>
@@ -171,6 +170,8 @@ export default function DietPage() {
 function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
   const t = useTranslations('DietPage.mealHistory');
   
+  console.log('MealHistory props:', { logs, isLoading });
+
   if (isLoading) {
     return (
       <Card>
@@ -218,6 +219,7 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
 
 function MealLogCard({ log }: { log: MealLog }) {
   const t = useTranslations('DietPage.mealHistory');
+  console.log('MealLogCard log prop:', log);
 
   const nutritionInfo = [
     { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
