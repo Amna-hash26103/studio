@@ -12,15 +12,17 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { dietAgent } from '@/ai/flows/diet-agent-flow';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Minus, Plus, GlassWater, PersonStanding, Poop, Waves, Wind } from 'lucide-react';
 import { format } from 'date-fns';
 import { ChatInterface } from '@/components/chat-interface';
 import { v4 as uuidv4 } from 'uuid';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type MealLog = {
   id: string;
@@ -59,17 +61,25 @@ const initialMealLogs: MealLog[] = [
     }
 ];
 
-
 const formSchema = z.object({
   mealDescription: z.string().min(10, {
     message: 'Please describe your meal in at least 10 characters.',
   }),
 });
 
+// New types for trackers
+type PoopLog = {
+    id: string;
+    type: string;
+    createdAt: Date;
+};
+
 export default function DietPage() {
   const { toast } = useToast();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+  const [waterIntake, setWaterIntake] = useState(0); // in glasses
+  const [poopLogs, setPoopLogs] = useState<PoopLog[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,10 +90,8 @@ export default function DietPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      // Use the new diet agent to get nutritional info
       const response = await dietAgent(`Analyze this meal: ${values.mealDescription}`);
       
-      // A simple way to find the JSON data from the agent's response
       const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
       if (!jsonMatch || !jsonMatch[1]) {
         throw new Error("Could not parse nutritional data from AI response.");
@@ -93,7 +101,7 @@ export default function DietPage() {
       
       const newLog: MealLog = {
         id: uuidv4(),
-        userId: 'dummy-user', // Replace with actual user ID
+        userId: 'dummy-user',
         description: values.mealDescription,
         createdAt: { seconds: Math.floor(Date.now() / 1000) },
         ...nutritionData,
@@ -116,11 +124,30 @@ export default function DietPage() {
     }
   };
 
+  const handleLogPoop = (type: string) => {
+    if (!type) return;
+    const newLog: PoopLog = {
+        id: uuidv4(),
+        type,
+        createdAt: new Date(),
+    };
+    setPoopLogs(prev => [...prev, newLog]);
+    toast({
+        title: "Bowel Movement Logged",
+        description: `You've logged a Type ${type} movement.`
+    })
+  };
+
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">Diet AI</h1>
-        <p className="text-muted-foreground">Your personal guide for nutrition and healthy eating.</p>
+        <h1 className="font-headline text-3xl font-bold">Diet & Digestion</h1>
+        <p className="text-muted-foreground">Track your meals, hydration, and digestive health.</p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <WaterTracker waterIntake={waterIntake} setWaterIntake={setWaterIntake} />
+        <PoopTracker logs={poopLogs} onLog={handleLogPoop} />
       </div>
 
       <Card>
@@ -168,6 +195,99 @@ export default function DietPage() {
       </div>
     </div>
   );
+}
+
+function WaterTracker({ waterIntake, setWaterIntake }: { waterIntake: number, setWaterIntake: (fn: (prev: number) => number) => void }) {
+    const glasses = Array.from({ length: 8 });
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <GlassWater /> Water Intake
+                </CardTitle>
+                <CardDescription>Log your daily water intake. Aim for 8 glasses a day!</CardDescription>
+            </CardHeader>
+            <CardContent className="flex items-center justify-center gap-4">
+                <div className="flex flex-col items-center gap-2">
+                    <div className="text-5xl font-bold text-primary">{waterIntake}</div>
+                    <div className="text-muted-foreground">glasses</div>
+                </div>
+                 <div className="grid grid-cols-4 gap-2">
+                    {glasses.map((_, i) => (
+                        <GlassWater
+                        key={i}
+                        className={`h-10 w-10 transition-colors ${
+                            i < waterIntake ? 'text-blue-500 fill-blue-300' : 'text-slate-300'
+                        }`}
+                        />
+                    ))}
+                </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2">
+                 <Button variant="outline" size="icon" onClick={() => setWaterIntake(p => Math.max(0, p - 1))} disabled={waterIntake === 0}>
+                    <Minus className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" onClick={() => setWaterIntake(p => p + 1)}>
+                    <Plus className="h-4 w-4" />
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+}
+
+function PoopTracker({ logs, onLog }: { logs: PoopLog[], onLog: (type: string) => void }) {
+    const bristolScale = [
+        { value: '1', label: 'Type 1: Separate hard lumps' },
+        { value: '2', label: 'Type 2: Lumpy and sausage-like' },
+        { value: '3', label: 'Type 3: Sausage shape with cracks' },
+        { value: '4', label: 'Type 4: Smooth, soft sausage' },
+        { value: '5', label: 'Type 5: Soft blobs with clear edges' },
+        { value: '6', label: 'Type 6: Mushy, ragged edges' },
+        { value: '7', label: 'Type 7: Liquid consistency' },
+    ];
+    
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Poop /> Bowel Movement Tracker
+                </CardTitle>
+                <CardDescription>Log your movements using the Bristol Stool Chart.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <div className="space-y-4">
+                    <Select onValueChange={(value) => onLog(value)}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Log a new movement..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {bristolScale.map(item => (
+                                <SelectItem key={item.value} value={item.value}>
+                                    {item.label}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                     <div className="space-y-2">
+                        <h4 className="font-medium text-sm">Today's Logs</h4>
+                        {logs.length > 0 ? (
+                            <div className="space-y-2 rounded-lg border p-3">
+                                {logs.map(log => (
+                                    <div key={log.id} className="flex justify-between items-center text-sm">
+                                        <span>Type {log.type}</span>
+                                        <span className="text-muted-foreground">{format(log.createdAt, 'h:mm a')}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-muted-foreground text-center py-4">No movements logged today.</p>
+                        )}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    )
 }
 
 function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
@@ -250,3 +370,4 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
+
