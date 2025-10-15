@@ -2,22 +2,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import {
-  useUser,
-  useFirestore,
-  useCollection,
-  useMemoFirebase,
-} from '@/firebase';
-import {
-  collection,
-  addDoc,
-  updateDoc,
-  query,
-  orderBy,
-  doc,
-  writeBatch,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,7 +24,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslations } from 'next-intl';
-import { format, differenceInDays, startOfDay, isBefore, isSameDay, addDays } from 'date-fns';
+import { format, differenceInDays, startOfDay, isBefore, isSameDay, addDays, subDays } from 'date-fns';
 import {
   Loader2,
   CircleDot,
@@ -49,7 +34,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DayModifiers } from 'react-day-picker';
-
 
 type Period = {
   id: string;
@@ -63,6 +47,7 @@ type Period = {
 
 type DailyLog = {
   id: string;
+  periodId: string;
   date: { seconds: number; nanoseconds: number };
   flowLevel: 'spotting' | 'light' | 'medium' | 'heavy';
   painLevel?: number;
@@ -71,11 +56,46 @@ type DailyLog = {
   notes?: string;
 };
 
+// --- DUMMY DATA ---
+const today = new Date();
+const initialPeriods: Period[] = [
+  {
+    id: 'past-cycle-1',
+    userId: 'dummy-user',
+    startDate: { seconds: Math.floor(subDays(today, 35).getTime() / 1000), nanoseconds: 0 },
+    endDate: { seconds: Math.floor(subDays(today, 30).getTime() / 1000), nanoseconds: 0 },
+    duration: 6,
+    notes: 'This was a typical cycle.',
+    createdAt: { seconds: Math.floor(subDays(today, 35).getTime() / 1000), nanoseconds: 0 },
+  },
+  { // Active cycle
+    id: 'active-cycle-1',
+    userId: 'dummy-user',
+    startDate: { seconds: Math.floor(subDays(today, 5).getTime() / 1000), nanoseconds: 0 },
+    createdAt: { seconds: Math.floor(subDays(today, 5).getTime() / 1000), nanoseconds: 0 },
+  }
+];
+
+const initialDailyLogs: DailyLog[] = [
+  { id: 'log-1', periodId: 'past-cycle-1', date: { seconds: Math.floor(subDays(today, 35).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'light', notes: 'Cramps today' },
+  { id: 'log-2', periodId: 'past-cycle-1', date: { seconds: Math.floor(subDays(today, 34).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'medium', notes: '' },
+  { id: 'log-3', periodId: 'past-cycle-1', date: { seconds: Math.floor(subDays(today, 33).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'medium', notes: '' },
+  { id: 'log-4', periodId: 'past-cycle-1', date: { seconds: Math.floor(subDays(today, 32).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'heavy', notes: 'Feeling tired' },
+  { id: 'log-5', periodId: 'past-cycle-1', date: { seconds: Math.floor(subDays(today, 31).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'light', notes: '' },
+  { id: 'log-6', periodId: 'past-cycle-1', date: { seconds: Math.floor(subDays(today, 30).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'spotting', notes: '' },
+  { id: 'log-7', periodId: 'active-cycle-1', date: { seconds: Math.floor(subDays(today, 5).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'light', notes: '' },
+  { id: 'log-8', periodId: 'active-cycle-1', date: { seconds: Math.floor(subDays(today, 4).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'medium', notes: 'Headache' },
+  { id: 'log-9', periodId: 'active-cycle-1', date: { seconds: Math.floor(subDays(today, 3).getTime() / 1000), nanoseconds: 0 }, flowLevel: 'medium', notes: '' },
+];
+// --- END DUMMY DATA ---
+
 export default function PeriodTrackerPage() {
   const t = useTranslations('PeriodTrackerPage');
-  const { user } = useUser();
-  const firestore = useFirestore();
   const { toast } = useToast();
+
+  const [periods, setPeriods] = useState<Period[]>(initialPeriods);
+  const [dailyLogs, setDailyLogs] = useState<DailyLog[]>(initialDailyLogs);
+  const [isLoadingPeriods, setIsLoadingPeriods] = useState(false);
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -87,32 +107,12 @@ export default function PeriodTrackerPage() {
     date?: Date;
   }>({});
 
-  const periodsCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'periods');
-  }, [firestore, user]);
-
-  const periodsQuery = useMemoFirebase(() => {
-    if (!periodsCollectionRef) return null;
-    return query(periodsCollectionRef, orderBy('startDate', 'desc'));
-  }, [periodsCollectionRef]);
-
-  const { data: periods, isLoading: isLoadingPeriods } = useCollection<Period>(periodsQuery);
-
-  const activeCycle = useMemo(() => periods?.find((p) => !p.endDate) || null, [periods]);
-  const pastCycles = useMemo(() => periods?.filter((p) => p.endDate) || [], [periods]);
-
-  const dailyLogsCollectionRef = useMemoFirebase(() => {
-      if (!firestore || !user || !activeCycle) return null;
-      return collection(firestore, 'users', user.uid, 'periods', activeCycle.id, 'dailyLogs');
-  }, [firestore, user, activeCycle]);
-  
-  const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
-
+  const activeCycle = useMemo(() => periods.find((p) => !p.endDate) || null, [periods]);
+  const pastCycles = useMemo(() => periods.filter((p) => p.endDate) || [], [periods]);
 
   const periodDays = useMemo(() => {
     const days = new Set<string>();
-    periods?.forEach((period) => {
+    periods.forEach((period) => {
       const start = startOfDay(new Date(period.startDate.seconds * 1000));
       const end = period.endDate
         ? startOfDay(new Date(period.endDate.seconds * 1000))
@@ -152,54 +152,37 @@ export default function PeriodTrackerPage() {
   };
 
   const handleStartPeriod = async () => {
-    if (!dialogState.date || !user || !firestore || !periodsCollectionRef) return;
+    if (!dialogState.date) return;
     setIsProcessing(true);
 
     const startDate = startOfDay(dialogState.date);
     
-    try {
-        const batch = writeBatch(firestore);
+    // In a real app, you would make an API call. Here, we just update state.
+    setTimeout(() => {
+      const newPeriod: Period = {
+        id: uuidv4(),
+        userId: 'dummy-user',
+        startDate: { seconds: Math.floor(startDate.getTime() / 1000), nanoseconds: 0 },
+        createdAt: { seconds: Math.floor(Date.now() / 1000), nanoseconds: 0 },
+      };
+      
+      // End any existing active cycle before starting a new one
+      setPeriods(prev => [...prev.filter(p => p.endDate), newPeriod]);
 
-        if (activeCycle) {
-            const activeDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
-            batch.delete(activeDocRef);
-        }
-        
-        const newPeriodData = {
-            userId: user.uid,
-            startDate: startDate,
-            createdAt: serverTimestamp(),
-        };
-
-        const newPeriodRef = doc(periodsCollectionRef);
-        batch.set(newPeriodRef, newPeriodData);
-        
-        await batch.commit();
-
-        toast({
-            title: t('toast.logSuccess.title'),
-            description: t('toast.logSuccess.description'),
-        });
-
-        setDialogState({});
-        setSelectedDate(startDate);
-        setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
-
-    } catch (error) {
-        console.error('Error starting period:', error);
-        toast({
-            variant: 'destructive',
-            title: t('toast.logError.title'),
-            description: t('toast.logError.description'),
-        });
-    } finally {
-        setIsProcessing(false);
-        setDialogState({});
-    }
+      toast({
+        title: t('toast.logSuccess.title'),
+        description: t('toast.logSuccess.description'),
+      });
+      setIsProcessing(false);
+      setDialogState({});
+      setSelectedDate(startDate);
+      // Open log dialog for the new start date
+      setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
+    }, 500);
   };
 
   const handleEndPeriod = async () => {
-      if (!dialogState.date || !user || !firestore || !activeCycle) return;
+      if (!dialogState.date || !activeCycle) return;
       setIsProcessing(true);
 
       const endDate = startOfDay(dialogState.date);
@@ -215,37 +198,39 @@ export default function PeriodTrackerPage() {
           return;
       }
 
-      try {
-          const periodDocRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
-          const duration = differenceInDays(endDate, startDate) + 1;
-          
-          await updateDoc(periodDocRef, {
-              endDate: endDate,
-              duration: duration,
-          });
-
-          toast({
-              title: t('toast.logSuccess.title'),
-              description: t('toast.endSuccessDescription'),
-          });
-
-          setDialogState({});
-      } catch (error) {
-          console.error('Error ending period:', error);
-          toast({
-              variant: 'destructive',
-              title: t('toast.logError.title'),
-              description: t('toast.logError.description'),
-          });
-      } finally {
-          setIsProcessing(false);
-          setDialogState({});
-      }
+      // In a real app, you would make an API call. Here, we just update state.
+      setTimeout(() => {
+        const duration = differenceInDays(endDate, startDate) + 1;
+        setPeriods(prev => prev.map(p => p.id === activeCycle.id ? { ...p, endDate: { seconds: Math.floor(endDate.getTime() / 1000), nanoseconds: 0 }, duration } : p));
+        
+        toast({
+            title: t('toast.logSuccess.title'),
+            description: t('toast.endSuccessDescription'),
+        });
+        setIsProcessing(false);
+        setDialogState({});
+      }, 500);
   };
   
   const handleOpenLogDialog = () => {
     const date = dialogState.date;
     setDialogState({ showLog: true, date: date });
+  };
+  
+  const handleSaveLog = (logData: Omit<DailyLog, 'id' | 'periodId'>) => {
+    if (!activeCycle) return;
+    const existingLog = dailyLogs.find(log => isSameDay(new Date(log.date.seconds * 1000), new Date(logData.date.seconds * 1000)));
+
+    if (existingLog) {
+        setDailyLogs(prev => prev.map(log => log.id === existingLog.id ? { ...existingLog, ...logData } : log));
+    } else {
+        const newLog: DailyLog = {
+            id: uuidv4(),
+            periodId: activeCycle.id,
+            ...logData,
+        };
+        setDailyLogs(prev => [...prev, newLog]);
+    }
   };
 
 
@@ -315,7 +300,7 @@ export default function PeriodTrackerPage() {
           </CardContent>
         </Card>
 
-        <BleedingHistory periods={pastCycles} t={t} />
+        <BleedingHistory periods={pastCycles} dailyLogs={dailyLogs} t={t} />
       </div>
 
        <Dialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
@@ -363,7 +348,8 @@ export default function PeriodTrackerPage() {
                 onOpenChange={(isOpen) => !isOpen && setDialogState({})}
                 date={dialogState.date}
                 activeCycle={activeCycle}
-                dailyLog={dailyLogs?.find(log => isSameDay(new Date(log.date.seconds * 1000), dialogState.date!))}
+                dailyLog={dailyLogs.find(log => log.periodId === activeCycle.id && isSameDay(new Date(log.date.seconds * 1000), dialogState.date!))}
+                onSave={handleSaveLog}
                 t={t}
             />
         )}
@@ -371,9 +357,7 @@ export default function PeriodTrackerPage() {
   );
 }
 
-function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog, t: (key: string, values?: any) => string }) {
-    const { user } = useUser();
-    const firestore = useFirestore();
+function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog, t }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog, onSave: (log: Omit<DailyLog, 'id'|'periodId'>) => void, t: (key: string, values?: any) => string }) {
     const { toast } = useToast();
     
     const [flow, setFlow] = useState<'spotting' | 'light' | 'medium' | 'heavy'>('light');
@@ -388,33 +372,20 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: {
     }, [open, date, dailyLog]);
     
     const handleSave = async () => {
-        if (!user || !firestore) return;
         setIsSaving(true);
-        try {
-            const dailyLogsColRef = collection(firestore, 'users', user.uid, 'periods', activeCycle.id, 'dailyLogs');
-            
+        // Simulate API call
+        setTimeout(() => {
             const logData = {
-                date: startOfDay(date),
+                date: { seconds: Math.floor(startOfDay(date).getTime() / 1000), nanoseconds: 0 },
                 flowLevel: flow,
                 notes: notes,
-                userId: user.uid,
             };
-
-            if (dailyLog) {
-                const logDocRef = doc(dailyLogsColRef, dailyLog.id);
-                await updateDoc(logDocRef, logData);
-            } else {
-                await addDoc(dailyLogsColRef, logData);
-            }
+            onSave(logData);
 
             toast({ title: t('logFlowDialog.toast.logSuccess.title') });
-            onOpenChange(false);
-        } catch (error) {
-            console.error("Failed to save daily log", error);
-            toast({ variant: 'destructive', title: t('logFlowDialog.toast.logError.title'), description: t('logFlowDialog.toast.logError.description') });
-        } finally {
             setIsSaving(false);
-        }
+            onOpenChange(false);
+        }, 500);
     }
 
     const flowOptions = [
@@ -429,7 +400,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: {
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>{t('logFlowDialog.title')}</DialogTitle>
-                    <DialogDescription>{t('logFlowDialog.description')}</DialogDescription>
+                    <DialogDescription>{t('logFlowDialog.description', {date: format(date, 'MMMM d, yyyy')})}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-6 py-4">
@@ -464,7 +435,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: {
 }
 
 
-function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string, values?: any) => string }) {
+function BleedingHistory({ periods, dailyLogs, t }: { periods: Period[], dailyLogs: DailyLog[], t: (key: string, values?: any) => string }) {
   if (periods.length === 0) {
     return (
       <Card>
@@ -485,24 +456,14 @@ function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string, v
       </CardHeader>
       <CardContent className="space-y-4">
         {periods.map((period, index) => (
-          <PastCycleCard key={period.id} period={period} index={periods.length - index} t={t} />
+          <PastCycleCard key={period.id} period={period} dailyLogs={dailyLogs.filter(l => l.periodId === period.id)} index={periods.length - index} t={t} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function PastCycleCard({ period, index, t }: { period: Period, index: number, t: (key: string, values?: any) => string }) {
-  const { user } = useUser();
-  const firestore = useFirestore();
-
-  const dailyLogsCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'periods', period.id, 'dailyLogs');
-  }, [firestore, user, period.id]);
-
-  const { data: dailyLogs } = useCollection<DailyLog>(dailyLogsCollectionRef);
-
+function PastCycleCard({ period, dailyLogs, index, t }: { period: Period, dailyLogs: DailyLog[], index: number, t: (key: string, values?: any) => string }) {
   const flowIcons: Record<string, React.ReactNode> = {
     spotting: <CircleDot className="h-4 w-4 text-red-300" />,
     light: <Droplet className="h-4 w-4 text-red-400" />,
@@ -559,7 +520,7 @@ function PastCycleCard({ period, index, t }: { period: Period, index: number, t:
             </p>
           </div>
         )}
-        {!allNotes && (
+        {!allNotes && !flowPattern.length && (
             <p className="text-sm text-muted-foreground">{t('bleedingHistory.noNotes')}</p>
         )}
       </CardContent>

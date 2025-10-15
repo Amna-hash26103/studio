@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,11 +18,10 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { analyzeNutrition } from '@/ai/flows/nutrition-analysis-flow';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ChatInterface } from '@/components/chat-interface';
+import { v4 as uuidv4 } from 'uuid';
 
 type MealLog = {
   id: string;
@@ -36,6 +35,32 @@ type MealLog = {
   fiber: number;
 };
 
+const initialMealLogs: MealLog[] = [
+    {
+        id: '1',
+        userId: 'dummy-user',
+        description: 'A bowl of oatmeal with blueberries and almonds',
+        createdAt: { seconds: Math.floor(Date.now() / 1000) - 3600 * 2 }, // 2 hours ago
+        calories: 350,
+        protein: 10,
+        carbs: 60,
+        fat: 10,
+        fiber: 8,
+    },
+    {
+        id: '2',
+        userId: 'dummy-user',
+        description: 'Grilled chicken salad with avocado dressing',
+        createdAt: { seconds: Math.floor(Date.now() / 1000) - 3600 * 24 }, // yesterday
+        calories: 450,
+        protein: 35,
+        carbs: 15,
+        fat: 28,
+        fiber: 7,
+    }
+];
+
+
 const formSchema = z.object({
   mealDescription: z.string().min(10, {
     message: 'Please describe your meal in at least 10 characters.',
@@ -44,9 +69,10 @@ const formSchema = z.object({
 
 export default function DietPage() {
   const t = useTranslations('DietPage');
-  const { user } = useUser();
-  const firestore = useFirestore();
   const { toast } = useToast();
+  const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,30 +81,20 @@ export default function DietPage() {
     },
   });
 
-  const mealLogsCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'mealLogs');
-  }, [firestore, user]);
-
-  const mealLogsQuery = useMemoFirebase(() => {
-    if (!mealLogsCollectionRef) return null;
-    return query(mealLogsCollectionRef, orderBy('createdAt', 'desc'));
-  }, [mealLogsCollectionRef]);
-
-  const { data: mealLogs, isLoading: isLoadingLogs } = useCollection<MealLog>(mealLogsQuery);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!user || !mealLogsCollectionRef) return;
-
     try {
       const nutritionData = await analyzeNutrition({ mealDescription: values.mealDescription });
 
-      await addDoc(mealLogsCollectionRef, {
-        userId: user.uid,
+      const newLog: MealLog = {
+        id: uuidv4(),
+        userId: 'dummy-user',
         description: values.mealDescription,
-        createdAt: serverTimestamp(),
+        createdAt: { seconds: Math.floor(Date.now() / 1000) },
         ...nutritionData,
-      });
+      };
+
+      setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
         title: t('toast.logSuccess.title'),
