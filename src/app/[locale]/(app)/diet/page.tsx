@@ -88,7 +88,7 @@ export default function DietPage() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await dietAgent(`Analyze this meal: ${values.mealDescription}`);
       
@@ -370,5 +370,3 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
-
-    
