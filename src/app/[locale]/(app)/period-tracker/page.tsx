@@ -226,7 +226,7 @@ export default function PeriodTrackerPage() {
 
           toast({
               title: t('toast.logSuccess.title'),
-              description: t('toast.endSuccessDescription'),
+              description: t('endSuccessDescription'),
           });
 
           setDialogState({});
@@ -371,7 +371,7 @@ export default function PeriodTrackerPage() {
   );
 }
 
-function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog, t: (key: string) => string }) {
+function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog, t: (key: string, values?: any) => string }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -428,7 +428,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{t('logFlowDialog.title', { date: format(date, 'MMMM d') })}</DialogTitle>
+                    <DialogTitle>{t('logFlowDialog.title')}</DialogTitle>
                     <DialogDescription>{t('logFlowDialog.description')}</DialogDescription>
                 </DialogHeader>
 
@@ -464,7 +464,7 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: {
 }
 
 
-function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string) => string }) {
+function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string, values?: any) => string }) {
   if (periods.length === 0) {
     return (
       <Card>
@@ -492,7 +492,7 @@ function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string) =
   );
 }
 
-function PastCycleCard({ period, index, t }: { period: Period, index: number, t: (key: string) => string }) {
+function PastCycleCard({ period, index, t }: { period: Period, index: number, t: (key: string, values?: any) => string }) {
   const { user } = useUser();
   const firestore = useFirestore();
 
@@ -566,5 +566,3 @@ function PastCycleCard({ period, index, t }: { period: Period, index: number, t:
     </Card>
   );
 }
-
-    
