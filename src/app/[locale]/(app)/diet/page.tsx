@@ -92,7 +92,6 @@ export default function DietPage() {
         ...nutritionData,
       };
 
-      console.log('New Meal Log Object:', newLog);
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
@@ -109,9 +108,6 @@ export default function DietPage() {
       });
     }
   };
-  
-  console.log('DietPage mealLogs state:', mealLogs);
-  console.log('DietPage isLoadingLogs state:', isLoadingLogs);
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -154,7 +150,7 @@ export default function DietPage() {
         </CardContent>
       </Card>
 
-      <MealHistory logs={mealLogs} isLoading={isLoadingLogs} />
+      <MealHistory logs={mealLogs} isLoading={isLoadingLogs} t={t} />
       
       <div className="mt-8">
         <h2 className="font-headline text-2xl font-bold">{t('aiChat.title')}</h2>
@@ -167,16 +163,12 @@ export default function DietPage() {
   );
 }
 
-function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
-  const t = useTranslations('DietPage.mealHistory');
-  
-  console.log('MealHistory props:', { logs, isLoading });
-
+function MealHistory({ logs, isLoading, t }: { logs: MealLog[] | null, isLoading: boolean, t: (key: string) => string }) {
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
+          <CardTitle>{t('mealHistory.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {[...Array(3)].map((_, i) => (
@@ -194,10 +186,10 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
+          <CardTitle>{t('mealHistory.title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('noHistory')}</p>
+          <p>{t('mealHistory.noHistory')}</p>
         </CardContent>
       </Card>
     );
@@ -206,27 +198,24 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
+        <CardTitle>{t('mealHistory.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {logs.map((log) => (
-          <MealLogCard key={log.id} log={log} />
+          <MealLogCard key={log.id} log={log} t={t} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function MealLogCard({ log }: { log: MealLog }) {
-  const t = useTranslations('DietPage.mealHistory');
-  console.log('MealLogCard log prop:', log);
-
+function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
   const nutritionInfo = [
-    { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
-    { label: t('protein'), value: log.protein.toFixed(1), unit: 'g' },
-    { label: t('carbs'), value: log.carbs.toFixed(1), unit: 'g' },
-    { label: t('fat'), value: log.fat.toFixed(1), unit: 'g' },
-    { label: t('fiber'), value: log.fiber.toFixed(1), unit: 'g' },
+    { label: t('mealHistory.calories'), value: log.calories.toFixed(0), unit: '' },
+    { label: t('mealHistory.protein'), value: log.protein.toFixed(1), unit: 'g' },
+    { label: t('mealHistory.carbs'), value: log.carbs.toFixed(1), unit: 'g' },
+    { label: t('mealHistory.fat'), value: log.fat.toFixed(1), unit: 'g' },
+    { label: t('mealHistory.fiber'), value: log.fiber.toFixed(1), unit: 'g' },
   ];
 
   return (
