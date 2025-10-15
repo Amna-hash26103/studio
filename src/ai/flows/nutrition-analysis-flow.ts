@@ -39,13 +39,21 @@ export const nutritionAnalysisTool = ai.defineTool(
       input: { schema: NutritionAnalysisInputSchema },
       output: { schema: NutritionAnalysisOutputSchema },
       prompt: `
-        You are an expert nutritionist. Analyze the following meal description and provide a realistic estimate of its nutritional content.
-        Consider common portion sizes if not specified. Break down the meal into its components to make your best estimate.
+        You are a clinical nutritionist AI. Your task is to analyze the following meal description and provide a highly accurate, realistic estimate of its nutritional content.
 
-        Meal: {{{mealDescription}}}
+        **Methodology:**
+        1. Base your estimations on standard food composition databases, such as the USDA FoodData Central.
+        2. Break down the meal into its core ingredients.
+        3. If portion sizes are not specified, assume common, standard portion sizes (e.g., 1 cup of rice, 4oz of chicken breast).
+        4. Sum the nutritional information for the components to arrive at a final estimate for the entire meal.
+        
+        **Meal Description:**
+        {{{mealDescription}}}
 
-        Return the estimated calories, protein (g), carbohydrates (g), fat (g), and fiber (g).
-        If a value is negligible, return 0. Do not return ranges, only single numbers.
+        **Output Requirements:**
+        - Return only the estimated total calories, protein (g), carbohydrates (g), fat (g), and fiber (g).
+        - If a value is negligible, return 0.
+        - Do not return ranges, only single, whole numbers for calories and numbers with up to one decimal place for grams.
       `,
     });
 
