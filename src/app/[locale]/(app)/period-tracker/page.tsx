@@ -17,7 +17,6 @@ import {
   doc,
   writeBatch,
   serverTimestamp,
-  deleteDoc,
 } from 'firebase/firestore';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -57,7 +56,6 @@ import {
   Droplet,
   Droplets,
   Waves,
-  Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DayModifiers } from 'react-day-picker';
@@ -126,13 +124,11 @@ export default function PeriodTrackerPage() {
     const days = new Set<string>();
     periods?.forEach((period) => {
       const start = startOfDay(new Date(period.startDate.seconds * 1000));
-      // Use today as the end date for the active cycle for UI highlighting
       const end = period.endDate
         ? startOfDay(new Date(period.endDate.seconds * 1000))
         : startOfDay(new Date());
 
       let current = start;
-      // Ensure we don't create an infinite loop if dates are invalid
       let i = 0;
       while (current <= end && i < 365) {
         days.add(format(current, 'yyyy-MM-dd'));
@@ -154,15 +150,13 @@ export default function PeriodTrackerPage() {
         setDialogState({ showStart: true, date: dayStart });
       } 
       else {
-        // A day on or after the current cycle's start can either be a log entry or an end date
         if (isSameDay(dayStart, activeCycleStart)) {
           setDialogState({ showLog: true, date: dayStart });
         } else {
-          setDialogState({ showEnd: true, date: dayStart }); // This dialog will also have a log button
+          setDialogState({ showEnd: true, date: dayStart });
         }
       }
     } else {
-      // No active cycle, so any day can be a start date
       setDialogState({ showStart: true, date: dayStart });
     }
   };
@@ -331,7 +325,7 @@ export default function PeriodTrackerPage() {
           </CardContent>
         </Card>
 
-        <BleedingHistory periods={pastCycles} />
+        <BleedingHistory periods={pastCycles} t={t} />
       </div>
 
        <AlertDialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
@@ -378,14 +372,14 @@ export default function PeriodTrackerPage() {
                 date={dialogState.date}
                 activeCycle={activeCycle}
                 dailyLog={dailyLogs?.find(log => isSameDay(new Date(log.date.seconds * 1000), dialogState.date!))}
+                t={t}
             />
         )}
     </>
   );
 }
 
-function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog }) {
-    const t = useTranslations('PeriodTrackerPage.logFlowDialog');
+function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog, t }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog, t: (key: string) => string }) {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -421,34 +415,34 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
                 await addDoc(dailyLogsColRef, logData);
             }
 
-            toast({ title: t('toast.logSuccess.title') });
+            toast({ title: t('logFlowDialog.toast.logSuccess.title') });
             onOpenChange(false);
         } catch (error) {
             console.error("Failed to save daily log", error);
-            toast({ variant: 'destructive', title: t('toast.logError.title'), description: t('toast.logError.description') });
+            toast({ variant: 'destructive', title: t('logFlowDialog.toast.logError.title'), description: t('logFlowDialog.toast.logError.description') });
         } finally {
             setIsSaving(false);
         }
     }
 
     const flowOptions = [
-        { value: 'spotting', label: t('flow.spotting'), icon: <CircleDot /> },
-        { value: 'light', label: t('flow.light'), icon: <Droplet /> },
-        { value: 'medium', label: t('flow.medium'), icon: <Droplets /> },
-        { value: 'heavy', label: t('flow.heavy'), icon: <Waves /> },
+        { value: 'spotting', label: t('logFlowDialog.flow.spotting'), icon: <CircleDot /> },
+        { value: 'light', label: t('logFlowDialog.flow.light'), icon: <Droplet /> },
+        { value: 'medium', label: t('logFlowDialog.flow.medium'), icon: <Droplets /> },
+        { value: 'heavy', label: t('logFlowDialog.flow.heavy'), icon: <Waves /> },
     ];
     
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>{t('title', { date: format(date, 'MMMM d') })}</DialogTitle>
-                    <DialogDescription>{t('description')}</DialogDescription>
+                    <DialogTitle>{t('logFlowDialog.title', { date: format(date, 'MMMM d') })}</DialogTitle>
+                    <DialogDescription>{t('logFlowDialog.description')}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-6 py-4">
                     <div className="space-y-2">
-                        <Label>{t('flow.label')}</Label>
+                        <Label>{t('logFlowDialog.flow.label')}</Label>
                         <RadioGroup value={flow} onValueChange={(value) => setFlow(value as any)} className="grid grid-cols-2 gap-4">
                             {flowOptions.map(option => (
                                 <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"border-primary bg-primary/10 text-primary": flow === option.value})}>
@@ -460,16 +454,16 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
                         </RadioGroup>
                     </div>
                     <div className="space-y-2">
-                         <Label htmlFor="notes">{t('notes.label')}</Label>
-                         <Textarea id="notes" placeholder={t('notes.placeholder')} value={notes} onChange={(e) => setNotes(e.target.value)} />
+                         <Label htmlFor="notes">{t('logFlowDialog.notes.label')}</Label>
+                         <Textarea id="notes" placeholder={t('logFlowDialog.notes.placeholder')} value={notes} onChange={(e) => setNotes(e.target.value)} />
                     </div>
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>{t('cancel')}</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>{t('logFlowDialog.cancel')}</Button>
                     <Button onClick={handleSave} disabled={isSaving}>
                         {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t('save')}
+                        {t('logFlowDialog.save')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -478,16 +472,15 @@ function LogFlowDialog({ open, onOpenChange, date, activeCycle, dailyLog }: { op
 }
 
 
-function BleedingHistory({ periods }: { periods: Period[] }) {
-  const t = useTranslations('PeriodTrackerPage.bleedingHistory');
+function BleedingHistory({ periods, t }: { periods: Period[], t: (key: string) => string }) {
   if (periods.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('title')}</CardTitle>
+          <CardTitle>{t('bleedingHistory.title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('noHistory')}</p>
+          <p>{t('bleedingHistory.noHistory')}</p>
         </CardContent>
       </Card>
     );
@@ -496,19 +489,18 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('title')}</CardTitle>
+        <CardTitle>{t('bleedingHistory.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {periods.map((period, index) => (
-          <PastCycleCard key={period.id} period={period} index={periods.length - index} />
+          <PastCycleCard key={period.id} period={period} index={periods.length - index} t={t} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function PastCycleCard({ period, index }: { period: Period, index: number }) {
-  const t = useTranslations('PeriodTrackerPage.bleedingHistory');
+function PastCycleCard({ period, index, t }: { period: Period, index: number, t: (key: string) => string }) {
   const { user } = useUser();
   const firestore = useFirestore();
 
@@ -538,29 +530,29 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
       <CardHeader>
         <div className="flex justify-between items-center">
           <p className="text-lg font-semibold">
-            {t('cycle')} #{index}
+            {t('bleedingHistory.cycle')} #{index}
           </p>
           <p className="text-sm text-muted-foreground">
             {format(startDate, 'MMM dd')} -{' '}
-            {period.endDate ? format(endDate, 'MMM dd, yyyy') : t('ongoing')}
+            {period.endDate ? format(endDate, 'MMM dd, yyyy') : t('bleedingHistory.ongoing')}
           </p>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex justify-between items-baseline">
-          <span className="text-sm font-medium">{t('duration')}:</span>
+          <span className="text-sm font-medium">{t('bleedingHistory.duration')}:</span>
           <span className="text-sm">
-            {period.duration || 0} {t('days')}
+            {period.duration || 0} {t('bleedingHistory.days')}
           </span>
         </div>
         {flowPattern.length > 0 && (
           <div className="space-y-1">
             <span className="text-sm font-medium">
-              {t('flowPattern')}:
+              {t('bleedingHistory.flowPattern')}:
             </span>
             <div className="flex gap-2 flex-wrap">
               {flowPattern.map((flow, i) => (
-                <span key={i} title={t(`flowLevels.${flow}`)}>
+                <span key={i} title={t(`bleedingHistory.flowLevels.${flow}`)}>
                   {flowIcons[flow.toLowerCase()]}
                 </span>
               ))}
@@ -569,14 +561,14 @@ function PastCycleCard({ period, index }: { period: Period, index: number }) {
         )}
         {allNotes && (
           <div className="space-y-1">
-            <span className="text-sm font-medium">{t('notes')}:</span>
+            <span className="text-sm font-medium">{t('bleedingHistory.notes')}:</span>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
               {allNotes}
             </p>
           </div>
         )}
         {!allNotes && (
-            <p className="text-sm text-muted-foreground">{t('noNotes')}</p>
+            <p className="text-sm text-muted-foreground">{t('bleedingHistory.noNotes')}</p>
         )}
       </CardContent>
     </Card>
