@@ -94,6 +94,7 @@ export default function DietPage() {
         ...nutritionData,
       };
 
+      console.log('Meal Log Object:', newLog);
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
@@ -121,7 +122,7 @@ export default function DietPage() {
       <Card>
         <CardHeader>
           <CardTitle>{t('logMeal.title')}</CardTitle>
-        {/* <CardDescription>{t('logMeal.description')}</CardDescription> */}
+          <CardDescription>{t('logMeal.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -152,7 +153,7 @@ export default function DietPage() {
         </CardContent>
       </Card>
 
-      {/*<MealHistory logs={mealLogs} isLoading={isLoadingLogs} t={t} />*/}
+      <MealHistory logs={mealLogs} isLoading={isLoadingLogs} t={t} />
       
       <div className="mt-8">
         <h2 className="font-headline text-2xl font-bold">{t('aiChat.title')}</h2>
@@ -245,3 +246,5 @@ function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
     </Card>
   )
 }
+
+    
