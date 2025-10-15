@@ -69,9 +69,6 @@ const formSchema = z.object({
 
 export default function DietPage() {
   const t = useTranslations('DietPage');
-  const t_logMeal = useTranslations('DietPage.logMeal');
-  const t_toast = useTranslations('DietPage.toast');
-
   const { toast } = useToast();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
@@ -92,11 +89,10 @@ export default function DietPage() {
     console.log('Form values submitted:', values);
     try {
       const nutritionData = await analyzeNutrition({ mealDescription: values.mealDescription });
-      console.log('AI analysis result:', nutritionData);
-
+      
       const newLog: MealLog = {
         id: uuidv4(),
-        userId: 'dummy-user',
+        userId: 'dummy-user', // Replace with actual user ID
         description: values.mealDescription,
         createdAt: { seconds: Math.floor(Date.now() / 1000) },
         ...nutritionData,
@@ -106,16 +102,16 @@ export default function DietPage() {
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
-        title: t_toast('logSuccess.title'),
-        description: t_toast('logSuccess.description'),
+        title: t('toast.logSuccess.title'),
+        description: t('toast.logSuccess.description'),
       });
       form.reset();
     } catch (error) {
       console.error('Error logging meal:', error);
       toast({
         variant: 'destructive',
-        title: t_toast('logError.title'),
-        description: t_toast('logError.description'),
+        title: t('toast.logError.title'),
+        description: t('toast.logError.description'),
       });
     }
   };
@@ -129,8 +125,8 @@ export default function DietPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t_logMeal('title')}</CardTitle>
-          <CardDescription>{t_logMeal('description')}</CardDescription>
+          <CardTitle>{t('logMeal.title')}</CardTitle>
+          <CardDescription>{t('logMeal.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -140,10 +136,10 @@ export default function DietPage() {
                 name="mealDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t_logMeal('mealDescriptionLabel')}</FormLabel>
+                    <FormLabel>{t('logMeal.mealDescriptionLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t_logMeal('mealDescriptionPlaceholder')}
+                        placeholder={t('logMeal.mealDescriptionPlaceholder')}
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -154,7 +150,7 @@ export default function DietPage() {
               />
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {form.formState.isSubmitting ? t_logMeal('loggingButton') : t_logMeal('logButton')}
+                {form.formState.isSubmitting ? t('logMeal.loggingButton') : t('logMeal.logButton')}
               </Button>
             </form>
           </Form>
