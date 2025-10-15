@@ -1,144 +1,141 @@
 /**
- * @file Firebase Security Rules for Femmora App
- * @description This ruleset enforces a strict user-ownership model for personal data,
- * allowing users to manage their profiles, period entries, daily logs, meal logs, and stats.
- * Community posts are publicly readable, but only authors can modify or delete them.
- *
+ * @file Firestore Security Rules
+ * @version 2
+ * @description This ruleset enforces a strict user-ownership model for user profiles, period data, daily logs, user stats, and meal logs.
+ * Community posts are publicly readable, but only the author can modify or delete them.
  * Data Structure:
- * - /users/{userId}: User profiles, accessible only to the owning user.
- * - /users/{userId}/periods/{periodId}: Menstrual cycle entries, accessible only to the owning user.
- * - /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}: Daily logs, accessible only to the owning user.
- * - /users/{userId}/stats/{statId}: User statistics, accessible only to the owning user. Should be a singleton document.
- * - /community_posts/{postId}: Community posts, publicly readable but writable only by the author.
- * - /users/{userId}/mealLogs/{mealLogId}: Meal logs, accessible only to the owning user.
- *
+ * - /users/{userId}: User profile data, owned by the user with the matching UID.
+ * - /users/{userId}/periods/{periodId}: Menstrual cycle data, owned by the user.
+ * - /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}: Daily log entries, owned by the user.
+ * - /users/{userId}/stats/{statId}: User statistics, owned by the user. Should be a singleton document.
+ * - /community_posts/{postId}: Community posts, publicly readable, owner-modifiable.
+ * - /users/{userId}/mealLogs/{mealLogId}: Meal log entries, owned by the user.
  * Key Security Decisions:
- * - User listing is disallowed to protect privacy.
- * - Ambiguous relationships default to owner-only access.
- * - Community posts are publicly readable to encourage engagement.
- *
+ * - Users can only access their own profile data and associated subcollections.
+ * - Community posts are publicly readable to facilitate community interaction.
+ * - User listing is disallowed to protect user privacy.
+ * - Read-only collections are not used in this data model.
  * Denormalization for Authorization:
- * - CommunityPost documents denormalize authorId to allow for simple owner-based access control.
+ * - The `CommunityPost` entity includes an `authorId` field to enable owner-only write access.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Protects user profiles, allowing only the owner to read and write.
+     * @description Controls access to user profile documents.
      * @path /users/{userId}
-     * @allow (create, update, get, delete) User with UID 'user123' can create/update/get/delete their own profile at /users/user123.
-     * @deny (create) User with UID 'user456' cannot create a profile at /users/user123.
-     * @deny (update, delete) User with UID 'user456' cannot update/delete the profile at /users/user123.
-     * @deny (list) Listing all users is not permitted.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user_abc' can create their profile document at /users/user_abc if the id field matches.
+     * @allow (get, update, delete) User with UID 'user_abc' can read, update, or delete their profile document at /users/user_abc.
+     * @deny (create) User with UID 'user_xyz' cannot create a profile document at /users/user_abc.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete the profile document at /users/user_abc.
+     * @principle Enforces document ownership for all operations on user profiles.
      */
     match /users/{userId} {
-      // Only signed-in users can attempt to access user profiles.
-      allow get: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Protects menstrual cycle entries, allowing only the owner to read and write.
+     * @description Controls access to menstrual cycle documents for a user.
      * @path /users/{userId}/periods/{periodId}
-     * @allow (create, update, get, delete, list) User with UID 'user123' can create/update/get/delete/list their own period entries under /users/user123/periods.
-     * @deny (create) User with UID 'user456' cannot create a period entry under /users/user123/periods.
-     * @deny (update, delete) User with UID 'user456' cannot update/delete period entries under /users/user123/periods.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user_abc' can create a period document under their profile at /users/user_abc/periods/period_1.
+     * @allow (get, list, update, delete) User with UID 'user_abc' can read, list, update, or delete period documents under their profile.
+     * @deny (create) User with UID 'user_xyz' cannot create a period document under /users/user_abc/periods/period_1.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete period documents under /users/user_abc/periods/period_1.
+     * @principle Enforces document ownership for writes, restricts listing to the owner, protects against unauthorized access.
      */
     match /users/{userId}/periods/{periodId} {
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Protects daily logs, allowing only the owner to read and write.
+     * @description Controls access to daily log documents within a user's period.
      * @path /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}
-     * @allow (create, update, get, delete, list) User with UID 'user123' can create/update/get/delete/list their own daily logs under /users/user123/periods/{periodId}/dailyLogs.
-     * @deny (create) User with UID 'user456' cannot create a daily log under /users/user123/periods/{periodId}/dailyLogs.
-     * @deny (update, delete) User with UID 'user456' cannot update/delete daily logs under /users/user123/periods/{periodId}/dailyLogs.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user_abc' can create a daily log under their period at /users/user_abc/periods/period_1/dailyLogs/log_1.
+     * @allow (get, list, update, delete) User with UID 'user_abc' can read, list, update, or delete daily logs under their period.
+     * @deny (create) User with UID 'user_xyz' cannot create a daily log under /users/user_abc/periods/period_1/dailyLogs/log_1.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete daily logs under /users/user_abc/periods/period_1/dailyLogs/log_1.
+     * @principle Enforces document ownership, restricts listing to the owner, protects against unauthorized access.
      */
     match /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId} {
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isExistingOwner(userId);
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Protects user statistics, allowing only the owner to read and write.
+     * @description Controls access to user statistics documents.
      * @path /users/{userId}/stats/{statId}
-     * @allow (create, update, get, delete, list) User with UID 'user123' can create/update/get/delete/list their own stats under /users/user123/stats.
-     * @deny (create) User with UID 'user456' cannot create stats under /users/user123/stats.
-     * @deny (update, delete) User with UID 'user456' cannot update/delete stats under /users/user123/stats.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user_abc' can create a stats document under their profile at /users/user_abc/stats/summary.
+     * @allow (get, update, delete) User with UID 'user_abc' can read, update, or delete their stats document.
+     * @allow (list) User with UID 'user_abc' can list their stats documents.
+     * @deny (create) User with UID 'user_xyz' cannot create a stats document under /users/user_abc/stats/summary.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete the stats document at /users/user_abc/stats/summary.
+     * @principle Enforces document ownership for writes, restricts listing to the owner, protects against unauthorized access.
      */
     match /users/{userId}/stats/{statId} {
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isExistingOwner(userId);
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Protects community posts, allowing public read access but restricting writes to the author.
+     * @description Controls access to community post documents.
      * @path /community_posts/{postId}
-     * @allow (get, list) Any user can read/list community posts.
-     * @allow (create) User with UID 'user123' can create a community post with authorId: 'user123'.
-     * @allow (update, delete) User with UID 'user123' can update/delete their own community post where resource.data.authorId == 'user123'.
-     * @deny (create) User with UID 'user456' cannot create a community post with authorId: 'user123'.
-     * @deny (update, delete) User with UID 'user456' cannot update/delete the community post where resource.data.authorId == 'user123'.
-     * @principle Allows public read access with owner-only writes for community posts.
+     * @allow (get, list) Any user can read or list community posts.
+     * @allow (create) User with UID 'user_abc' can create a community post with authorId 'user_abc'.
+     * @allow (update, delete) User with UID 'user_abc' can update or delete their own community post where authorId matches.
+     * @deny (create) User with UID 'user_xyz' cannot create a community post with authorId 'user_abc'.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete a community post where the authorId is 'user_abc'.
+     * @principle Allows public read access to community posts while enforcing owner-only write access.
      */
     match /community_posts/{postId} {
-      allow get: if true;
-      allow list: if true;
+      allow get, list: if true;
       allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
-      allow update: if isSignedIn() && isExistingOwner(resource.data.authorId);
-      allow delete: if isSignedIn() && isExistingOwner(resource.data.authorId);
+      allow update: if isExistingOwner(resource.data.authorId);
+      allow delete: if isExistingOwner(resource.data.authorId);
     }
 
     /**
-     * @description Protects meal logs, allowing only the owner to read and write.
+     * @description Controls access to meal log documents for a user.
      * @path /users/{userId}/mealLogs/{mealLogId}
-     * @allow (create, update, get, delete, list) User with UID 'user123' can create/update/get/delete/list their own meal logs under /users/user123/mealLogs.
-     * @deny (create) User with UID 'user456' cannot create a meal log under /users/user123/mealLogs.
-     * @deny (update, delete) User with UID 'user456' cannot update/delete meal logs under /users/user123/mealLogs.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user_abc' can create a meal log under their profile at /users/user_abc/mealLogs/meal_1.
+     * @allow (get, list, update, delete) User with UID 'user_abc' can read, list, update, or delete meal logs under their profile.
+     * @deny (create) User with UID 'user_xyz' cannot create a meal log under /users/user_abc/mealLogs/meal_1.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete meal logs under /users/user_abc/mealLogs/meal_1.
+     * @principle Enforces document ownership, restricts listing to the owner, protects against unauthorized access.
      */
     match /users/{userId}/mealLogs/{mealLogId} {
-      allow get: if isSignedIn() && isOwner(userId);
-      allow list: if isSignedIn() && isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isSignedIn() && isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isSignedIn() && isExistingOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
+  }
 
-    // --- Helper Functions ---
+  // Helper Functions
+  function isSignedIn() {
+    return request.auth != null;
+  }
 
-    // Checks if the user is signed in.
-    function isSignedIn() {
-      return request.auth != null;
-    }
+  function isOwner(userId) {
+    return request.auth.uid == userId;
+  }
 
-    // Checks if the requesting user is the owner of the document based on the provided userId.
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    //Check if the requesting user is the owner of the document AND if the document exists
     function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-    }
+    return isSignedIn() && isOwner(userId) && resource != null;
   }
 }
