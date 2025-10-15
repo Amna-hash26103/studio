@@ -121,7 +121,7 @@ export default function DietPage() {
       <Card>
         <CardHeader>
           <CardTitle>{t('logMeal.title')}</CardTitle>
-         //<CardDescription>{t('logMeal.description')}</CardDescription>
+         <CardDescription>{t('logMeal.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -152,7 +152,7 @@ export default function DietPage() {
         </CardContent>
       </Card>
 
-      <MealHistory logs={mealLogs} isLoading={isLoadingLogs} t={t} />
+      {/*<MealHistory logs={mealLogs} isLoading={isLoadingLogs} t={t} />*/}
       
       <div className="mt-8">
         <h2 className="font-headline text-2xl font-bold">{t('aiChat.title')}</h2>
