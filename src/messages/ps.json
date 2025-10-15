@@ -1,127 +1,170 @@
 
 {
-  "LandingPage_login": "ننوتل",
-  "LandingPage_signup": "نوم لیکنه",
-  "LandingPage_mainHeading": "خپل سفر پیاوړی کړئ. یوځای.",
-  "LandingPage_subHeading": "فیمورا د ښځو لپاره د نښلولو، شریکولو او پرمختګ لپاره یو پټنځای دی. په هغه ځای کې چې ستاسو لپاره ډیزاین شوی، هوساینه، خلاقیت او ټولنه وپلټئ.",
-  "LandingPage_joinButton": "له ټولنې سره یوځay شئ",
-  "LandingPage_thriveHeading": "د ودې لپاره یو ځای",
-  "LandingPage_thriveParagraph": "په فیمورا کې، موږ د ډله ایز ځواک په ځواک باور لرو. زموږ پلیټ فارم یوازې یو اپلیکیشن نه دی؛ دا یو حرکت دی چې د هرې میرمنې هوساینې او بریا ته د ځانګړي لارې لمانځلو او ملاتړ لپاره وقف شوی دی.",
-  "LandingPage_featuresHeading": "ستاسو لپاره ډیزاین شوي ځانګړتیاوې",
-  "LandingPage_featuresSubHeading": "هر هغه څه چې تاسو ورته اړتیا لرئ د خپل شخصي او مسلکي ودې ملاتړ وکړئ، ټول په یو ځای کې.",
-  "LandingPage_featureSoulSpaceTitle": "سول سپیس: د احساساتي هوساینې ملګری",
-  "LandingPage_featureSoulSpaceDescription": "یو خوندي ډیجیټل پټنځای چیرې چې احساسات د خواخوږۍ سره مخ کیږي. که تاسو ستړي یاست، فکر کوئ، یا درملنه کوئ، سول سپیس اوري - لارښود انعکاس، نرم وړاندیزونه، او ملاتړي AI ملګري وړاندې کوي چې ستاسو د زړه ژبه خبرې کوي.",
-  "LandingPage_featureHerHealthTitle": "هر هیلت: د روغتیا سمارټ لیدونه",
-  "LandingPage_featureHerHealthDescription": "خپل دورې، خوب او فشار په یو ارام ځای کې تعقیب کړئ. هر هیلت تاسو د پوهیدو لپاره تطبیقي AI کاروي - د ژوند طرز بدلونونو، یادونو، او ملاتړي معمولاتو وړاندیز کوي چې ستاسو د بدن تال ته درناوی کوي.",
-  "LandingPage_featureNourishTitle": "نورش: شخصي خواړه او د تغذیې لارښod",
-  "LandingPage_featureNourishDescription": "د هرې میرمنې سفر لپاره جوړ شوی - له ځواک څخه تر ځان پالنې پورې. نورش د خواړو وړاندیزونه کوي چې ستاسو مزاج، روغتیا اهدافو او کلتور سره سمون لري. هر وړاندیز د مینې له ځای څخه راځي، نه له محدودیت څخه.",
-  "LandingPage_featureEvolveTitle": "ایولو: نرم فټنس او د انرژي جریان",
-  "LandingPage_featureEvolveDescription": "په خپله 속도 حرکت وکړئ - یوګا، ذهني حرکت، او د میرمنو متمرکز ورزشونه چې ستاسو د انرژي کچې او احساساتي حالت لخوا لارښود کیږي. په ایولو کې هر حرکت لمانځي هغه څه چې ستاسو بدن یې کولی شي، نه هغه څه چې باید یې وکړي.",
-  "LandingPage_featureCircleTitle": "سرکل: د فیمورا ټولنه",
-  "LandingPage_featureCircleDescription": "د ښځو لپاره یو ښکلی معتدل ځای چې له یو بل سره وصل شي، کیسې شریکې کړي او یو بل پورته کړي. له ورځني چیک ان څخه تر تخلیقي ننګونو پورې، سرکل پرته له پرتله کولو یووالی لمانځي - د ځواک یوه ډیجیټل خورلڼي.",
-  "LandingPage_featureFEMMindTitle": "فیم ماینډ: ستاسو د AI لارښود ودې ملګری",
-  "LandingPage_featureFEMMindDescription": "درې ښه تنظیم شوي، خواخوږي LLMs - د روغتیا، احساساتي هوساینې، او ژوند لارښوونې ملاتړ لپاره دودیز شوي. دوی یوازې ځواب نه ورکوي - دوی پوهیږي، ساینس د خواخوږۍ سره ګډوي ترڅو مشوره وړاندې کړي چې پورته کوي، نه لارښوونه کوي.",
-  "LandingPage_footerPrivacy": "محرمیت",
-  "LandingPage_footerTerms": "شرایط",
-  "LandingPage_footerContact": "اړیکه",
-
-  "AppShell_welcomeBack": "بیا ښه راغلاست 🌷",
-  "AppShell_notifications": "خبرتیاوې",
-  "AppShell_userMenu": "د کارونکي مینو",
-  "AppShell_nav_feed": "فیډ",
-  "AppShell_nav_healthcare": "روغتیاپالنه",
-  "AppShell_nav_emotionalHealth": "احساساتي روغتیا",
-  "AppShell_nav_diet": "خواړه",
-  "AppShell_nav_profile": "پروفایل",
-  "AppShell_nav_settings": "ترتیبات",
-  "AppShell_nav_logout": "وتل",
-  "AppShell_nav_mainGroup": "اصلي",
-  "AppShell_nav_accountGroup": "حساب",
-  "AppShell_nav_periodTracker": "د سایکل تعقیبونکی",
-  "AppShell_toast_logoutSuccess_title": "وتل!",
-  "AppShell_toast_logoutSuccess_description": "تاسو په بریالیتوب سره وتلی ياست.",
-  "AppShell_toast_logoutError_title": "اوه!",
-  "AppShell_toast_logoutError_description": "تاسو نشئ وتلی. مهرباني وکړئ بیا هڅه وکړئ.",
-
-  "AppLayout_loading": "ستاسو ځای بار کیږي...",
-
-  "LoginPage_title": "بیا ښه راغلاست",
-  "LoginPage_description": "د فیمورا سره خپل سفر ته دوام ورکولو لپاره ننوځئ.",
-  "LoginPage_emailLabel": "بریښنالیک",
-  "LoginPage_passwordLabel": "پټنوم",
-  "LoginPage_forgotPasswordLink": "پټنوم مو هیر دی؟",
-  "LoginPage_logInButton": "ننوتل",
-  "LoginPage_loggingInButton": "ننوتل...",
-  "LoginPage_noAccountPrompt": "حساب نه لرئ؟",
-  "LoginPage_signUpLink": "نوم لیکنه",
-  "LoginPage_toast_success_title": "ننوتل!",
-  "LoginPage_toast_success_description": "بیا ښه راغلاست!",
-  "LoginPage_toast_error_title": "ننوتل ناکام شول",
-  "LoginPage_toast_error_description": "ستاسو داخل شوی بریښنالیک یا پټنوم ناسم دی. مهرباني وکړئ خپل اسناد وګورئ او بیا هڅه وکړئ.",
-
-  "SignupPage_title": "له فیمورا سره یوځای شئ",
-  "SignupPage_description": "خپل حساب جوړ کړئ او د پیاوړتیا سفر پیل کړئ.",
-  "SignupPage_displayNameLabel": "ښودل شوی نوم",
-  "SignupPage_displayNamePlaceholder": "ستاسو نوم",
-  "SignupPage_emailLabel": "بریښنالیک",
-  "SignupPage_passwordLabel": "پټنوم",
-  "SignupPage_createAccountButton": "حساب جوړ کړئ",
-  "SignupPage_creatingAccountButton": "پروسس کول...",
-  "SignupPage_hasAccountPrompt": "مخکې له مخکې حساب لرئ؟",
-  "SignupPage_logInLink": "ننوتل",
-  "SignupPage_toast_success_title": "حساب جوړ شو!",
-  "SignupPage_toast_success_description": "فیمورا ته ښه راغلاست! موږ ډیر خوښ یو چې تاسو دلته یاست 💜",
-  "SignupPage_toast_error_title": "نوم لیکنه ناکامه شوه",
-  "SignupPage_toast_error_description": "ستاسو د حساب په جوړولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ.",
-  "SignupPage_toast_error_emailInUse": "دا بریښنالیک لا دمخه کارول شوی. مهرباني وکړئ پرځای یې ننوځئ.",
-
-  "FeedPage_postPlaceholder": "په ذهن کې دې څه دي، جین؟",
-  "FeedPage_postButton": "پوسټ",
-  "FeedPage_shareButton": "شریکول",
-  "FeedPage_commentPlaceholder": "یو نظر ولیکئ...",
-
-  "ProfilePage_editProfileButton": "پروفایل سمول",
-  "ProfilePage_coverImageAlt": "د پوښ انځور",
-  "ProfilePage_noBio": "تر اوسه بیو نشته.",
-  "ProfilePage_joined": "یوځای شو",
-  "ProfilePage_posts": "پوسټونه",
-  "ProfilePage_followers": "followers",
-  "ProfilePage_following": "following",
-  "ProfilePage_postsTab": "پوسټونه",
-  "ProfilePage_projectsTab": "پروژې",
-  "ProfilePage_mediaTab": "میډیا",
-  "ProfilePage_postsTabContent": "د کارونکي پوسټونه به دلته وښودل شي.",
-  "ProfilePage_projectsTabContent": "د کارونکي پروژې به دلته وښودل شي.",
-  "ProfilePage_profileLoadError": "د کارونکي پروفایل نشي باریدلی. دا ممکن لا تر اوسه شتون ونلري.",
-
-  "EditProfileDialog_title": "پروفایل سمول",
-  "EditProfileDialog_description": "دلته خپل پروفایل کې بدلونونه راولی. کله چې سرته ورسیږي، 'خوندي' کلیک وکړئ.",
-  "EditProfileDialog_changePictureButton": "انځور بدل کړئ",
-  "EditProfileDialog_displayNameLabel": "ښودل شوی نوم",
-  "EditProfileDialog_displayNamePlaceholder": "ستاسو بشپړ نوم",
-  "EditProfileDialog_bioLabel": "بیو",
-  "EditProfileDialog_bioPlaceholder": "موږ ته د ځان په اړه لږ څه ووایاست",
-  "EditProfileDialog_locationLabel": "ځای",
-  "EditProfileDialog_locationPlaceholder": "تاسو په نړۍ کې چیرته ياست؟",
-  "EditProfileDialog_cancelButton": "لغوه کول",
-  "EditProfileDialog_saveButton": "بدلونونه خوندي کړئ",
-  "EditProfileDialog_savingButton": "خوندي کول...",
-  "EditProfileDialog_toast_avatarSuccess_title": "اوتار نوی شو!",
-  "EditProfileDialog_toast_avatarError_title": "اپلوډ ناکام شو",
-  "EditProfileDialog_toast_avatarError_description": "ستاسو د نوي اوتار په اپلوډولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ.",
-  "EditProfileDialog_toast_profileSuccess_title": "پروفایل نوی شو!",
-  "EditProfileDialog_toast_profileSuccess_description": "ستاسو بدلونونه په بریالیتوب سره خوندي شول.",
-  "EditProfileDialog_toast_profileError_title": "نوي کول ناکام شول",
-  "EditProfileDialog_toast_profileError_description": "ستاسو د پروفایل په خوندي کولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ.",
-
-  "ChatInterface_placeholders_health": "د مثال په توګه، زه څنګه کولی شم د کور ساده ورزش معمول پیل کړم؟",
-  "ChatInterface_placeholders_emotionalWellbeing": "د مثال په توګه، زه فشار احساسوم، کوم چټک ذهني لارښوونې؟",
-  "ChatInterface_placeholders_nutrition": "د مثال په توګه، د صحي ناشتو ځینې نظرونه څه دي؟",
-  "ChatInterface_initialMessages_health": "سلام! زه ستاسو د روغتیاپالنې مرستیال یم. نن څنګه مرسته کولی شم؟",
-  "ChatInterface_initialMessages_emotionalWellbeing": "سلام، زه دلته یم چې ستاسو احساساتي هوساینې ملاتړ وکړم. په ذهن کې دې څه دي؟",
-  "ChatInterface_initialMessages_nutrition": "سلام! زه ستاسو د خوړو لارښod یم. د صحي خوړو په اړه هر څه وپښتئ!",
-  "ChatInterface_errorMessage": "بخښنه غواړم، یو څه غلط شول. مهرباني وکړئ وروسته بیا هڅه وکړئ.",
-
+  "LandingPage": {
+    "login": "ننوتل",
+    "signup": "نوم لیکنه",
+    "mainHeading": "خپل سفر پیاوړی کړئ. یوځای.",
+    "subHeading": "فیمورا د ښځو لپاره د نښلولو، شریکولو او پرمختګ لپاره یو پټنځای دی. په هغه ځای کې چې ستاسو لپاره ډیزاین شوی، هوساینه، خلاقیت او ټولنه وپلټئ.",
+    "joinButton": "له ټولنې سره یوځay شئ",
+    "thriveHeading": "د ودې لپاره یو ځای",
+    "thriveParagraph": "په فیمورا کې، موږ د ډله ایز ځواک په ځواک باور لرو. زموږ پلیټ فارم یوازې یو اپلیکیشن نه دی؛ دا یو حرکت دی چې د هرې میرمنې هوساینې او بریا ته د ځانګړي لارې لمانځلو او ملاتړ لپاره وقف شوی دی.",
+    "featuresHeading": "ستاسو لپاره ډیزاین شوي ځانګړتیاوې",
+    "featuresSubHeading": "هر هغه څه چې تاسو ورته اړتیا لرئ د خپل شخصي او مسلکي ودې ملاتړ وکړئ، ټول په یو ځای کې.",
+    "featureSoulSpaceTitle": "سول سپیس: د احساساتي هوساینې ملګری",
+    "featureSoulSpaceDescription": "یو خوندي ډیجیټل پټنځای چیرې چې احساسات د خواخوږۍ سره مخ کیږي. که تاسو ستړي یاست، فکر کوئ، یا درملنه کوئ، سول سپیس اوري - لارښود انعکاس، نرم وړاندیزونه، او ملاتړي AI ملګري وړاندې کوي چې ستاسو د زړه ژبه خبرې کوي.",
+    "featureHerHealthTitle": "هر هیلت: د روغتیا سمارټ لیدونه",
+    "featureHerHealthDescription": "خپل دورې، خوب او فشار په یو ارام ځای کې تعقیب کړئ. هر هیلت تاسو د پوهیدو لپاره تطبیقي AI کاروي - د ژوند طرز بدلونونو، یادونو، او ملاتړي معمولاتو وړاندیز کوي چې ستاسو د بدن تال ته درناوی کوي.",
+    "featureNourishTitle": "نورش: شخصي خواړه او د تغذیې لارښod",
+    "featureNourishDescription": "د هرې میرمنې سفر لپاره جوړ شوی - له ځواک څخه تر ځان پالنې پورې. نورش د خواړو وړاندیزونه کوي چې ستاسو مزاج، روغتیا اهدافو او کلتور سره سمون لري. هر وړاندیز د مینې له ځای څخه راځي، نه له محدودیت څخه.",
+    "featureEvolveTitle": "ایولو: نرم فټنس او د انرژي جریان",
+    "featureEvolveDescription": "په خپله 속도 حرکت وکړئ - یوګا، ذهني حرکت، او د میرمنو متمرکز ورزشونه چې ستاسو د انرژي کچې او احساساتي حالت لخوا لارښود کیږي. په ایولو کې هر حرکت لمانځي هغه څه چې ستاسو بدن یې کولی شي، نه هغه څه چې باید یې وکړي.",
+    "featureCircleTitle": "سرکل: د فیمورا ټولنه",
+    "featureCircleDescription": "د ښځو لپاره یو ښکلی معتدل ځای چې له یو بل سره وصل شي، کیسې شریکې کړي او یو بل پورته کړي. له ورځني چیک ان څخه تر تخلیقي ننګونو پورې، سرکل پرته له پرتله کولو یووالی لمانځي - د ځواک یوه ډیجیټل خورلڼي.",
+    "featureFEMMindTitle": "فیم ماینډ: ستاسو د AI لارښود ودې ملګری",
+    "featureFEMMindDescription": "درې ښه تنظیم شوي، خواخوږي LLMs - د روغتیا، احساساتي هوساینې، او ژوند لارښوونې ملاتړ لپاره دودیز شوي. دوی یوازې ځواب نه ورکوي - دوی پوهیږي، ساینس د خواخوږۍ سره ګډوي ترڅو مشوره وړاندې کړي چې پورته کوي، نه لارښوونه کوي.",
+    "footerPrivacy": "محرمیت",
+    "footerTerms": "شرایط",
+    "footerContact": "اړیکه"
+  },
+  "AppShell": {
+    "welcomeBack": "بیا ښه راغلاست 🌷",
+    "notifications": "خبرتیاوې",
+    "userMenu": "د کارونکي مینو",
+    "nav": {
+      "feed": "فیډ",
+      "healthcare": "روغتیاپالنه",
+      "emotionalHealth": "احساساتي روغتیا",
+      "diet": "خواړه",
+      "profile": "پروفایل",
+      "settings": "ترتیبات",
+      "logout": "وتل",
+      "mainGroup": "اصلي",
+      "accountGroup": "حساب",
+      "periodTracker": "د دورې تعقیبونکی"
+    },
+    "toast": {
+      "logoutSuccess": {
+        "title": "وتل!",
+        "description": "تاسو په بریالیتوب سره وتلی ياست."
+      },
+      "logoutError": {
+        "title": "اوه!",
+        "description": "تاسو نشئ وتلی. مهرباني وکړئ بیا هڅه وکړئ."
+      }
+    }
+  },
+  "AppLayout": {
+    "loading": "ستاسو ځای بار کیږي..."
+  },
+  "LoginPage": {
+    "title": "بیا ښه راغلاست",
+    "description": "د فیمورا سره خپل سفر ته دوام ورکولو لپاره ننوځئ.",
+    "emailLabel": "بریښنالیک",
+    "passwordLabel": "پټنوم",
+    "forgotPasswordLink": "پټنوم مو هیر دی؟",
+    "logInButton": "ننوتل",
+    "loggingInButton": "ننوتل...",
+    "noAccountPrompt": "حساب نه لرئ؟",
+    "signUpLink": "نوم لیکنه",
+    "toast": {
+      "success": {
+        "title": "ننوتل!",
+        "description": "بیا ښه راغلاست!"
+      },
+      "error": {
+        "title": "اوه! یو څه غلط شول.",
+        "description": "ناسم بریښنالیک یا پټنوم. مهرباني وکړئ بیا هڅه وکړئ."
+      }
+    }
+  },
+  "SignupPage": {
+    "title": "له فیمورا سره یوځای شئ",
+    "description": "خپل حساب جوړ کړئ او د پیاوړتیا سفر پیل کړئ.",
+    "displayNameLabel": "ښودل شوی نوم",
+    "displayNamePlaceholder": "ستاسو نوم",
+    "emailLabel": "بریښنالیک",
+    "passwordLabel": "پټنوم",
+    "createAccountButton": "حساب جوړ کړئ",
+    "creatingAccountButton": "پروسس کول...",
+    "hasAccountPrompt": "مخکې له مخکې حساب لرئ؟",
+    "logInLink": "ننوتل",
+    "toast": {
+      "success": {
+        "title": "حساب جوړ شو!",
+        "description": "فیمورا ته ښه راغلاست! موږ ډیر خوښ یو چې تاسو دلته یاست 💜"
+      },
+      "error": {
+        "title": "نوم لیکنه ناکامه شوه",
+        "description": "ستاسو د حساب په جوړولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ.",
+        "emailInUse": "دا بریښنالیک لا دمخه کارول شوی. مهرباني وکړئ پرځای یې ننوځئ."
+      }
+    }
+  },
+  "FeedPage": {
+    "postPlaceholder": "په ذهن کې دې څه دي، جین؟",
+    "postButton": "پوسټ",
+    "shareButton": "شریکول",
+    "commentPlaceholder": "یو نظر ولیکئ..."
+  },
+  "ProfilePage": {
+    "editProfileButton": "پروفایل سمول",
+    "coverImageAlt": "د پوښ انځور",
+    "noBio": "تر اوسه بیو نشته.",
+    "joined": "یوځای شو",
+    "posts": "پوسټونه",
+    "followers": "followers",
+    "following": "following",
+    "postsTab": "پوسټونه",
+    "projectsTab": "پروژې",
+    "mediaTab": "میډیا",
+    "postsTabContent": "د کارونکي پوسټونه به دلته وښودل شي.",
+    "projectsTabContent": "د کارونکي پروژې به دلته وښودل شي.",
+    "profileLoadError": "د کارونکي پروفایل نشي باریدلی. دا ممکن لا تر اوسه شتون ونلري."
+  },
+  "EditProfileDialog": {
+    "title": "پروفایل سمول",
+    "description": "دلته خپل پروفایل کې بدلونونه راولی. کله چې سرته ورسیږي، 'خوندي' کلیک وکړئ.",
+    "changePictureButton": "انځور بدل کړئ",
+    "displayNameLabel": "ښودل شوی نوم",
+    "displayNamePlaceholder": "ستاسو بشپړ نوم",
+    "bioLabel": "بیو",
+    "bioPlaceholder": "موږ ته د ځان په اړه لږ څه ووایاست",
+    "locationLabel": "ځای",
+    "locationPlaceholder": "تاسو په نړۍ کې چیرته ياست؟",
+    "cancelButton": "لغوه کول",
+    "saveButton": "بدلونونه خوندي کړئ",
+    "savingButton": "خوندي کول...",
+    "toast": {
+      "avatarSuccess": {
+        "title": "اوتار نوی شو!"
+      },
+      "avatarError": {
+        "title": "اپلوډ ناکام شو",
+        "description": "ستاسو د نوي اوتار په اپلوډولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ."
+      },
+      "profileSuccess": {
+        "title": "پروفایل نوی شو!",
+        "description": "ستاسو بدلونونه په بریالیتوب سره خوندي شول."
+      },
+      "profileError": {
+        "title": "نوي کول ناکام شول",
+        "description": "ستاسو د پروفایل په خوندي کولو کې یوه ستونزه وه. مهرباني وکړئ بیا هڅه وکړئ."
+      }
+    }
+  },
+  "ChatInterface": {
+    "placeholders": {
+      "health": "د مثال په توګه، زه څنګه کولی شم د کور ساده ورزش معمول پیل کړم؟",
+      "emotionalWellbeing": "د مثال په توګه، زه فشار احساسوم، کوم چټک ذهني لارښوونې؟",
+      "nutrition": "د مثال په توګه، د صحي ناشتو ځینې نظرونه څه دي؟"
+    },
+    "initialMessages": {
+      "health": "سلام! زه ستاسو د روغتیاپالنې مرستیال یم. نن څنګه مرسته کولی شم؟",
+      "emotionalWellbeing": "سلام، زه دلته یم چې ستاسو احساساتي هوساینې ملاتړ وکړم. په ذهن کې دې څه دي؟",
+      "nutrition": "سلام! زه ستاسو د خوړو لارښod یم. د صحي خوړو په اړه هر څه وپښتئ!"
+    },
+    "errorMessage": "بخښنه غواړم، یو څه غلط شول. مهرباني وکړئ وروسته بیا هڅه وکړئ."
+  },
   "DietPage": {
     "title": "د خوړو AI",
     "description": "د تغذیې او صحي خوړو لپاره ستاسو شخصي لارښود.",
@@ -157,99 +200,47 @@
       }
     }
   },
-
   "EmotionalHealthPage": {
     "title": "د احساساتي روغتیا AI",
     "description": "د ذهني او احساساتي توازن لپاره ستاسو شخصي لارښود."
   },
-
   "HealthcarePage": {
     "title": "د روغتیاپالنې AI",
     "description": "د فزیکي روغتیا او هوساینې لپاره ستاسو شخصي لارښود."
   },
-
   "PeriodTrackerPage": {
     "title": "د سایکل تعقیبونکی",
     "description": "د خپل بدن ښه پوهیدو لپاره خپله میاشتنۍ دوره تعقیب کړئ.",
     "logPeriodTitle": "خپله دوره ثبت کړئ",
-    "activeCycleFooter": "فعاله دوره په {date} پیل شوه",
-    "dialogs": {
-      "cancel": "لغوه کول",
-      "start": {
-        "title": "نوې دوره پیل کړئ؟",
-        "description": "دا به په {date} یوه نوې دوره پیل کړي. ایا تاسو غواړئ دوام ورکړئ؟",
-        "confirm": "نوې دوره پیل کړئ"
-      },
-      "end": {
-        "title": "اوسنۍ دوره پای ته ورسوئ؟",
-        "description": "ایا تاسو غواړئ {date} د خپلې اوسنۍ دورې پای په توګه نښه کړئ؟",
-        "confirm": "دوره پای ته ورسوئ"
-      }
-    },
-    "logFlowDialog": {
-      "title": "ورځني توضیحات ثبت کړئ",
-      "description": "د {date} لپاره خپل جریان ثبت کړئ",
-      "flow": {
-        "label": "د جریان کچه",
-        "spotting": "داغ",
-        "light": "سپک",
-        "medium": "منځنی",
-        "heavy": "دروند"
-      },
-      "notes": {
-        "label": "یادښتونه",
-        "placeholder": "نښې، مزاج، یا بل څه اضافه کړئ..."
-      },
-      "save": "لاګ خوندي کړئ",
-      "toast": {
-        "logSuccess": {
-          "title": "لاګ خوندي شو"
-        },
-        "logError": {
-          "title": "لاګ خوندي کول ناکام شول",
-          "description": "مهرباني وکړئ خپل پیوستون وګورئ او بیا هڅه وکړئ."
-        }
-      }
-    },
+    "logButton": "دوره ثبت کړئ",
+    "loggingButton": "ثبت کول...",
     "toast": {
       "logSuccess": {
         "title": "دوره ثبت شوه",
-        "description": "ستاسو نوې دوره په بریالیتوب سره ثبت شوه."
+        "description": "ستاسو سایکل په بریالیتوب سره ثبت شو."
       },
-      "endSuccessDescription": "ستاسو دوره د پای ته رسیدلې په توګه نښه شوه.",
       "logError": {
         "title": "اوه!",
-        "description": "ستاسو د دورې معلومات خوندي نشول. مهرباني وکړئ بیا هڅه وکړئ."
+        "description": "ستاسو سایکل خوندي نشو. مهرباني وکړئ بیا هڅه وکړئ."
       },
       "deleteSuccess": {
         "title": "ننوتل ړنګ شو",
-        "description": "د دورې ننوتل ړنګ شو."
+        "description": "د سایکل ننوتل ړنګ شو."
       },
       "deleteError": {
         "title": "ړنګول ناکام شول",
-        "description": "د دورې ننوتل ړنګ نشو. مهرباني وکړئ بیا هڅه وکړئ."
-      },
-      "endDateError": {
-        "title": "ناسمه پای نیټه",
-        "description": "د پای نیټه نشي کولی د پیل نیټې څخه مخکې وي."
+        "description": "د سایکل ننوتل ړنګ نشو. مهرباني وکړئ بیا هڅه وکړئ."
       }
     },
     "bleedingHistory": {
-      "title": "د سایکل تاریخ",
+      "title": "د وینې بهیدنې تاریخ",
       "noHistory": "تر اوسه کوم بشپړ سایکل نشته. د پیل کولو لپاره خپله لومړۍ دوره ثبت کړئ!",
       "cycle": "سایکل",
       "duration": "موده",
       "flowPattern": "د جریان نمونه",
       "notes": "یادښتونه",
       "noNotes": "د دې سایکل لپاره هیڅ یادښت نشته.",
-      "days": "ورځې",
-      "ongoing": "روان",
-      "flowLevels": {
-        "spotting": "داغ",
-        "light": "سپک",
-        "medium": "منځنی",
-        "heavy": "دروند"
-      }
+      "days": "ورځې"
     }
   }
 }
