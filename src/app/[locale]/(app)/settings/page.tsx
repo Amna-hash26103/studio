@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/firebase';
 import { useTheme } from 'next-themes';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,6 +26,7 @@ import { Link, usePathname, useRouter } from '@/navigation';
 import { Monitor, Moon, Sun } from 'lucide-react';
 
 export default function SettingsPage() {
+  const t = useTranslations('SettingsPage');
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
@@ -37,54 +38,54 @@ export default function SettingsPage() {
   };
 
   const localeItems = [
-    { value: 'en', label: 'English' },
-    { value: 'ur', label: 'اردو' },
-    { value: 'ur-RO', label: 'Roman Urdu' },
-    { value: 'ps', label: 'پښتو' },
-    { value: 'pa', label: 'پنجابی' },
+    { value: 'en', label: t('appearance.language.languages.en') },
+    { value: 'ur', label: t('appearance.language.languages.ur') },
+    { value: 'ur-RO', label: t('appearance.language.languages.ur-RO') },
+    { value: 'ps', label: t('appearance.language.languages.ps') },
+    { value: 'pa', label: t('appearance.language.languages.pa') },
   ];
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your account, preferences, and app settings.</p>
+        <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('description')}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Account</CardTitle>
-          <CardDescription>Update your profile information and manage your account.</CardDescription>
+          <CardTitle>{t('account.title')}</CardTitle>
+          <CardDescription>{t('account.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('account.emailLabel')}</Label>
             <Input id="email" type="email" value={user?.email || ''} readOnly />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('account.passwordLabel')}</Label>
             <Button variant="outline" className="w-full sm:w-auto">
-              Change Password
+              {t('account.changePasswordButton')}
             </Button>
           </div>
         </CardContent>
         <CardFooter>
           <Button asChild>
-            <Link href="/profile">Manage Profile</Link>
+            <Link href="/profile">{t('account.manageProfileButton')}</Link>
           </Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>Customize the look and feel of the app.</CardDescription>
+          <CardTitle>{t('appearance.title')}</CardTitle>
+          <CardDescription>{t('appearance.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <h3 className="font-medium">Theme</h3>
+            <h3 className="font-medium">{t('appearance.theme.title')}</h3>
             <p className="text-sm text-muted-foreground">
-              Select a theme for the application.
+              {t('appearance.theme.description')}
             </p>
             <div className="flex space-x-2 rounded-lg bg-secondary p-1">
               <Button
@@ -93,7 +94,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Sun className="mr-2 h-4 w-4" />
-                Light
+                {t('appearance.theme.light')}
               </Button>
               <Button
                 variant={theme === 'dark' ? 'default' : 'ghost'}
@@ -101,7 +102,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Moon className="mr-2 h-4 w-4" />
-                Dark
+                {t('appearance.theme.dark')}
               </Button>
               <Button
                 variant={theme === 'system' ? 'default' : 'ghost'}
@@ -109,14 +110,14 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Monitor className="mr-2 h-4 w-4" />
-                System
+                {t('appearance.theme.system')}
               </Button>
             </div>
           </div>
           <div className="space-y-2">
-            <h3 className="font-medium">Language</h3>
+            <h3 className="font-medium">{t('appearance.language.title')}</h3>
             <p className="text-sm text-muted-foreground">
-              Choose your preferred language.
+              {t('appearance.language.description')}
             </p>
             <Select
               value={currentLocale}
