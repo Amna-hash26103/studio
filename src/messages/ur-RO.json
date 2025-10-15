@@ -217,7 +217,7 @@
       "cancel": "Cancel",
       "start": {
         "title": "Naya Period Shuru Karein?",
-        "description": "Yeh {date} ko ek naya period cycle shuru kar dega. Agar aapka koi fa'al cycle hai, to woh tabdeel ho jayega. Kya aap jari rakhna chahti hain?",
+        "description": "Yeh {date} ko ek naya period cycle shuru kar dega. Kya aap jari rakhna chahti hain?",
         "confirm": "Naya Period Shuru Karein"
       },
       "end": {
@@ -251,7 +251,7 @@
     },
     "logFlowDialog": {
       "title": "Rozana Tafseelat Log Karein",
-      "description": "Apna flow aur koi doosri alamat ya notes record karein.",
+      "description": "{date} ke liye apna flow record karein",
       "flow": {
         "label": "Flow Level",
         "spotting": "Dhabba",
@@ -263,7 +263,6 @@
         "label": "Notes",
         "placeholder": "Alamat, mood, ya kuch aur shamil karein..."
       },
-      "cancel": "Cancel",
       "save": "Log Save Karein",
       "toast": {
         "logSuccess": {
@@ -294,3 +293,5 @@
     }
   }
 }
+
+    

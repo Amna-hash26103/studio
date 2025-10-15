@@ -217,7 +217,7 @@
       "cancel": "Cancel",
       "start": {
         "title": "Start New Period?",
-        "description": "This will start a new period cycle on {date}. If you have an active cycle, it will be replaced. Do you want to continue?",
+        "description": "This will start a new period cycle on {date}. Do you want to continue?",
         "confirm": "Start New Period"
       },
       "end": {
@@ -251,7 +251,7 @@
     },
     "logFlowDialog": {
       "title": "Log Daily Details",
-      "description": "Record your flow and any other symptoms or notes.",
+      "description": "Record your flow for {date}",
       "flow": {
         "label": "Flow Level",
         "spotting": "Spotting",
@@ -263,7 +263,6 @@
         "label": "Notes",
         "placeholder": "Add symptoms, mood, or anything else..."
       },
-      "cancel": "Cancel",
       "save": "Save Log",
       "toast": {
         "logSuccess": {
@@ -294,3 +293,5 @@
     }
   }
 }
+
+    

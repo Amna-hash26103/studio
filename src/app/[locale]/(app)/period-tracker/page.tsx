@@ -89,7 +89,7 @@ const initialDailyLogs: DailyLog[] = [
 ];
 // --- END DUMMY DATA ---
 
-export default function PeriodTrackerPage() {
+function PeriodTrackerPage() {
   const t = useTranslations('PeriodTrackerPage');
   const { toast } = useToast();
 
@@ -423,7 +423,7 @@ function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog, t }: { open
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>{t('logFlowDialog.cancel')}</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>{t('dialogs.cancel')}</Button>
                     <Button onClick={handleSave} disabled={isSaving}>
                         {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {t('logFlowDialog.save')}
@@ -527,3 +527,7 @@ function PastCycleCard({ period, dailyLogs, index, t }: { period: Period, dailyL
     </Card>
   );
 }
+
+export default PeriodTrackerPage;
+
+    
