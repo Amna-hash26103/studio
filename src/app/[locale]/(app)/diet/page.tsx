@@ -67,7 +67,6 @@ const formSchema = z.object({
   }),
 });
 
-// New types for trackers
 type PoopLog = {
     id: string;
     type: string;
@@ -370,3 +369,5 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
+
+    
