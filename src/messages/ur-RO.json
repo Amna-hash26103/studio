@@ -239,54 +239,24 @@
     "title": "Cycle Tracker",
     "description": "Apne jism ko behtar samajhne ke liye apne mahwari cycle ko track karein.",
     "logPeriodTitle": "Apna Period Log Karein",
-    "startCycleButton": "Cycle Shuru Karein",
-    "endCycleButton": "Cycle Khatam Karein",
-    "logFlowButton": "Flow Log Karein",
-    "activeCycleLabel": "Active cycle {date} ko shuru hua",
-    "dialogs": {
-      "start": {
-        "title": "Naya Cycle Shuru Karein?",
-        "description": "Kya aap {date} ko naya period cycle shuru karna chahti hain?"
-      },
-      "end": {
-        "title": "Mojooda Cycle Khatam Karein?",
-        "description": "Kya aap apna mojooda cycle {date} ko khatam karna chahti hain? Aap is din ke liye apna flow bhi log kar sakti hain."
-      },
-      "logFlow": {
-        "title": "Flow Log Karein",
-        "description": "{date} ke liye apna mahwari ka flow log karein",
-        "flowLabel": "Flow",
-        "notesLabel": "Notes (ikhtiyari)",
-        "notesPlaceholder": "maslan, cramps, thakawat, etc.",
-        "saveButton": "Log Save Karein",
-        "flowLevels": {
-          "spotting": "Spotting",
-          "light": "Halka",
-          "medium": "Darmiyana",
-          "heavy": "Bhaari"
-        }
-      },
-      "cancelButton": "Cancel"
-    },
+    "logButton": "Period Log Karein",
+    "loggingButton": "Logging...",
     "toast": {
       "logSuccess": {
         "title": "Period Log Hogaya",
         "description": "Aapka cycle kamyabi se record ho gaya hai."
       },
-      "endSuccess": {
-        "title": "Period Khatam Hogaya",
-        "description": "Aapka cycle kamyabi se khatam ho gaya hai."
-      },
       "logError": {
         "title": "Oh No!",
         "description": "Aapka cycle save nahi ho saka. Barah-e-karam dobara koshish karein."
       },
-      "endDateError": {
-        "title": "End Date Mein Ghalati",
-        "description": "End date start date se pehle nahi ho sakti."
+      "deleteSuccess": {
+        "title": "Entry Delete Hogayi",
+        "description": "Cycle ki entry hata di gayi hai."
       },
-      "logFlowSuccess": {
-        "title": "Rozana ka log save ho gaya!"
+      "deleteError": {
+        "title": "Delete Nakam",
+        "description": "Cycle ki entry delete nahi ho saki. Barah-e-karam dobara koshish karein."
       }
     },
     "bleedingHistory": {

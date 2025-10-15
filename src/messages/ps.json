@@ -239,54 +239,24 @@
     "title": "د سایکل تعقیبونکی",
     "description": "د خپل بدن ښه پوهیدو لپاره خپله میاشتنۍ دوره تعقیب کړئ.",
     "logPeriodTitle": "خپله دوره ثبت کړئ",
-    "startCycleButton": "سایکل پیل کړئ",
-    "endCycleButton": "سایکل پای ته ورسوئ",
-    "logFlowButton": "جریان ثبت کړئ",
-    "activeCycleLabel": "فعال سایکل په {date} پیل شو",
-    "dialogs": {
-      "start": {
-        "title": "نوی سایکل پیل کړو؟",
-        "description": "ایا تاسو غواړئ په {date} کې یو نوی د حیض سایکل پیل کړئ؟"
-      },
-      "end": {
-        "title": "اوسنی سایکل پای ته ورسوو؟",
-        "description": "ایا تاسو غواړئ خپل اوسنی سایکل په {date} کې پای ته ورسوئ؟ تاسو کولی شئ د دې ورځې لپاره خپل جریان هم ثبت کړئ."
-      },
-      "logFlow": {
-        "title": "جریان ثبت کړئ",
-        "description": "د {date} لپاره خپل د حیض جریان ثبت کړئ",
-        "flowLabel": "جریان",
-        "notesLabel": "یادښتونه (اختیاري)",
-        "notesPlaceholder": "د مثال په توګه، درد، ستړیا، او داسې نور.",
-        "saveButton": "ثبت خوندي کړئ",
-        "flowLevels": {
-          "spotting": "داغ لیدل",
-          "light": "لږ",
-          "medium": "متوسط",
-          "heavy": "ډیر"
-        }
-      },
-      "cancelButton": "لغوه کول"
-    },
+    "logButton": "دوره ثبت کړئ",
+    "loggingButton": "ثبت کول...",
     "toast": {
       "logSuccess": {
         "title": "دوره ثبت شوه",
         "description": "ستاسو سایکل په بریالیتوب سره ثبت شو."
       },
-      "endSuccess": {
-        "title": "دوره پای ته ورسیده",
-        "description": "ستاسو سایکل په بریالیتوب سره پای ته ورسید."
-      },
       "logError": {
         "title": "اوه!",
         "description": "ستاسو سایکل خوندي نشو. مهرباني وکړئ بیا هڅه وکړئ."
       },
-      "endDateError": {
-        "title": "د پای نیټې تېروتنه",
-        "description": "د پای نیټه نشي کولی د پیل نیټې څخه مخکې وي."
+      "deleteSuccess": {
+        "title": "ننوتل ړنګ شو",
+        "description": "د سایکل ننوتل ړنګ شو."
       },
-      "logFlowSuccess": {
-        "title": "ورځنی ثبت خوندي شو!"
+      "deleteError": {
+        "title": "ړنګول ناکام شول",
+        "description": "د سایکل ننوتل ړنګ نشو. مهرباني وکړئ بیا هڅه وکړئ."
       }
     },
     "bleedingHistory": {

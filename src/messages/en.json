@@ -239,54 +239,24 @@
     "title": "Cycle Tracker",
     "description": "Track your menstrual cycle to understand your body better.",
     "logPeriodTitle": "Log Your Period",
-    "startCycleButton": "Start Cycle",
-    "endCycleButton": "End Cycle",
-    "logFlowButton": "Log Flow",
-    "activeCycleLabel": "Active cycle started on {date}",
-    "dialogs": {
-      "start": {
-        "title": "Start New Cycle?",
-        "description": "Do you want to start a new period cycle on {date}?"
-      },
-      "end": {
-        "title": "End Current Cycle?",
-        "description": "Do you want to end your current cycle on {date}? You can also log your flow for this day."
-      },
-      "logFlow": {
-        "title": "Log Flow",
-        "description": "Log your menstrual flow for {date}",
-        "flowLabel": "Flow",
-        "notesLabel": "Notes (optional)",
-        "notesPlaceholder": "e.g., cramps, fatigue, etc.",
-        "saveButton": "Save Log",
-        "flowLevels": {
-          "spotting": "Spotting",
-          "light": "Light",
-          "medium": "Medium",
-          "heavy": "Heavy"
-        }
-      },
-      "cancelButton": "Cancel"
-    },
+    "logButton": "Log Period",
+    "loggingButton": "Logging...",
     "toast": {
       "logSuccess": {
         "title": "Period Logged",
         "description": "Your cycle has been successfully recorded."
       },
-      "endSuccess": {
-        "title": "Period Ended",
-        "description": "Your cycle has been successfully ended."
-      },
       "logError": {
         "title": "Uh oh!",
         "description": "Could not save your cycle. Please try again."
       },
-      "endDateError": {
-        "title": "End Date Error",
-        "description": "End date cannot be before the start date."
+      "deleteSuccess": {
+        "title": "Entry Deleted",
+        "description": "The cycle entry has been removed."
       },
-      "logFlowSuccess": {
-        "title": "Daily log saved!"
+      "deleteError": {
+        "title": "Delete Failed",
+        "description": "Could not delete the cycle entry. Please try again."
       }
     },
     "bleedingHistory": {
