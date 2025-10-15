@@ -73,6 +73,9 @@ export default function DietPage() {
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
 
+  console.log('--- DietPage Render ---');
+  console.log('mealLogs state:', mealLogs);
+  console.log('isLoadingLogs state:', isLoadingLogs);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,8 +86,10 @@ export default function DietPage() {
 
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log('Form values submitted:', values);
     try {
       const nutritionData = await analyzeNutrition({ mealDescription: values.mealDescription });
+      console.log('AI analysis result:', nutritionData);
 
       const newLog: MealLog = {
         id: uuidv4(),
@@ -94,7 +99,7 @@ export default function DietPage() {
         ...nutritionData,
       };
 
-      console.log('Meal Log Object:', newLog);
+      console.log('New Meal Log Object:', newLog);
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
@@ -167,6 +172,10 @@ export default function DietPage() {
 }
 
 function MealHistory({ logs, isLoading, t }: { logs: MealLog[] | null, isLoading: boolean, t: (key: string) => string }) {
+  console.log('--- MealHistory Render ---');
+  console.log('Props received by MealHistory - logs:', logs);
+  console.log('Props received by MealHistory - isLoading:', isLoading);
+
   if (isLoading) {
     return (
       <Card>
@@ -213,6 +222,9 @@ function MealHistory({ logs, isLoading, t }: { logs: MealLog[] | null, isLoading
 }
 
 function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
+  console.log('--- MealLogCard Render ---');
+  console.log('Prop received by MealLogCard - log:', log);
+
   const nutritionInfo = [
     { label: t('mealHistory.calories'), value: log.calories.toFixed(0), unit: '' },
     { label: t('mealHistory.protein'), value: log.protein.toFixed(1), unit: 'g' },
@@ -246,5 +258,3 @@ function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
     </Card>
   )
 }
-
-    
