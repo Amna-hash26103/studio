@@ -121,7 +121,7 @@ export default function DietPage() {
       <Card>
         <CardHeader>
           <CardTitle>{t('logMeal.title')}</CardTitle>
-          <CardDescription>{t('logMeal.description')}</CardDescription>
+         //<CardDescription>{t('logMeal.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>

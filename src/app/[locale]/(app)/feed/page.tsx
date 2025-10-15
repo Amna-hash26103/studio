@@ -103,11 +103,19 @@ export default function FeedPage() {
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <Input placeholder={t('postPlaceholder')} className="bg-secondary" />
-            <Button>{t('postButton')}</Button>
+            {/* This is an example of commenting out a JSX element */}
+            {/*
+              <Button>{t('postButton')}</Button>
+            */}
           </div>
         </CardContent>
       </Card>
       
+      {/*
+        This is an example of commenting out a larger block of JSX,
+        including logic that maps over an array.
+      */}
+      {/*
       <div className="space-y-6">
         {posts.map(post => (
           <Card key={post.id}>
@@ -172,8 +180,7 @@ export default function FeedPage() {
           </Card>
         ))}
       </div>
+      */}
     </div>
   )
 }
-
-    
