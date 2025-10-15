@@ -38,11 +38,11 @@ export default function SettingsPage() {
   };
 
   const localeItems = [
-    { value: 'en', label: t('appearance.language.languages.en') },
-    { value: 'ur', label: t('appearance.language.languages.ur') },
-    { value: 'ur-RO', label: t('appearance.language.languages.ur-RO') },
-    { value: 'ps', label: t('appearance.language.languages.ps') },
-    { value: 'pa', label: t('appearance.language.languages.pa') },
+    { value: 'en', label: t('langEnglish') },
+    { value: 'ur', label: t('langUrdu') },
+    { value: 'ur-RO', label: t('langRomanUrdu') },
+    { value: 'ps', label: t('langPashto') },
+    { value: 'pa', label: t('langPunjabi') },
   ];
 
   return (
@@ -54,38 +54,38 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('account.title')}</CardTitle>
-          <CardDescription>{t('account.description')}</CardDescription>
+          <CardTitle>{t('accountTitle')}</CardTitle>
+          <CardDescription>{t('accountDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">{t('account.emailLabel')}</Label>
+            <Label htmlFor="email">{t('accountEmailLabel')}</Label>
             <Input id="email" type="email" value={user?.email || ''} readOnly />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">{t('account.passwordLabel')}</Label>
+            <Label htmlFor="password">{t('accountPasswordLabel')}</Label>
             <Button variant="outline" className="w-full sm:w-auto">
-              {t('account.changePasswordButton')}
+              {t('accountChangePasswordButton')}
             </Button>
           </div>
         </CardContent>
         <CardFooter>
           <Button asChild>
-            <Link href="/profile">{t('account.manageProfileButton')}</Link>
+            <Link href="/profile">{t('accountManageProfileButton')}</Link>
           </Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('appearance.title')}</CardTitle>
-          <CardDescription>{t('appearance.description')}</CardDescription>
+          <CardTitle>{t('appearanceTitle')}</CardTitle>
+          <CardDescription>{t('appearanceDescription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <h3 className="font-medium">{t('appearance.theme.title')}</h3>
+            <h3 className="font-medium">{t('themeTitle')}</h3>
             <p className="text-sm text-muted-foreground">
-              {t('appearance.theme.description')}
+              {t('themeDescription')}
             </p>
             <div className="flex space-x-2 rounded-lg bg-secondary p-1">
               <Button
@@ -94,7 +94,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Sun className="mr-2 h-4 w-4" />
-                {t('appearance.theme.light')}
+                {t('themeLight')}
               </Button>
               <Button
                 variant={theme === 'dark' ? 'default' : 'ghost'}
@@ -102,7 +102,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Moon className="mr-2 h-4 w-4" />
-                {t('appearance.theme.dark')}
+                {t('themeDark')}
               </Button>
               <Button
                 variant={theme === 'system' ? 'default' : 'ghost'}
@@ -110,14 +110,14 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Monitor className="mr-2 h-4 w-4" />
-                {t('appearance.theme.system')}
+                {t('themeSystem')}
               </Button>
             </div>
           </div>
           <div className="space-y-2">
-            <h3 className="font-medium">{t('appearance.language.title')}</h3>
+            <h3 className="font-medium">{t('languageTitle')}</h3>
             <p className="text-sm text-muted-foreground">
-              {t('appearance.language.description')}
+              {t('languageDescription')}
             </p>
             <Select
               value={currentLocale}

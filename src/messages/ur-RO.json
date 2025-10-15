@@ -273,35 +273,25 @@
   "SettingsPage": {
     "title": "Settings",
     "description": "Apna account, tarjehat, aur app settings manage karein.",
-    "account": {
-      "title": "Account",
-      "description": "Apni profile ki maloomat update karein aur apna account manage karein.",
-      "emailLabel": "Email",
-      "passwordLabel": "Password",
-      "changePasswordButton": "Password Badlein",
-      "manageProfileButton": "Profile Manage Karein"
-    },
-    "appearance": {
-      "title": "Zahiri Shakal",
-      "description": "App ki zahiri shakal aur ehsaas ko customize karein.",
-      "theme": {
-        "title": "Theme",
-        "description": "Application ke liye ek theme chunein.",
-        "light": "Light",
-        "dark": "Dark",
-        "system": "System"
-      },
-      "language": {
-        "title": "Zaban",
-        "description": "Apni pasandeeda zaban chunein.",
-        "languages": {
-          "en": "English",
-          "ur": "اردو",
-          "ur-RO": "Roman Urdu",
-          "ps": "پښتو",
-          "pa": "پنجابی"
-        }
-      }
-    }
+    "accountTitle": "Account",
+    "accountDescription": "Apni profile ki maloomat update karein aur apna account manage karein.",
+    "accountEmailLabel": "Email",
+    "accountPasswordLabel": "Password",
+    "accountChangePasswordButton": "Password Badlein",
+    "accountManageProfileButton": "Profile Manage Karein",
+    "appearanceTitle": "Zahiri Shakal",
+    "appearanceDescription": "App ki zahiri shakal aur ehsaas ko customize karein.",
+    "themeTitle": "Theme",
+    "themeDescription": "Application ke liye ek theme chunein.",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "languageTitle": "Zaban",
+    "languageDescription": "Apni pasandeeda zaban chunein.",
+    "langEnglish": "English",
+    "langUrdu": "اردو",
+    "langRomanUrdu": "Roman Urdu",
+    "langPashto": "پښتو",
+    "langPunjabi": "پنجابی"
   }
 }

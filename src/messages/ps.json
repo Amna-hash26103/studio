@@ -273,35 +273,25 @@
   "SettingsPage": {
     "title": "ترتیبات",
     "description": "خپل حساب، غوره توبونه، او د اپلیکیشن ترتیبات اداره کړئ.",
-    "account": {
-      "title": "حساب",
-      "description": "خپل پروفایل معلومات نوي کړئ او خپل حساب اداره کړئ.",
-      "emailLabel": "بریښنالیک",
-      "passwordLabel": "پټنوم",
-      "changePasswordButton": "پټنوم بدل کړئ",
-      "manageProfileButton": "پروفایل اداره کړئ"
-    },
-    "appearance": {
-      "title": "بڼه",
-      "description": "د اپلیکیشن بڼه او احساس تنظیم کړئ.",
-      "theme": {
-        "title": "موضوع",
-        "description": "د اپلیکیشن لپاره یوه موضوع وټاکئ.",
-        "light": "روښانه",
-        "dark": "توره",
-        "system": "سیسټم"
-      },
-      "language": {
-        "title": "ژبه",
-        "description": "خپله غوره ژبه وټاکئ.",
-        "languages": {
-          "en": "English",
-          "ur": "اردو",
-          "ur-RO": "رومن اردو",
-          "ps": "پښتو",
-          "pa": "پنجابی"
-        }
-      }
-    }
+    "accountTitle": "حساب",
+    "accountDescription": "خپل پروفایل معلومات نوي کړئ او خپل حساب اداره کړئ.",
+    "accountEmailLabel": "بریښنالیک",
+    "accountPasswordLabel": "پټنوم",
+    "accountChangePasswordButton": "پټنوم بدل کړئ",
+    "accountManageProfileButton": "پروفایل اداره کړئ",
+    "appearanceTitle": "بڼه",
+    "appearanceDescription": "د اپلیکیشن بڼه او احساس تنظیم کړئ.",
+    "themeTitle": "موضوع",
+    "themeDescription": "د اپلیکیشن لپاره یوه موضوع وټاکئ.",
+    "themeLight": "روښانه",
+    "themeDark": "توره",
+    "themeSystem": "سیسټم",
+    "languageTitle": "ژبه",
+    "languageDescription": "خپله غوره ژبه وټاکئ.",
+    "langEnglish": "English",
+    "langUrdu": "اردو",
+    "langRomanUrdu": "رومن اردو",
+    "langPashto": "پښتو",
+    "langPunjabi": "پنجابی"
   }
 }

@@ -273,35 +273,25 @@
   "SettingsPage": {
     "title": "Settings",
     "description": "Manage your account, preferences, and app settings.",
-    "account": {
-      "title": "Account",
-      "description": "Update your profile information and manage your account.",
-      "emailLabel": "Email",
-      "passwordLabel": "Password",
-      "changePasswordButton": "Change Password",
-      "manageProfileButton": "Manage Profile"
-    },
-    "appearance": {
-      "title": "Appearance",
-      "description": "Customize the look and feel of the app.",
-      "theme": {
-        "title": "Theme",
-        "description": "Select a theme for the application.",
-        "light": "Light",
-        "dark": "Dark",
-        "system": "System"
-      },
-      "language": {
-        "title": "Language",
-        "description": "Choose your preferred language.",
-        "languages": {
-          "en": "English",
-          "ur": "اردو",
-          "ur-RO": "Roman Urdu",
-          "ps": "پښتو",
-          "pa": "پنجابی"
-        }
-      }
-    }
+    "accountTitle": "Account",
+    "accountDescription": "Update your profile information and manage your account.",
+    "accountEmailLabel": "Email",
+    "accountPasswordLabel": "Password",
+    "accountChangePasswordButton": "Change Password",
+    "accountManageProfileButton": "Manage Profile",
+    "appearanceTitle": "Appearance",
+    "appearanceDescription": "Customize the look and feel of the app.",
+    "themeTitle": "Theme",
+    "themeDescription": "Select a theme for the application.",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "languageTitle": "Language",
+    "languageDescription": "Choose your preferred language.",
+    "langEnglish": "English",
+    "langUrdu": "اردو",
+    "langRomanUrdu": "Roman Urdu",
+    "langPashto": "پښتو",
+    "langPunjabi": "پنجابی"
   }
 }

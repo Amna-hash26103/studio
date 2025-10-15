@@ -185,7 +185,7 @@
         "3": "ਟਾਈپ 3: ਦਰਾੜਾਂ ਵਾਲਾ ਸੌਸੇਜ ਦਾ ਆਕਾਰ",
         "4": "ਟਾਈਪ 4: ਨਿਰਵਿਘਨ, ਨਰਮ ਸੌਸੇਜ",
         "5": "ਟਾਈਪ 5: ਸਪਸ਼ਟ ਕਿਨਾਰਿਆਂ ਵਾਲੇ ਨਰਮ ਧੱਬੇ",
-        "6": "ਟਾਈਪ 6: ਗਿੱਲਾ, ਫਟੇ ਹੋਏ ਕਿਨारे",
+        "6": "ਟਾਈਪ 6: ਗਿੱਲਾ, ਫਟੇ ਹੋਏ ਕਿਨਾਰੇ",
         "7": "ਟਾਈਪ 7: ਤਰਲ ਇਕਸਾਰਤਾ"
       },
       "toast": {
@@ -273,35 +273,25 @@
   "SettingsPage": {
     "title": "ਸੈਟਿੰਗਾਂ",
     "description": "ਆਪਣੇ ਖਾਤੇ, ਤਰਜੀਹਾਂ ਅਤੇ ਐਪ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।",
-    "account": {
-      "title": "ਖਾਤਾ",
-      "description": "ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਜਾਣਕਾਰੀ ਨੂੰ ਅਪਡੇਟ ਕਰੋ ਅਤੇ ਆਪਣੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।",
-      "emailLabel": "ਈ - ਮੇਲ",
-      "passwordLabel": "ਪਾਸਵਰਡ",
-      "changePasswordButton": "ਪਾਸਵਰਡ ਬਦਲੋ",
-      "manageProfileButton": "ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ"
-    },
-    "appearance": {
-      "title": "ਦਿੱਖ",
-      "description": "ਐਪ ਦੀ ਦਿੱਖ ਅਤੇ ਮਹਿਸੂਸ ਨੂੰ ਅਨੁਕੂਲਿਤ ਕਰੋ।",
-      "theme": {
-        "title": "ਥੀਮ",
-        "description": "ਐਪਲੀਕੇਸ਼ਨ ਲਈ ਇੱਕ ਥੀਮ ਚੁਣੋ।",
-        "light": "ਹਲਕਾ",
-        "dark": "ਗੂੜ੍ਹਾ",
-        "system": "ਸਿਸਟਮ"
-      },
-      "language": {
-        "title": "ਭਾਸ਼ਾ",
-        "description": "ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ।",
-        "languages": {
-          "en": "ਅੰਗਰੇਜ਼ੀ",
-          "ur": "اردو",
-          "ur-RO": "ਰੋਮਨ ਉਰਦੂ",
-          "ps": "پښتو",
-          "pa": "ਪੰਜਾਬੀ"
-        }
-      }
-    }
+    "accountTitle": "ਖਾਤਾ",
+    "accountDescription": "ਆਪਣੀ ਪ੍ਰੋਫਾਈਲ ਜਾਣਕਾਰੀ ਨੂੰ ਅਪਡੇਟ ਕਰੋ ਅਤੇ ਆਪਣੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।",
+    "accountEmailLabel": "ਈ - ਮੇਲ",
+    "accountPasswordLabel": "ਪਾਸਵਰਡ",
+    "accountChangePasswordButton": "ਪਾਸਵਰਡ ਬਦਲੋ",
+    "accountManageProfileButton": "ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ",
+    "appearanceTitle": "ਦਿੱਖ",
+    "appearanceDescription": "ਐਪ ਦੀ ਦਿੱਖ ਅਤੇ ਮਹਿਸੂਸ ਨੂੰ ਅਨੁਕੂਲਿਤ ਕਰੋ।",
+    "themeTitle": "ਥੀਮ",
+    "themeDescription": "ਐਪਲੀਕੇਸ਼ਨ ਲਈ ਇੱਕ ਥੀਮ ਚੁਣੋ।",
+    "themeLight": "ਹਲਕਾ",
+    "themeDark": "ਗੂੜ੍ਹਾ",
+    "themeSystem": "ਸਿਸਟਮ",
+    "languageTitle": "ਭਾਸ਼ਾ",
+    "languageDescription": "ਆਪਣੀ ਪਸੰਦੀਦਾ ਭਾਸ਼ਾ ਚੁਣੋ।",
+    "langEnglish": "ਅੰਗਰੇਜ਼ੀ",
+    "langUrdu": "اردو",
+    "langRomanUrdu": "ਰੋਮਨ ਉਰਦੂ",
+    "langPashto": "پښتو",
+    "langPunjabi": "ਪੰਜਾਬੀ"
   }
 }
