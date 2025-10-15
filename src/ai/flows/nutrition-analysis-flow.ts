@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -25,33 +26,32 @@ const NutritionAnalysisOutputSchema = z.object({
 });
 export type NutritionAnalysisOutput = z.infer<typeof NutritionAnalysisOutputSchema>;
 
-export async function analyzeNutrition(input: NutritionAnalysisInput): Promise<NutritionAnalysisOutput> {
-  return nutritionAnalysisFlow(input);
-}
-
-const nutritionPrompt = ai.definePrompt({
-  name: 'nutritionAnalysisPrompt',
-  input: { schema: NutritionAnalysisInputSchema },
-  output: { schema: NutritionAnalysisOutputSchema },
-  prompt: `
-    You are an expert nutritionist. Analyze the following meal description and provide a realistic estimate of its nutritional content.
-    Consider common portion sizes if not specified. Break down the meal into its components to make your best estimate.
-
-    Meal: {{{mealDescription}}}
-
-    Return the estimated calories, protein (g), carbohydrates (g), fat (g), and fiber (g).
-    If a value is negligible, return 0. Do not return ranges, only single numbers.
-  `,
-});
-
-const nutritionAnalysisFlow = ai.defineFlow(
+export const nutritionAnalysisTool = ai.defineTool(
   {
-    name: 'nutritionAnalysisFlow',
+    name: 'analyzeMealNutrition',
+    description: 'Analyzes a meal description and returns estimated nutritional content.',
     inputSchema: NutritionAnalysisInputSchema,
     outputSchema: NutritionAnalysisOutputSchema,
   },
   async (input) => {
+    const nutritionPrompt = ai.definePrompt({
+      name: 'nutritionAnalysisPrompt',
+      input: { schema: NutritionAnalysisInputSchema },
+      output: { schema: NutritionAnalysisOutputSchema },
+      prompt: `
+        You are an expert nutritionist. Analyze the following meal description and provide a realistic estimate of its nutritional content.
+        Consider common portion sizes if not specified. Break down the meal into its components to make your best estimate.
+
+        Meal: {{{mealDescription}}}
+
+        Return the estimated calories, protein (g), carbohydrates (g), fat (g), and fiber (g).
+        If a value is negligible, return 0. Do not return ranges, only single numbers.
+      `,
+    });
+
     const { output } = await nutritionPrompt(input);
     return output!;
   }
 );
+
+    

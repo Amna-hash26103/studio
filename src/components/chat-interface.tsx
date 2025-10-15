@@ -1,14 +1,13 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
-  CardHeader,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -16,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
+import { dietAgent } from '@/ai/flows/diet-agent-flow';
 import { useTranslations } from 'next-intl';
 
 const healthAvatar = PlaceHolderImages.find(
@@ -36,7 +36,7 @@ interface Message {
   content: string;
 }
 
-export function ChatInterface({ topic }: { topic: Topic }) {
+export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, useDietAgent?: boolean }) {
   const t = useTranslations('ChatInterface');
   
   const avatars: Record<Topic, typeof healthAvatar> = {
@@ -69,10 +69,18 @@ export function ChatInterface({ topic }: { topic: Topic }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
 
   useEffect(() => {
     setMessages([initialMessages[topic]]);
   }, [topic]);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
 
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -80,17 +88,22 @@ export function ChatInterface({ topic }: { topic: Topic }) {
     if (!input.trim()) return;
 
     const userMessage: Message = { role: 'user', content: input };
-
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
 
     try {
-      const aiInput: WellnessChatbotPersonalizedAdviceInput = {
-        topic: topic,
-        query: input,
-      };
-      const response = await wellnessChatbotPersonalizedAdvice(aiInput);
+        let response;
+        if (useDietAgent) {
+            response = { advice: await dietAgent(input) };
+        } else {
+            const aiInput: WellnessChatbotPersonalizedAdviceInput = {
+                topic: topic,
+                query: input,
+            };
+            response = await wellnessChatbotPersonalizedAdvice(aiInput);
+        }
+
       const assistantMessage: Message = {
         role: 'assistant',
         content: response.advice,
@@ -110,7 +123,7 @@ export function ChatInterface({ topic }: { topic: Topic }) {
 
   return (
     <Card>
-      <CardContent className="h-[60vh] overflow-y-auto p-4">
+      <CardContent ref={scrollRef} className="h-[60vh] overflow-y-auto p-4">
         <div className="space-y-6">
           {messages.map((message, index) => (
             <div
@@ -169,7 +182,7 @@ export function ChatInterface({ topic }: { topic: Topic }) {
             placeholder={placeholders[topic]}
             disabled={isLoading}
           />
-          <Button type="submit" size="icon" disabled={isLoading}>
+          <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
@@ -177,3 +190,5 @@ export function ChatInterface({ topic }: { topic: Topic }) {
     </Card>
   );
 }
+
+    

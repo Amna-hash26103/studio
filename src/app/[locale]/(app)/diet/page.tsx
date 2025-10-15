@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { analyzeNutrition } from '@/ai/flows/nutrition-analysis-flow';
+import { dietAgent } from '@/ai/flows/diet-agent-flow';
 import { Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ChatInterface } from '@/components/chat-interface';
@@ -68,7 +68,7 @@ const formSchema = z.object({
 });
 
 export default function DietPage() {
-  const t = useTranslations('DietPage');
+  const t_page = useTranslations('DietPage');
   const t_logMeal = useTranslations('DietPage.logMeal');
   const t_history = useTranslations('DietPage.mealHistory');
   const t_aiChat = useTranslations('DietPage.aiChat');
@@ -87,7 +87,16 @@ export default function DietPage() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const nutritionData = await analyzeNutrition({ mealDescription: values.mealDescription });
+      // Use the new diet agent to get nutritional info
+      const response = await dietAgent(`Analyze this meal: ${values.mealDescription}`);
+      
+      // A simple way to find the JSON data from the agent's response
+      const jsonMatch = response.match(/```json\n([\s\S]*?)\n```/);
+      if (!jsonMatch || !jsonMatch[1]) {
+        throw new Error("Could not parse nutritional data from AI response.");
+      }
+
+      const nutritionData = JSON.parse(jsonMatch[1]);
       
       const newLog: MealLog = {
         id: uuidv4(),
@@ -117,8 +126,8 @@ export default function DietPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground">{t('description')}</p>
+        <h1 className="font-headline text-3xl font-bold">{t_page('title')}</h1>
+        <p className="text-muted-foreground">{t_page('description')}</p>
       </div>
 
       <Card>
@@ -161,14 +170,14 @@ export default function DietPage() {
         <h2 className="font-headline text-2xl font-bold">{t_aiChat('title')}</h2>
         <p className="text-muted-foreground">{t_aiChat('description')}</p>
         <div className="mt-4">
-          <ChatInterface topic="nutrition" />
+          <ChatInterface topic="nutrition" useDietAgent={true} />
         </div>
       </div>
     </div>
   );
 }
 
-function MealHistory({ logs, isLoading, t }: { logs: MealLog[] | null, isLoading: boolean, t: (key: string) => string }) {
+function MealHistory({ logs, isLoading, t }: { logs: MealLog[] | null, isLoading: boolean, t: any }) {
   if (isLoading) {
     return (
       <Card>
@@ -214,7 +223,7 @@ function MealHistory({ logs, isLoading, t }: { logs: MealLog[] | null, isLoading
   );
 }
 
-function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
+function MealLogCard({ log, t }: { log: MealLog, t: any }) {
   const nutritionInfo = [
     { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
     { label: t('protein'), value: log.protein.toFixed(1), unit: 'g' },
@@ -248,3 +257,5 @@ function MealLogCard({ log, t }: { log: MealLog, t: (key: string) => string }) {
     </Card>
   );
 }
+
+    
