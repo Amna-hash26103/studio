@@ -27,16 +27,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -328,42 +318,44 @@ export default function PeriodTrackerPage() {
         <BleedingHistory periods={pastCycles} t={t} />
       </div>
 
-       <AlertDialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>{t('dialogs.start.title')}</AlertDialogTitle>
-                    <AlertDialogDescription>
+       <Dialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{t('dialogs.start.title')}</DialogTitle>
+                    <DialogDescription>
                         {t('dialogs.start.description', { date: dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : '' })}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isProcessing}>{t('dialogs.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleStartPeriod} disabled={isProcessing}>
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>{t('dialogs.cancel')}</Button>
+                    <Button onClick={handleStartPeriod} disabled={isProcessing}>
                         {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {t('dialogs.start.confirm')}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
 
-        <AlertDialog open={dialogState.showEnd} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>{t('dialogs.end.title')}</AlertDialogTitle>
-                    <AlertDialogDescription>
+        <Dialog open={dialogState.showEnd} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>{t('dialogs.end.title')}</DialogTitle>
+                    <DialogDescription>
                         {t('dialogs.end.description', { date: dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : '' })}
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <Button variant="outline" onClick={handleOpenLogDialog} disabled={isProcessing}>{t('logFlowDialog.title', { date: '' }).replace(' for ', '')}</Button>
-                    <AlertDialogCancel disabled={isProcessing}>{t('dialogs.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleEndPeriod} disabled={isProcessing}>
-                        {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        {t('dialogs.end.confirm')}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-between">
+                    <Button variant="secondary" onClick={handleOpenLogDialog} disabled={isProcessing}>{t('logFlowDialog.title', { date: '' }).replace(' for ', '')}</Button>
+                    <div className="flex gap-2 justify-end">
+                      <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>{t('dialogs.cancel')}</Button>
+                      <Button onClick={handleEndPeriod} disabled={isProcessing}>
+                          {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          {t('dialogs.end.confirm')}
+                      </Button>
+                    </div>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
         
         {dialogState.date && activeCycle && (
             <LogFlowDialog
@@ -574,3 +566,5 @@ function PastCycleCard({ period, index, t }: { period: Period, index: number, t:
     </Card>
   );
 }
+
+    
