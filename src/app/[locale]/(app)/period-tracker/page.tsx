@@ -226,7 +226,7 @@ export default function PeriodTrackerPage() {
 
           toast({
               title: t('toast.logSuccess.title'),
-              description: t('endSuccessDescription'),
+              description: t('toast.endSuccessDescription'),
           });
 
           setDialogState({});
@@ -345,7 +345,7 @@ export default function PeriodTrackerPage() {
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="sm:justify-between">
-                    <Button variant="secondary" onClick={handleOpenLogDialog} disabled={isProcessing}>{t('logFlowDialog.title', { date: '' }).replace(' for ', '')}</Button>
+                    <Button variant="secondary" onClick={handleOpenLogDialog} disabled={isProcessing}>{t('logFlowDialog.title')}</Button>
                     <div className="flex gap-2 justify-end">
                       <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>{t('dialogs.cancel')}</Button>
                       <Button onClick={handleEndPeriod} disabled={isProcessing}>

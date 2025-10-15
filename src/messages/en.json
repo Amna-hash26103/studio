@@ -250,7 +250,7 @@
       }
     },
     "logFlowDialog": {
-      "title": "Log Details for {date}",
+      "title": "Log Daily Details",
       "description": "Record your flow and any other symptoms or notes.",
       "flow": {
         "label": "Flow Level",

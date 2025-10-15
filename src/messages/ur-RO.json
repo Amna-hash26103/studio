@@ -250,7 +250,7 @@
       }
     },
     "logFlowDialog": {
-      "title": "{date} ke liye Tafseelat Log Karein",
+      "title": "Rozana Tafseelat Log Karein",
       "description": "Apna flow aur koi doosri alamat ya notes record karein.",
       "flow": {
         "label": "Flow Level",
