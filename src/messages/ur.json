@@ -122,82 +122,134 @@
   "ChatInterface_initialMessages_nutrition": "ہیلو! میں آپ کا غذا کا رہنما ہوں۔ مجھ سے صحت مند کھانے کے بارے میں کچھ بھی पूछیں!",
   "ChatInterface_errorMessage": "معاف کیجئے گا، کچھ غلط ہو گیا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔",
 
-  "DietPage_title": "غذا اے آئی",
-  "DietPage_description": "غذائیت اور صحت مند کھانے کے لیے آپ کا ذاتی رہنما۔",
-  "DietPage_logMeal_title": "کھانا لاگ کریں",
-  "DietPage_logMeal_description": "جو آپ نے کھایا اس کی وضاحت کریں، اور ہمارا اے آئی غذائی اجزاء کا تخمینہ لگائے گا۔",
-  "DietPage_logMeal_mealDescriptionLabel": "کھانے کی تفصیل",
-  "DietPage_logMeal_mealDescriptionPlaceholder": "مثلاً، بلو بیری اور بادام کے ساتھ دلیہ کا ایک پیالہ",
-  "DietPage_logMeal_logButton": "تجزیہ کریں اور کھانا لاگ کریں",
-  "DietPage_logMeal_loggingButton": "تجزیہ ہو رہا ہے...",
-  "DietPage_mealHistory_title": "کھانے کی تاریخ",
-  "DietPage_mealHistory_noHistory": "آپ نے ابھی تک کوئی کھانا لاگ نہیں کیا۔ شروع करने کے لیے اوپر ایک شامل کریں!",
-  "DietPage_mealHistory_calories": "کیلوریز",
-  "DietPage_mealHistory_protein": "پروٹین",
-  "DietPage_mealHistory_carbs": "کاربز",
-  "DietPage_mealHistory_fat": "چربی",
-  "DietPage_mealHistory_fiber": "فائبر",
-  "DietPage_aiChat_title": "اپنے غذا کے رہنما سے پوچھیں",
-  "DietPage_aiChat_description": "غذائیت کے بارے میں سوالات ہیں؟ نیچے اپنے اے آئی اسسٹنٹ سے پوچھیں۔",
-  "DietPage_toast_logSuccess_title": "کھانا لاگ ہو گیا!",
-  "DietPage_toast_logSuccess_description": "آپ کا کھانا اور اس کی غذائی معلومات محفوظ ہو گئی ہیں۔",
-  "DietPage_toast_logError_title": "تجزیہ ناکام",
-  "DietPage_toast_logError_description": "ہم اس وقت آپ کے کھانے کا تجزیہ نہیں کر سکے۔ براہ کرم دوبارہ کوشش کریں۔",
+  "DietPage": {
+    "title": "غذا اے آئی",
+    "description": "غذائیت اور صحت مند کھانے کے لیے آپ کا ذاتی رہنما۔",
+    "logMeal": {
+      "title": "کھانا لاگ کریں",
+      "description": "جو آپ نے کھایا اس کی وضاحت کریں، اور ہمارا اے آئی غذائی اجزاء کا تخمینہ لگائے گا۔",
+      "mealDescriptionLabel": "کھانے کی تفصیل",
+      "mealDescriptionPlaceholder": "مثلاً، بلو بیری اور بادام کے ساتھ دلیہ کا ایک پیالہ",
+      "logButton": "تجزیہ کریں اور کھانا لاگ کریں",
+      "loggingButton": "تجزیہ ہو رہا ہے..."
+    },
+    "mealHistory": {
+      "title": "کھانے کی تاریخ",
+      "noHistory": "آپ نے ابھی تک کوئی کھانا لاگ نہیں کیا۔ شروع करने کے لیے اوپر ایک شامل کریں!",
+      "calories": "کیلوریز",
+      "protein": "پروٹین",
+      "carbs": "کاربز",
+      "fat": "چربی",
+      "fiber": "فائبر"
+    },
+    "aiChat": {
+      "title": "اپنے غذا کے رہنما سے پوچھیں",
+      "description": "غذائیت کے بارے میں سوالات ہیں؟ نیچے اپنے اے آئی اسسٹنٹ سے پوچھیں۔"
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "کھانا لاگ ہو گیا!",
+        "description": "آپ کا کھانا اور اس کی غذائی معلومات محفوظ ہو گئی ہیں۔"
+      },
+      "logError": {
+        "title": "تجزیہ ناکام",
+        "description": "ہم اس وقت آپ کے کھانے کا تجزیہ نہیں کر سکے۔ براہ کرم دوبارہ کوشش کریں۔"
+      }
+    }
+  },
 
-  "EmotionalHealthPage_title": "جذباتی صحت اے آئی",
-  "EmotionalHealthPage_description": "ذہن سازی اور جذباتی توازن کے لیے آپ کا ذاتی رہنما۔",
+  "EmotionalHealthPage": {
+    "title": "جذباتی صحت اے آئی",
+    "description": "ذہن سازی اور جذباتی توازن کے لیے آپ کا ذاتی رہنما۔"
+  },
 
-  "HealthcarePage_title": "صحت کی دیکھ بھال اے آئی",
-  "HealthcarePage_description": "جسمانی صحت اور تندرستی کے لیے آپ کا ذاتی رہنما۔",
+  "HealthcarePage": {
+    "title": "صحت کی دیکھ بھال اے آئی",
+    "description": "جسمانی صحت اور تندرستی کے لیے آپ کا ذاتی رہنما۔"
+  },
 
-  "PeriodTrackerPage_title": "سائیکل ٹریکر",
-  "PeriodTrackerPage_description": "اپنے جسم کو بہتر سمجھنے کے لیے اپنے ماہواری کے چکر کو ٹریک کریں۔",
-  "PeriodTrackerPage_logPeriodTitle": "اپنا پیریڈ لاگ کریں",
-  "PeriodTrackerPage_activeCycleFooter": "فعال سائیکل {date} کو شروع ہوا",
-  "PeriodTrackerPage_dialogs_cancel": "منسوخ کریں",
-  "PeriodTrackerPage_dialogs_start_title": "نیا پیریڈ شروع کریں؟",
-  "PeriodTrackerPage_dialogs_start_description": "یہ {date} کو ایک نیا پیریڈ سائیکل شروع کر دے گا۔ کیا آپ جاری रखना چاہتی ہیں؟",
-  "PeriodTrackerPage_dialogs_start_confirm": "نیا پیریڈ شروع کریں",
-  "PeriodTrackerPage_dialogs_end_title": "موجودہ پیریڈ ختم کریں؟",
-  "PeriodTrackerPage_dialogs_end_description": "کیا آپ {date} کو اپنے موجودہ پیریڈ کا اختتام نشان زد کرنا چاہتی ہیں؟",
-  "PeriodTrackerPage_dialogs_end_confirm": "پیریڈ ختم کریں",
-  "PeriodTrackerPage_logFlowDialog_title": "روزانہ تفصیلات لاگ کریں",
-  "PeriodTrackerPage_logFlowDialog_description": "{date} کے لیے اپنا بہاؤ ریکارڈ کریں۔",
-  "PeriodTrackerPage_logFlowDialog_flow_label": "بہاؤ کی سطح",
-  "PeriodTrackerPage_logFlowDialog_flow_spotting": "دھبہ",
-  "PeriodTrackerPage_logFlowDialog_flow_light": "ہلکا",
-  "PeriodTrackerPage_logFlowDialog_flow_medium": "درمیانہ",
-  "PeriodTrackerPage_logFlowDialog_flow_heavy": "بھاری",
-  "PeriodTrackerPage_logFlowDialog_notes_label": "نوٹس",
-  "PeriodTrackerPage_logFlowDialog_notes_placeholder": "علامات، مزاج، یا کچھ اور شامل کریں...",
-  "PeriodTrackerPage_logFlowDialog_save": "لاگ محفوظ کریں",
-  "PeriodTrackerPage_logFlowDialog_toast_logSuccess_title": "لاگ محفوظ ہو گیا",
-  "PeriodTrackerPage_logFlowDialog_toast_logError_title": "لاگ محفوظ کرنے میں ناکامی",
-  "PeriodTrackerPage_logFlowDialog_toast_logError_description": "براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔",
-  "PeriodTrackerPage_toast_logSuccess_title": "پیریڈ لاگ ہو گیا",
-  "PeriodTrackerPage_toast_logSuccess_description": "آپ کا نیا سائیکل کامیابی سے ریکارڈ ہو گیا ہے۔",
-  "PeriodTrackerPage_toast_endSuccessDescription": "آپ کا پیریڈ ختم हुआ نشان زد کر دیا گیا ہے۔",
-  "PeriodTrackerPage_toast_logError_title": "افوہ!",
-  "PeriodTrackerPage_toast_logError_description": "آپ کا سائیکل ڈیٹا محفوظ نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔",
-  "PeriodTrackerPage_toast_deleteSuccess_title": "اندراج حذف کر دیا گیا",
-  "PeriodTrackerPage_toast_deleteSuccess_description": "سائیکل کا اندراج ہٹا دیا گیا ہے۔",
-  "PeriodTrackerPage_toast_deleteError_title": "حذف ناکام",
-  "PeriodTrackerPage_toast_deleteError_description": "سائیکل کا اندراج حذف نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔",
-  "PeriodTrackerPage_toast_endDateError_title": "غلط آخری تاریخ",
-  "PeriodTrackerPage_toast_endDateError_description": "آخری تاریخ شروع کی تاریخ سے پہلے نہیں ہو सकती۔",
-  "PeriodTrackerPage_bleedingHistory_title": "سائیکل کی تاریخ",
-  "PeriodTrackerPage_bleedingHistory_noHistory": "ابھی تک کوئی مکمل سائیکل نہیں۔ شروع करने کے لیے اپنا پہلا پیریڈ لاگ کریں!",
-  "PeriodTrackerPage_bleedingHistory_cycle": "سائیکل",
-  "PeriodTrackerPage_bleedingHistory_duration": "مدت",
-  "PeriodTrackerPage_bleedingHistory_flowPattern": "فلو کا پیٹرن",
-  "PeriodTrackerPage_bleedingHistory_notes": "نوٹس",
-  "PeriodTrackerPage_bleedingHistory_noNotes": "اس سائیکل کے لیے کوئی نوٹس نہیں۔",
-  "PeriodTrackerPage_bleedingHistory_days": "دن",
-  "PeriodTrackerPage_bleedingHistory_ongoing": "جاری ہے",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_spotting": "دھبہ",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_light": "ہلکا",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_medium": "درمیانہ",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_heavy": "بھاری"
+  "PeriodTrackerPage": {
+    "title": "سائیکل ٹریکر",
+    "description": "اپنے جسم کو بہتر سمجھنے کے لیے اپنے ماہواری کے چکر کو ٹریک کریں۔",
+    "logPeriodTitle": "اپنا پیریڈ لاگ کریں",
+    "activeCycleFooter": "فعال سائیکل {date} کو شروع ہوا",
+    "dialogs": {
+      "cancel": "منسوخ کریں",
+      "start": {
+        "title": "نیا پیریڈ شروع کریں؟",
+        "description": "یہ {date} کو ایک نیا پیریڈ سائیکل شروع کر دے گا۔ کیا آپ جاری रखना چاہتی ہیں؟",
+        "confirm": "نیا پیریڈ شروع کریں"
+      },
+      "end": {
+        "title": "موجودہ پیریڈ ختم کریں؟",
+        "description": "کیا آپ {date} کو اپنے موجودہ پیریڈ کا اختتام نشان زد کرنا چاہتی ہیں؟",
+        "confirm": "پیریڈ ختم کریں"
+      }
+    },
+    "logFlowDialog": {
+      "title": "روزانہ تفصیلات لاگ کریں",
+      "description": "{date} کے لیے اپنا بہاؤ ریکارڈ کریں۔",
+      "flow": {
+        "label": "بہاؤ کی سطح",
+        "spotting": "دھبہ",
+        "light": "ہلکا",
+        "medium": "درمیانہ",
+        "heavy": "بھاری"
+      },
+      "notes": {
+        "label": "نوٹس",
+        "placeholder": "علامات، مزاج، یا کچھ اور شامل کریں..."
+      },
+      "save": "لاگ محفوظ کریں",
+      "toast": {
+        "logSuccess": {
+          "title": "لاگ محفوظ ہو گیا"
+        },
+        "logError": {
+          "title": "لاگ محفوظ کرنے میں ناکامی",
+          "description": "براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔"
+        }
+      }
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "پیریڈ لاگ ہو گیا",
+        "description": "آپ کا نیا سائیکل کامیابی سے ریکارڈ ہو گیا ہے۔"
+      },
+      "endSuccessDescription": "آپ کا پیریڈ ختم हुआ نشان زد کر دیا گیا ہے۔",
+      "logError": {
+        "title": "افوہ!",
+        "description": "آپ کا سائیکل ڈیٹا محفوظ نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+      },
+      "deleteSuccess": {
+        "title": "اندراج حذف کر دیا گیا",
+        "description": "سائیکل کا اندراج ہٹا دیا گیا ہے۔"
+      },
+      "deleteError": {
+        "title": "حذف ناکام",
+        "description": "سائیکل کا اندراج حذف نہیں کیا جا سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+      },
+      "endDateError": {
+        "title": "غلط آخری تاریخ",
+        "description": "آخری تاریخ شروع کی تاریخ سے پہلے نہیں ہو सकती۔"
+      }
+    },
+    "bleedingHistory": {
+      "title": "سائیکل کی تاریخ",
+      "noHistory": "ابھی تک کوئی مکمل سائیکل نہیں۔ شروع करने کے لیے اپنا پہلا پیریڈ لاگ کریں!",
+      "cycle": "سائیکل",
+      "duration": "مدت",
+      "flowPattern": "فلو کا پیٹرن",
+      "notes": "نوٹس",
+      "noNotes": "اس سائیکل کے لیے کوئی نوٹس نہیں۔",
+      "days": "دن",
+      "ongoing": "جاری ہے",
+      "flowLevels": {
+        "spotting": "دھبہ",
+        "light": "ہلکا",
+        "medium": "درمیانہ",
+        "heavy": "بھاری"
+      }
+    }
+  }
 }
-
-    

@@ -68,14 +68,15 @@ const formSchema = z.object({
 });
 
 export default function DietPage() {
-  const t = useTranslations();
+  const t = useTranslations('DietPage');
+  const t_logMeal = useTranslations('DietPage.logMeal');
+  const t_history = useTranslations('DietPage.mealHistory');
+  const t_aiChat = useTranslations('DietPage.aiChat');
+  const t_toast = useTranslations('DietPage.toast');
+
   const { toast } = useToast();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
-
-  console.log('--- DietPage Render ---');
-  console.log('mealLogs state:', mealLogs);
-  console.log('isLoadingLogs state:', isLoadingLogs);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,9 +85,7 @@ export default function DietPage() {
     },
   });
 
-
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('Form values submitted:', values);
     try {
       const nutritionData = await analyzeNutrition({ mealDescription: values.mealDescription });
       
@@ -98,20 +97,19 @@ export default function DietPage() {
         ...nutritionData,
       };
 
-      console.log('New Meal Log Object:', newLog);
       setMealLogs(prevLogs => [newLog, ...prevLogs]);
 
       toast({
-        title: t('DietPage_toast_logSuccess_title'),
-        description: t('DietPage_toast_logSuccess_description'),
+        title: t_toast('logSuccess.title'),
+        description: t_toast('logSuccess.description'),
       });
       form.reset();
     } catch (error) {
       console.error('Error logging meal:', error);
       toast({
         variant: 'destructive',
-        title: t('DietPage_toast_logError_title'),
-        description: t('DietPage_toast_logError_description'),
+        title: t_toast('logError.title'),
+        description: t_toast('logError.description'),
       });
     }
   };
@@ -119,14 +117,14 @@ export default function DietPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('DietPage_title')}</h1>
-        <p className="text-muted-foreground">{t('DietPage_description')}</p>
+        <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('description')}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('DietPage_logMeal_title')}</CardTitle>
-          <CardDescription>{t('DietPage_logMeal_description')}</CardDescription>
+          <CardTitle>{t_logMeal('title')}</CardTitle>
+          <CardDescription>{t_logMeal('description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -136,10 +134,10 @@ export default function DietPage() {
                 name="mealDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('DietPage_logMeal_mealDescriptionLabel')}</FormLabel>
+                    <FormLabel>{t_logMeal('mealDescriptionLabel')}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('DietPage_logMeal_mealDescriptionPlaceholder')}
+                        placeholder={t_logMeal('mealDescriptionPlaceholder')}
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -150,7 +148,7 @@ export default function DietPage() {
               />
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {form.formState.isSubmitting ? t('DietPage_logMeal_loggingButton') : t('DietPage_logMeal_logButton')}
+                {form.formState.isSubmitting ? t_logMeal('loggingButton') : t_logMeal('logButton')}
               </Button>
             </form>
           </Form>
@@ -160,8 +158,8 @@ export default function DietPage() {
       <MealHistory logs={mealLogs} isLoading={isLoadingLogs} />
       
       <div className="mt-8">
-        <h2 className="font-headline text-2xl font-bold">{t('DietPage_aiChat_title')}</h2>
-        <p className="text-muted-foreground">{t('DietPage_aiChat_description')}</p>
+        <h2 className="font-headline text-2xl font-bold">{t_aiChat('title')}</h2>
+        <p className="text-muted-foreground">{t_aiChat('description')}</p>
         <div className="mt-4">
           <ChatInterface topic="nutrition" />
         </div>
@@ -171,16 +169,13 @@ export default function DietPage() {
 }
 
 function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
-  const t = useTranslations();
-  console.log('--- MealHistory Render ---');
-  console.log('Props received by MealHistory - logs:', logs);
-  console.log('Props received by MealHistory - isLoading:', isLoading);
-
+  const t = useTranslations('DietPage.mealHistory');
+  
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('DietPage_mealHistory_title')}</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {[...Array(3)].map((_, i) => (
@@ -198,10 +193,10 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('DietPage_mealHistory_title')}</CardTitle>
+          <CardTitle>{t('title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('DietPage_mealHistory_noHistory')}</p>
+          <p>{t('noHistory')}</p>
         </CardContent>
       </Card>
     );
@@ -210,7 +205,7 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('DietPage_mealHistory_title')}</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {logs.map((log) => (
@@ -222,16 +217,14 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
 }
 
 function MealLogCard({ log }: { log: MealLog }) {
-  const t = useTranslations();
-  console.log('--- MealLogCard Render ---');
-  console.log('Prop received by MealLogCard - log:', log);
+  const t = useTranslations('DietPage.mealHistory');
 
   const nutritionInfo = [
-    { label: t('DietPage_mealHistory_calories'), value: log.calories.toFixed(0), unit: '' },
-    { label: t('DietPage_mealHistory_protein'), value: log.protein.toFixed(1), unit: 'g' },
-    { label: t('DietPage_mealHistory_carbs'), value: log.carbs.toFixed(1), unit: 'g' },
-    { label: t('DietPage_mealHistory_fat'), value: log.fat.toFixed(1), unit: 'g' },
-    { label: t('DietPage_mealHistory_fiber'), value: log.fiber.toFixed(1), unit: 'g' },
+    { label: t('calories'), value: log.calories.toFixed(0), unit: '' },
+    { label: t('protein'), value: log.protein.toFixed(1), unit: 'g' },
+    { label: t('carbs'), value: log.carbs.toFixed(1), unit: 'g' },
+    { label: t('fat'), value: log.fat.toFixed(1), unit: 'g' },
+    { label: t('fiber'), value: log.fiber.toFixed(1), unit: 'g' },
   ];
 
   return (
@@ -259,5 +252,3 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
-
-    

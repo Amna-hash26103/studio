@@ -1,3 +1,4 @@
+
 {
   "LandingPage_login": "Log In",
   "LandingPage_signup": "Sign Up",
@@ -120,83 +121,134 @@
   "ChatInterface_initialMessages_emotionalWellbeing": "Hello, I’m here to support your emotional wellness. What’s on your mind?",
   "ChatInterface_initialMessages_nutrition": "Hey there! I’m your Diet guide. Ask me anything about healthy eating!",
   "ChatInterface_errorMessage": "I’m sorry, something went wrong. Please try again later.",
+  
+  "DietPage": {
+    "title": "Nourish AI",
+    "description": "Your personal guide to mindful nutrition and balanced eating.",
+    "logMeal": {
+      "title": "Log a Meal",
+      "description": "Describe what you ate, and our AI will estimate the nutritional content.",
+      "mealDescriptionLabel": "Meal Description",
+      "mealDescriptionPlaceholder": "e.g., A bowl of oatmeal with blueberries and almonds",
+      "logButton": "Analyze & Log Meal",
+      "loggingButton": "Analyzing..."
+    },
+    "mealHistory": {
+      "title": "Meal History",
+      "noHistory": "You haven't logged any meals yet. Add one above to get started!",
+      "calories": "Calories",
+      "protein": "Protein",
+      "carbs": "Carbs",
+      "fat": "Fat",
+      "fiber": "Fiber"
+    },
+    "aiChat": {
+      "title": "Ask Your Diet Guide",
+      "description": "Have questions about nutrition? Ask your AI assistant below."
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "Meal Logged!",
+        "description": "Your meal and its nutritional info have been saved."
+      },
+      "logError": {
+        "title": "Analysis Failed",
+        "description": "We couldn't analyze your meal right now. Please try again."
+      }
+    }
+  },
 
-  "DietPage_title": "Nourish AI",
-  "DietPage_description": "Your personal guide to mindful nutrition and balanced eating.",
-  "DietPage_logMeal_title": "Log a Meal",
-  "DietPage_logMeal_description": "Describe what you ate, and our AI will estimate the nutritional content.",
-  "DietPage_logMeal_mealDescriptionLabel": "Meal Description",
-  "DietPage_logMeal_mealDescriptionPlaceholder": "e.g., A bowl of oatmeal with blueberries and almonds",
-  "DietPage_logMeal_logButton": "Analyze & Log Meal",
-  "DietPage_logMeal_loggingButton": "Analyzing...",
-  "DietPage_mealHistory_title": "Meal History",
-  "DietPage_mealHistory_noHistory": "You haven't logged any meals yet. Add one above to get started!",
-  "DietPage_mealHistory_calories": "Calories",
-  "DietPage_mealHistory_protein": "Protein",
-  "DietPage_mealHistory_carbs": "Carbs",
-  "DietPage_mealHistory_fat": "Fat",
-  "DietPage_mealHistory_fiber": "Fiber",
-  "DietPage_aiChat_title": "Ask Your Diet Guide",
-  "DietPage_aiChat_description": "Have questions about nutrition? Ask your AI assistant below.",
-  "DietPage_toast_logSuccess_title": "Meal Logged!",
-  "DietPage_toast_logSuccess_description": "Your meal and its nutritional info have been saved.",
-  "DietPage_toast_logError_title": "Analysis Failed",
-  "DietPage_toast_logError_description": "We couldn't analyze your meal right now. Please try again.",
+  "EmotionalHealthPage": {
+    "title": "Emotional Health AI",
+    "description": "Your supportive companion for mindfulness and emotional balance."
+  },
 
-  "EmotionalHealthPage_title": "Emotional Health AI",
-  "EmotionalHealthPage_description": "Your supportive companion for mindfulness and emotional balance.",
-
-  "HealthcarePage_title": "Healthcare AI",
-  "HealthcarePage_description": "Your caring assistant for physical health and wellness.",
-
-  "PeriodTrackerPage_title": "Cycle Tracker",
-  "PeriodTrackerPage_description": "Track your menstrual cycle to understand your body better.",
-  "PeriodTrackerPage_logPeriodTitle": "Log Your Period",
-  "PeriodTrackerPage_activeCycleFooter": "Active cycle started {date}",
-  "PeriodTrackerPage_dialogs_cancel": "Cancel",
-  "PeriodTrackerPage_dialogs_start_title": "Start New Period?",
-  "PeriodTrackerPage_dialogs_start_description": "This will start a new period cycle on {date}. Do you want to continue?",
-  "PeriodTrackerPage_dialogs_start_confirm": "Start New Period",
-  "PeriodTrackerPage_dialogs_end_title": "End Current Period?",
-  "PeriodTrackerPage_dialogs_end_description": "Do you want to mark {date} as the end of your current period?",
-  "PeriodTrackerPage_dialogs_end_confirm": "End Period",
-  "PeriodTrackerPage_logFlowDialog_title": "Log Daily Details",
-  "PeriodTrackerPage_logFlowDialog_description": "Record your flow for {date}",
-  "PeriodTrackerPage_logFlowDialog_flow_label": "Flow Level",
-  "PeriodTrackerPage_logFlowDialog_flow_spotting": "Spotting",
-  "PeriodTrackerPage_logFlowDialog_flow_light": "Light",
-  "PeriodTrackerPage_logFlowDialog_flow_medium": "Medium",
-  "PeriodTrackerPage_logFlowDialog_flow_heavy": "Heavy",
-  "PeriodTrackerPage_logFlowDialog_notes_label": "Notes",
-  "PeriodTrackerPage_logFlowDialog_notes_placeholder": "Add symptoms, mood, or anything else...",
-  "PeriodTrackerPage_logFlowDialog_save": "Save Log",
-  "PeriodTrackerPage_logFlowDialog_toast_logSuccess_title": "Log Saved",
-  "PeriodTrackerPage_logFlowDialog_toast_logError_title": "Failed to save log",
-  "PeriodTrackerPage_logFlowDialog_toast_logError_description": "Please check your connection and try again.",
-  "PeriodTrackerPage_toast_logSuccess_title": "Period Logged",
-  "PeriodTrackerPage_toast_logSuccess_description": "Your new cycle has been successfully recorded.",
-  "PeriodTrackerPage_toast_endSuccessDescription": "Your period has been marked as ended.",
-  "PeriodTrackerPage_toast_logError_title": "Uh oh!",
-  "PeriodTrackerPage_toast_logError_description": "Could not save your cycle data. Please try again.",
-  "PeriodTrackerPage_toast_deleteSuccess_title": "Entry Deleted",
-  "PeriodTrackerPage_toast_deleteSuccess_description": "The cycle entry has been removed.",
-  "PeriodTrackerPage_toast_deleteError_title": "Delete Failed",
-  "PeriodTrackerPage_toast_deleteError_description": "Could not delete the cycle entry. Please try again.",
-  "PeriodTrackerPage_toast_endDateError_title": "Invalid End Date",
-  "PeriodTrackerPage_toast_endDateError_description": "The end date cannot be before the start date.",
-  "PeriodTrackerPage_bleedingHistory_title": "Cycle History",
-  "PeriodTrackerPage_bleedingHistory_noHistory": "No completed cycles yet. Log your first period to get started!",
-  "PeriodTrackerPage_bleedingHistory_cycle": "Cycle",
-  "PeriodTrackerPage_bleedingHistory_duration": "Duration",
-  "PeriodTrackerPage_bleedingHistory_flowPattern": "Flow Pattern",
-  "PeriodTrackerPage_bleedingHistory_notes": "Notes",
-  "PeriodTrackerPage_bleedingHistory_noNotes": "No notes for this cycle.",
-  "PeriodTrackerPage_bleedingHistory_days": "days",
-  "PeriodTrackerPage_bleedingHistory_ongoing": "Ongoing",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_spotting": "Spotting",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_light": "Light",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_medium": "Medium",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_heavy": "Heavy"
+  "HealthcarePage": {
+    "title": "Healthcare AI",
+    "description": "Your caring assistant for physical health and wellness."
+  },
+  "PeriodTrackerPage": {
+    "title": "Cycle Tracker",
+    "description": "Track your menstrual cycle to understand your body better.",
+    "logPeriodTitle": "Log Your Period",
+    "activeCycleFooter": "Active cycle started {date}",
+    "dialogs": {
+      "cancel": "Cancel",
+      "start": {
+        "title": "Start New Period?",
+        "description": "This will start a new period cycle on {date}. Do you want to continue?",
+        "confirm": "Start New Period"
+      },
+      "end": {
+        "title": "End Current Period?",
+        "description": "Do you want to mark {date} as the end of your current period?",
+        "confirm": "End Period"
+      }
+    },
+    "logFlowDialog": {
+      "title": "Log Daily Details",
+      "description": "Record your flow for {date}",
+      "flow": {
+        "label": "Flow Level",
+        "spotting": "Spotting",
+        "light": "Light",
+        "medium": "Medium",
+        "heavy": "Heavy"
+      },
+      "notes": {
+        "label": "Notes",
+        "placeholder": "Add symptoms, mood, or anything else..."
+      },
+      "save": "Save Log",
+      "toast": {
+        "logSuccess": {
+          "title": "Log Saved"
+        },
+        "logError": {
+          "title": "Failed to save log",
+          "description": "Please check your connection and try again."
+        }
+      }
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "Period Logged",
+        "description": "Your new cycle has been successfully recorded."
+      },
+      "endSuccessDescription": "Your period has been marked as ended.",
+      "logError": {
+        "title": "Uh oh!",
+        "description": "Could not save your cycle data. Please try again."
+      },
+      "deleteSuccess": {
+        "title": "Entry Deleted",
+        "description": "The cycle entry has been removed."
+      },
+      "deleteError": {
+        "title": "Delete Failed",
+        "description": "Could not delete the cycle entry. Please try again."
+      },
+      "endDateError": {
+        "title": "Invalid End Date",
+        "description": "The end date cannot be before the start date."
+      }
+    },
+    "bleedingHistory": {
+      "title": "Cycle History",
+      "noHistory": "No completed cycles yet. Log your first period to get started!",
+      "cycle": "Cycle",
+      "duration": "Duration",
+      "flowPattern": "Flow Pattern",
+      "notes": "Notes",
+      "noNotes": "No notes for this cycle.",
+      "days": "days",
+      "ongoing": "Ongoing",
+      "flowLevels": {
+        "spotting": "Spotting",
+        "light": "Light",
+        "medium": "Medium",
+        "heavy": "Heavy"
+      }
+    }
+  }
 }
-
-    

@@ -1,3 +1,4 @@
+
 {
   "LandingPage_login": "ننوتل",
   "LandingPage_signup": "نوم لیکنه",
@@ -121,82 +122,134 @@
   "ChatInterface_initialMessages_nutrition": "سلام! زه ستاسو د خوړو لارښod یم. د صحي خوړو په اړه هر څه وپښتئ!",
   "ChatInterface_errorMessage": "بخښنه غواړم، یو څه غلط شول. مهرباني وکړئ وروسته بیا هڅه وکړئ.",
 
-  "DietPage_title": "د خوړو AI",
-  "DietPage_description": "د تغذیې او صحي خوړو لپاره ستاسو شخصي لارښود.",
-  "DietPage_logMeal_title": "خواړه ثبت کړئ",
-  "DietPage_logMeal_description": "تشریح کړئ چې تاسو څه خوړلي، او زموږ AI به د تغذیې محتوا اټکل کړي.",
-  "DietPage_logMeal_mealDescriptionLabel": "د خوړو تشریح",
-  "DietPage_logMeal_mealDescriptionPlaceholder": "د مثال په توګه، د بلو بیری او بادامو سره د اوټمیل یوه کڅوړه",
-  "DietPage_logMeal_logButton": "تحلیل او خواړه ثبت کړئ",
-  "DietPage_logMeal_loggingButton": "تحلیل کول...",
-  "DietPage_mealHistory_title": "د خوړو تاریخ",
-  "DietPage_mealHistory_noHistory": "تاسو تر اوسه کوم خواړه ندي ثبت کړي. د پیل کولو لپاره یو پورته اضافه کړئ!",
-  "DietPage_mealHistory_calories": "کالوري",
-  "DietPage_mealHistory_protein": "پروټین",
-  "DietPage_mealHistory_carbs": "کاربوهایډریټ",
-  "DietPage_mealHistory_fat": "غوړ",
-  "DietPage_mealHistory_fiber": "فایبر",
-  "DietPage_aiChat_title": "د خپل خواړو لارښود څخه وپښتئ",
-  "DietPage_aiChat_description": "د تغذیې په اړه پوښتنې لرئ؟ لاندې د خپل AI مرستیال څخه وپښتئ.",
-  "DietPage_toast_logSuccess_title": "خواړه ثبت شول!",
-  "DietPage_toast_logSuccess_description": "ستاسو خواړه او د هغې تغذیه معلومات خوندي شوي دي.",
-  "DietPage_toast_logError_title": "تحلیل ناکام شو",
-  "DietPage_toast_logError_description": "موږ نشو کولی همدا اوس ستاسو خواړه تحلیل کړو. مهرباني وکړئ بیا هڅه وکړئ.",
+  "DietPage": {
+    "title": "د خوړو AI",
+    "description": "د تغذیې او صحي خوړو لپاره ستاسو شخصي لارښود.",
+    "logMeal": {
+      "title": "خواړه ثبت کړئ",
+      "description": "تشریح کړئ چې تاسو څه خوړلي، او زموږ AI به د تغذیې محتوا اټکل کړي.",
+      "mealDescriptionLabel": "د خوړو تشریح",
+      "mealDescriptionPlaceholder": "د مثال په توګه، د بلو بیری او بادامو سره د اوټمیل یوه کڅوړه",
+      "logButton": "تحلیل او خواړه ثبت کړئ",
+      "loggingButton": "تحلیل کول..."
+    },
+    "mealHistory": {
+      "title": "د خوړو تاریخ",
+      "noHistory": "تاسو تر اوسه کوم خواړه ندي ثبت کړي. د پیل کولو لپاره یو پورته اضافه کړئ!",
+      "calories": "کالوري",
+      "protein": "پروټین",
+      "carbs": "کاربوهایډریټ",
+      "fat": "غوړ",
+      "fiber": "فایبر"
+    },
+    "aiChat": {
+      "title": "د خپل خواړو لارښود څخه وپښتئ",
+      "description": "د تغذیې په اړه پوښتنې لرئ؟ لاندې د خپل AI مرستیال څخه وپښتئ."
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "خواړه ثبت شول!",
+        "description": "ستاسو خواړه او د هغې تغذیه معلومات خوندي شوي دي."
+      },
+      "logError": {
+        "title": "تحلیل ناکام شو",
+        "description": "موږ نشو کولی همدا اوس ستاسو خواړه تحلیل کړو. مهرباني وکړئ بیا هڅه وکړئ."
+      }
+    }
+  },
 
-  "EmotionalHealthPage_title": "د احساساتي روغتیا AI",
-  "EmotionalHealthPage_description": "د ذهني او احساساتي توازن لپاره ستاسو شخصي لارښود.",
+  "EmotionalHealthPage": {
+    "title": "د احساساتي روغتیا AI",
+    "description": "د ذهني او احساساتي توازن لپاره ستاسو شخصي لارښود."
+  },
 
-  "HealthcarePage_title": "د روغتیاپالنې AI",
-  "HealthcarePage_description": "د فزیکي روغتیا او هوساینې لپاره ستاسو شخصي لارښود.",
+  "HealthcarePage": {
+    "title": "د روغتیاپالنې AI",
+    "description": "د فزیکي روغتیا او هوساینې لپاره ستاسو شخصي لارښود."
+  },
 
-  "PeriodTrackerPage_title": "د سایکل تعقیبونکی",
-  "PeriodTrackerPage_description": "د خپل بدن ښه پوهیدو لپاره خپله میاشتنۍ دوره تعقیب کړئ.",
-  "PeriodTrackerPage_logPeriodTitle": "خپله دوره ثبت کړئ",
-  "PeriodTrackerPage_activeCycleFooter": "فعاله دوره په {date} پیل شوه",
-  "PeriodTrackerPage_dialogs_cancel": "لغوه کول",
-  "PeriodTrackerPage_dialogs_start_title": "نوې دوره پیل کړئ؟",
-  "PeriodTrackerPage_dialogs_start_description": "دا به په {date} یوه نوې دوره پیل کړي. ایا تاسو غواړئ دوام ورکړئ؟",
-  "PeriodTrackerPage_dialogs_start_confirm": "نوې دوره پیل کړئ",
-  "PeriodTrackerPage_dialogs_end_title": "اوسنۍ دوره پای ته ورسوئ؟",
-  "PeriodTrackerPage_dialogs_end_description": "ایا تاسو غواړئ {date} د خپلې اوسنۍ دورې پای په توګه نښه کړئ؟",
-  "PeriodTrackerPage_dialogs_end_confirm": "دوره پای ته ورسوئ",
-  "PeriodTrackerPage_logFlowDialog_title": "ورځني توضیحات ثبت کړئ",
-  "PeriodTrackerPage_logFlowDialog_description": "د {date} لپاره خپل جریان ثبت کړئ",
-  "PeriodTrackerPage_logFlowDialog_flow_label": "د جریان کچه",
-  "PeriodTrackerPage_logFlowDialog_flow_spotting": "داغ",
-  "PeriodTrackerPage_logFlowDialog_flow_light": "سپک",
-  "PeriodTrackerPage_logFlowDialog_flow_medium": "منځنی",
-  "PeriodTrackerPage_logFlowDialog_flow_heavy": "دروند",
-  "PeriodTrackerPage_logFlowDialog_notes_label": "یادښتونه",
-  "PeriodTrackerPage_logFlowDialog_notes_placeholder": "نښې، مزاج، یا بل څه اضافه کړئ...",
-  "PeriodTrackerPage_logFlowDialog_save": "لاګ خوندي کړئ",
-  "PeriodTrackerPage_logFlowDialog_toast_logSuccess_title": "لاګ خوندي شو",
-  "PeriodTrackerPage_logFlowDialog_toast_logError_title": "لاګ خوندي کول ناکام شول",
-  "PeriodTrackerPage_logFlowDialog_toast_logError_description": "مهرباني وکړئ خپل پیوستون وګورئ او بیا هڅه وکړئ.",
-  "PeriodTrackerPage_toast_logSuccess_title": "دوره ثبت شوه",
-  "PeriodTrackerPage_toast_logSuccess_description": "ستاسو نوې دوره په بریالیتوب سره ثبت شوه.",
-  "PeriodTrackerPage_toast_endSuccessDescription": "ستاسو دوره د پای ته رسیدلې په توګه نښه شوه.",
-  "PeriodTrackerPage_toast_logError_title": "اوه!",
-  "PeriodTrackerPage_toast_logError_description": "ستاسو د دورې معلومات خوندي نشول. مهرباني وکړئ بیا هڅه وکړئ.",
-  "PeriodTrackerPage_toast_deleteSuccess_title": "ننوتل ړنګ شو",
-  "PeriodTrackerPage_toast_deleteSuccess_description": "د دورې ننوتل ړنګ شو.",
-  "PeriodTrackerPage_toast_deleteError_title": "ړنګول ناکام شول",
-  "PeriodTrackerPage_toast_deleteError_description": "د دورې ننوتل ړنګ نشو. مهرباني وکړئ بیا هڅه وکړئ.",
-  "PeriodTrackerPage_toast_endDateError_title": "ناسمه پای نیټه",
-  "PeriodTrackerPage_toast_endDateError_description": "د پای نیټه نشي کولی د پیل نیټې څخه مخکې وي.",
-  "PeriodTrackerPage_bleedingHistory_title": "د سایکل تاریخ",
-  "PeriodTrackerPage_bleedingHistory_noHistory": "تر اوسه کوم بشپړ سایکل نشته. د پیل کولو لپاره خپله لومړۍ دوره ثبت کړئ!",
-  "PeriodTrackerPage_bleedingHistory_cycle": "سایکل",
-  "PeriodTrackerPage_bleedingHistory_duration": "موده",
-  "PeriodTrackerPage_bleedingHistory_flowPattern": "د جریان نمونه",
-  "PeriodTrackerPage_bleedingHistory_notes": "یادښتونه",
-  "PeriodTrackerPage_bleedingHistory_noNotes": "د دې سایکل لپاره هیڅ یادښت نشته.",
-  "PeriodTrackerPage_bleedingHistory_days": "ورځې",
-  "PeriodTrackerPage_bleedingHistory_ongoing": "روان",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_spotting": "داغ",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_light": "سپک",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_medium": "منځنی",
-  "PeriodTrackerPage_bleedingHistory_flowLevels_heavy": "دروند"
+  "PeriodTrackerPage": {
+    "title": "د سایکل تعقیبونکی",
+    "description": "د خپل بدن ښه پوهیدو لپاره خپله میاشتنۍ دوره تعقیب کړئ.",
+    "logPeriodTitle": "خپله دوره ثبت کړئ",
+    "activeCycleFooter": "فعاله دوره په {date} پیل شوه",
+    "dialogs": {
+      "cancel": "لغوه کول",
+      "start": {
+        "title": "نوې دوره پیل کړئ؟",
+        "description": "دا به په {date} یوه نوې دوره پیل کړي. ایا تاسو غواړئ دوام ورکړئ؟",
+        "confirm": "نوې دوره پیل کړئ"
+      },
+      "end": {
+        "title": "اوسنۍ دوره پای ته ورسوئ؟",
+        "description": "ایا تاسو غواړئ {date} د خپلې اوسنۍ دورې پای په توګه نښه کړئ؟",
+        "confirm": "دوره پای ته ورسوئ"
+      }
+    },
+    "logFlowDialog": {
+      "title": "ورځني توضیحات ثبت کړئ",
+      "description": "د {date} لپاره خپل جریان ثبت کړئ",
+      "flow": {
+        "label": "د جریان کچه",
+        "spotting": "داغ",
+        "light": "سپک",
+        "medium": "منځنی",
+        "heavy": "دروند"
+      },
+      "notes": {
+        "label": "یادښتونه",
+        "placeholder": "نښې، مزاج، یا بل څه اضافه کړئ..."
+      },
+      "save": "لاګ خوندي کړئ",
+      "toast": {
+        "logSuccess": {
+          "title": "لاګ خوندي شو"
+        },
+        "logError": {
+          "title": "لاګ خوندي کول ناکام شول",
+          "description": "مهرباني وکړئ خپل پیوستون وګورئ او بیا هڅه وکړئ."
+        }
+      }
+    },
+    "toast": {
+      "logSuccess": {
+        "title": "دوره ثبت شوه",
+        "description": "ستاسو نوې دوره په بریالیتوب سره ثبت شوه."
+      },
+      "endSuccessDescription": "ستاسو دوره د پای ته رسیدلې په توګه نښه شوه.",
+      "logError": {
+        "title": "اوه!",
+        "description": "ستاسو د دورې معلومات خوندي نشول. مهرباني وکړئ بیا هڅه وکړئ."
+      },
+      "deleteSuccess": {
+        "title": "ننوتل ړنګ شو",
+        "description": "د دورې ننوتل ړنګ شو."
+      },
+      "deleteError": {
+        "title": "ړنګول ناکام شول",
+        "description": "د دورې ننوتل ړنګ نشو. مهرباني وکړئ بیا هڅه وکړئ."
+      },
+      "endDateError": {
+        "title": "ناسمه پای نیټه",
+        "description": "د پای نیټه نشي کولی د پیل نیټې څخه مخکې وي."
+      }
+    },
+    "bleedingHistory": {
+      "title": "د سایکل تاریخ",
+      "noHistory": "تر اوسه کوم بشپړ سایکل نشته. د پیل کولو لپاره خپله لومړۍ دوره ثبت کړئ!",
+      "cycle": "سایکل",
+      "duration": "موده",
+      "flowPattern": "د جریان نمونه",
+      "notes": "یادښتونه",
+      "noNotes": "د دې سایکل لپاره هیڅ یادښت نشته.",
+      "days": "ورځې",
+      "ongoing": "روان",
+      "flowLevels": {
+        "spotting": "داغ",
+        "light": "سپک",
+        "medium": "منځنی",
+        "heavy": "دروند"
+      }
+    }
+  }
 }
-
-    
