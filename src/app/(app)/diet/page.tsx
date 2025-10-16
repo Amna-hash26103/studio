@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,11 +18,12 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
 import { dietAgent } from '@/ai/flows/diet-agent-flow';
-import { Loader2, Minus, Plus, GlassWater, Waves, Bean } from 'lucide-react';
+import { Loader2, Minus, Plus, GlassWater, Bean } from 'lucide-react';
 import { format } from 'date-fns';
 import { ChatInterface } from '@/components/chat-interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { scheduleReminder } from '@/lib/reminders';
 
 type MealLog = {
   id: string;
@@ -78,6 +80,18 @@ export default function DietPage() {
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
   const [waterIntake, setWaterIntake] = useState(0); // in glasses
   const [poopLogs, setPoopLogs] = useState<PoopLog[]>([]);
+
+  useEffect(() => {
+    // Schedule some fun reminders when the page loads
+    const waterTimeout = scheduleReminder('water');
+    const mealTimeout = scheduleReminder('meal');
+
+    // Clean up timers when the component unmounts
+    return () => {
+      clearTimeout(waterTimeout);
+      clearTimeout(mealTimeout);
+    };
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -368,3 +382,5 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
+
+    
