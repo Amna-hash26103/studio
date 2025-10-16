@@ -57,13 +57,13 @@ const DUMMY_POSTS: Post[] = [
         authorId: 'dummy-user-chloe',
         avatar: user2?.imageUrl,
         time: '2h ago',
-        content: `Just wrapped up a big project and feeling so accomplished! ✨ It's amazing what you can do when you put your mind to it. How's everyone else's week going?`,
+        content: `Cycle syncing my workouts has been a total game-changer! 🚴‍♀️ I have so much more energy during my follicular phase and I've learned to take it easier with yoga during my luteal phase. Has anyone else tried this?`,
         lang: 'en',
-        image: postImage1 ? { imageUrl: postImage1.imageUrl, imageHint: postImage1.imageHint } : undefined,
-        likes: 24,
+        image: postImage3 ? { imageUrl: postImage3.imageUrl, imageHint: postImage3.imageHint } : undefined,
+        likes: 38,
         likedBy: [],
         comments: [
-            { id: uuidv4(), author: 'Jasmine', authorId: 'dummy-user-jasmine', avatar: user3?.imageUrl || '', content: 'That’s awesome, congrats!', createdAt: new Date() },
+            { id: uuidv4(), author: 'Jasmine', authorId: 'dummy-user-jasmine', avatar: user3?.imageUrl || '', content: 'Yes! I started a few months ago and my body feels so much more in tune. It really helps with PMS too!', createdAt: new Date() },
         ],
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
     },
@@ -73,10 +73,10 @@ const DUMMY_POSTS: Post[] = [
         authorId: 'dummy-user-elena',
         avatar: user3?.imageUrl,
         time: '1d ago',
-        content: `I've been trying out mindfulness for the past week, and it's been a game-changer for my stress levels. Highly recommend the 'Calm' app if anyone is looking for a place to start! 🧘‍♀️`,
+        content: `I've been trying to balance my hormones with nutrition and started adding seed cycling to my diet. Flax and pumpkin seeds in the first half of my cycle, and sesame and sunflower in the second. Feeling cautiously optimistic! 🥑`,
         lang: 'en',
-        image: postImage3 ? { imageUrl: postImage3.imageUrl, imageHint: postImage3.imageHint } : undefined,
-        likes: 42,
+        image: postImage2 ? { imageUrl: postImage2.imageUrl, imageHint: 'healthy food' } : undefined,
+        likes: 51,
         likedBy: [],
         comments: [],
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
@@ -403,3 +403,6 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
 
     
 
+
+
+    
