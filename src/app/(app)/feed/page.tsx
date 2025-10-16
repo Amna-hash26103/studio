@@ -13,6 +13,7 @@ import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebas
 import { ReadAloudButton } from '@/components/read-aloud-button';
 import { translateText } from '@/ai/flows/translate-text-flow';
 import { collection, query, orderBy, serverTimestamp, addDoc, updateDoc, doc, arrayUnion, runTransaction } from 'firebase/firestore';
+import { cn } from '@/lib/utils';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -312,5 +313,6 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
+    
 
     
