@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -45,7 +44,7 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
   
   const placeholders: Record<Topic, string> = {
     health: "e.g., How can I start a simple home workout routine?",
-    emotionalWellbeing: "e.g., I feel stressed, any quick mindfulness tips?",
+    emotionalWellbeing: "e.g., I've been feeling down lately...",
     nutrition: "e.g., What are some healthy snack ideas?",
   };
   
@@ -56,7 +55,7 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
       },
       emotionalWellbeing: {
           role: 'assistant',
-          content: "Hello, I'm here to support your emotional well-being. What's on your mind?",
+          content: "Hello. It's okay to not be okay. If you feel like talking, I'm here to listen.",
       },
       nutrition: {
           role: 'assistant',
