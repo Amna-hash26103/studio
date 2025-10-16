@@ -9,7 +9,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { render } from 'genkit/handlebars';
+import { render } from 'genkit';
 
 const TranslateTextInputSchema = z.object({
   text: z.string().describe('The text to translate.'),
