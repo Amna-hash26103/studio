@@ -79,10 +79,35 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
+    const initialPost: Post = {
+        id: 'initial-user-post-1',
+        author: user?.displayName || "You",
+        authorId: user?.uid || 'user-id',
+        avatar: user?.photoURL || PlaceHolderImages.find(p => p.id === 'user-avatar-1')?.imageUrl,
+        time: 'Just now',
+        content: 'Just set up my profile! Excited to connect with everyone here. ✨',
+        lang: 'en',
+        likes: 0,
+        likedBy: [],
+        comments: [],
+        isTranslated: false,
+        createdAt: new Date(),
+    };
+
     if (userPosts) {
-      setPosts(userPosts);
+      const combined = [initialPost, ...userPosts];
+       // Deduplicate posts
+      const uniquePosts = Array.from(new Map(combined.map(p => [p.id, p])).values());
+      uniquePosts.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
+      setPosts(uniquePosts);
+    } else {
+      setPosts([initialPost]);
     }
-  }, [userPosts]);
+  }, [userPosts, user]);
   
   const handleTranslatePost = async (postId: string) => {
       const postToTranslate = posts.find(p => p.id === postId);
@@ -131,7 +156,19 @@ export default function ProfilePage() {
   };
 
   const handleLikePost = async (postId: string) => {
-      if (!user || !firestore) return;
+      if (!user || !firestore || postId.startsWith('initial-')) {
+          const updatedPosts = posts.map(p => {
+              if (p.id === postId) {
+                  const isLiked = p.likedBy.includes(user?.uid || '');
+                  const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user?.uid) : [...p.likedBy, user?.uid || ''];
+                  const newLikes = newLikedBy.length;
+                  return { ...p, likes: newLikes, likedBy: newLikedBy };
+              }
+              return p;
+          });
+          setPosts(updatedPosts);
+          return;
+      };
       
       const postRef = doc(firestore, 'community_posts', postId);
 
@@ -167,7 +204,6 @@ export default function ProfilePage() {
   const handleAddComment = async (postId: string, commentText: string) => {
     if (!commentText.trim() || !user || !firestore) return;
     
-    const postRef = doc(firestore, 'community_posts', postId);
     const newComment = {
         id: uuidv4(),
         author: user.displayName || 'Anonymous User',
@@ -177,18 +213,21 @@ export default function ProfilePage() {
         createdAt: new Date(), // Using client-side date for optimistic update
     };
 
-    try {
-        // Optimistically update local state
-        const updatedPosts = posts.map(p => {
-            if (p.id === postId) {
-                const updatedComments = [...(p.comments || []), newComment];
-                return { ...p, comments: updatedComments };
-            }
-            return p;
-        });
-        setPosts(updatedPosts);
+    const updatedPosts = posts.map(p => {
+        if (p.id === postId) {
+            const updatedComments = [...(p.comments || []), newComment];
+            return { ...p, comments: updatedComments };
+        }
+        return p;
+    });
+    setPosts(updatedPosts);
+    
+    if (postId.startsWith('initial-')) {
+        return;
+    }
 
-        // Then update Firestore
+    const postRef = doc(firestore, 'community_posts', postId);
+    try {
         await updateDoc(postRef, {
             comments: arrayUnion({ ...newComment, createdAt: new Date() }) // Use serverTimestamp in real app if needed
         });
