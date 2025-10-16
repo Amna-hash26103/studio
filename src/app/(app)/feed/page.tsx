@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, MoreHorizontal, Send, Share2, Languages } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useMemo, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -14,7 +14,12 @@ import { ReadAloudButton } from '@/components/read-aloud-button';
 import { translateText } from '@/ai/flows/translate-text-flow';
 import { collection, query, orderBy, serverTimestamp, addDoc, updateDoc, doc, arrayUnion, runTransaction } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -47,6 +52,7 @@ type Post = {
   likedBy: string[];
   comments: Comment[];
   isTranslated?: boolean;
+  translatedLang?: string;
   createdAt: any;
 };
 
@@ -174,16 +180,17 @@ export default function FeedPage() {
     }
   };
   
-    const handleTranslatePost = async (postId: string) => {
+    const handleTranslatePost = async (postId: string, targetLanguage: string) => {
         const post = allPosts.find(p => p.id === postId);
         if (!post) return;
         
         const originalContent = post.originalContent || post.content;
         
-        if (post.isTranslated) {
-            setAllPosts(prev => prev.map(p => p.id === postId ? { ...p, content: originalContent, isTranslated: false, originalContent: undefined } : p));
+        // Revert to original if the same language is clicked again or 'Show Original' is intended
+        if (post.isTranslated && post.translatedLang === targetLanguage) {
+            setAllPosts(prev => prev.map(p => p.id === postId ? { ...p, content: originalContent, isTranslated: false, originalContent: undefined, translatedLang: undefined } : p));
             if (!postId.startsWith('dummy-') && firestore) {
-                 await updateDoc(doc(firestore, 'community_posts', postId), { content: originalContent, originalContent: null, isTranslated: false });
+                 await updateDoc(doc(firestore, 'community_posts', postId), { content: originalContent, originalContent: null, isTranslated: false, translatedLang: null });
             }
             return;
         }
@@ -191,15 +198,16 @@ export default function FeedPage() {
         try {
             const { translatedText } = await translateText({
                 text: originalContent,
-                targetLanguage: 'ur-RO',
+                targetLanguage,
             });
-            setAllPosts(prev => prev.map(p => p.id === postId ? { ...p, content: translatedText, isTranslated: true, originalContent: originalContent } : p));
+            setAllPosts(prev => prev.map(p => p.id === postId ? { ...p, content: translatedText, isTranslated: true, translatedLang: targetLanguage, originalContent: originalContent } : p));
 
             if (!postId.startsWith('dummy-') && firestore) {
                  await updateDoc(doc(firestore, 'community_posts', postId), {
                     originalContent: originalContent,
                     content: translatedText,
-                    isTranslated: true
+                    isTranslated: true,
+                    translatedLang: targetLanguage,
                 });
             }
         } catch (error) {
@@ -293,9 +301,16 @@ export default function FeedPage() {
 }
 
 
-function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onAddComment: (postId: string, text: string) => void, onTranslate: (postId: string) => void, onLike: (postId: string) => void }) {
+function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onAddComment: (postId: string, text: string) => void, onTranslate: (postId: string, lang: string) => void, onLike: (postId: string) => void }) {
     const { user } = useUser();
     const isLiked = user ? post.likedBy?.includes(user.uid) : false;
+    const languages = [
+        { code: 'ur-RO', name: 'Roman Urdu' },
+        { code: 'es', name: 'Spanish' },
+        { code: 'fr', name: 'French' },
+        { code: 'de', name: 'German' },
+        { code: 'hi', name: 'Hindi' },
+    ];
 
     // Use original content for read aloud if it has been translated
     const contentToRead = (post.isTranslated && post.originalContent) ? post.originalContent : post.content;
@@ -317,9 +332,26 @@ function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onA
                 </div>
                  <div className='flex items-center gap-1'>
                     <ReadAloudButton textToRead={contentToRead} lang={langToRead} />
-                    <Button variant="ghost" size="sm" onClick={() => onTranslate(post.id)}>
-                        {post.content === 'Translating...' ? 'Translating...' : (post.isTranslated ? 'Show Original' : 'Translate')}
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-1">
+                                <Languages className="h-4 w-4" />
+                                <span>{post.isTranslated ? 'Translated' : 'Translate'}</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            {post.isTranslated && (
+                                <DropdownMenuItem onClick={() => onTranslate(post.id, post.translatedLang || '')}>
+                                    Show Original
+                                </DropdownMenuItem>
+                            )}
+                            {languages.map((lang) => (
+                                <DropdownMenuItem key={lang.code} onClick={() => onTranslate(post.id, lang.code)}>
+                                    Translate to {lang.name}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <Button variant="ghost" size="icon">
                         <MoreHorizontal className="h-5 w-5" />
                     </Button>
@@ -404,5 +436,7 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
     
 
 
+
+    
 
     
