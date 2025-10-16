@@ -22,7 +22,7 @@ type Comment = {
 };
 
 type Post = {
-  id: number;
+  id: string;
   author: string;
   avatar?: string;
   time: string;
@@ -34,7 +34,7 @@ type Post = {
 
 const initialPosts: Post[] = [
   {
-    id: 1,
+    id: '1',
     author: 'Elena Rodriguez',
     avatar: user1?.imageUrl,
     time: '3h ago',
@@ -46,7 +46,7 @@ const initialPosts: Post[] = [
     ],
   },
   {
-    id: 2,
+    id: '2',
     author: 'Chloe Chen',
     avatar: user2?.imageUrl,
     time: '8h ago',
@@ -59,9 +59,27 @@ const initialPosts: Post[] = [
 
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [newPostContent, setNewPostContent] = useState('');
   const { user } = useUser();
 
-  const handleAddComment = (postId: number, commentText: string) => {
+  const handleAddPost = () => {
+    if (!newPostContent.trim() || !user) return;
+
+    const newPost: Post = {
+        id: uuidv4(),
+        author: user.displayName || 'Anonymous',
+        avatar: user.photoURL || user1?.imageUrl,
+        time: 'Just now',
+        content: newPostContent,
+        likes: 0,
+        comments: [],
+    };
+
+    setPosts([newPost, ...posts]);
+    setNewPostContent('');
+  };
+
+  const handleAddComment = (postId: string, commentText: string) => {
     if (!commentText.trim() || !user) return;
 
     const newComment: Comment = {
@@ -88,8 +106,14 @@ export default function FeedPage() {
               <AvatarImage src={user?.photoURL || user1?.imageUrl} />
               <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
             </Avatar>
-            <Input placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'friend'}?`} className="bg-secondary" />
-            <Button>Post</Button>
+            <Input 
+                placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'friend'}?`} 
+                className="bg-secondary"
+                value={newPostContent}
+                onChange={(e) => setNewPostContent(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddPost()}
+            />
+            <Button onClick={handleAddPost}>Post</Button>
           </div>
         </CardContent>
       </Card>
@@ -104,7 +128,7 @@ export default function FeedPage() {
 }
 
 
-function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: number, text: string) => void }) {
+function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: string, text: string) => void }) {
     const { user } = useUser();
     return (
         <Card>
