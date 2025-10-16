@@ -72,6 +72,9 @@ export default function SignupPage() {
 
       const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-default');
       const defaultAvatarUrl = defaultAvatar?.imageUrl || 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
+      
+      const defaultCover = PlaceHolderImages.find(p => p.id === 'user-profile-cover');
+      const defaultCoverUrl = defaultCover?.imageUrl;
 
       await updateProfile(user, {
         displayName: values.displayName,
@@ -86,6 +89,7 @@ export default function SignupPage() {
         interests: [],
         location: '',
         profilePhotoURL: defaultAvatarUrl,
+        coverPhotoURL: defaultCoverUrl,
         projectIds: []
       };
 

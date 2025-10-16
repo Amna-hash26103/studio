@@ -107,6 +107,30 @@
       "description": "A cover image for a user profile page, showing a serene landscape.",
       "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b6cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "serene landscape"
+    },
+    {
+      "id": "user-cover-1",
+      "description": "A field of wildflowers at sunset.",
+      "imageUrl": "https://images.unsplash.com/photo-1526080676457-4544b4eb9b2d?w=800&q=80",
+      "imageHint": "wildflowers sunset"
+    },
+    {
+      "id": "user-cover-2",
+      "description": "An abstract pastel watercolor background.",
+      "imageUrl": "https://images.unsplash.com/photo-1569171731649-e70483515413?w=800&q=80",
+      "imageHint": "pastel watercolor"
+    },
+    {
+      "id": "user-cover-3",
+      "description": "A minimalist desk setup with plants.",
+      "imageUrl": "https://images.unsplash.com/photo-1512295767273-b684ac69f887?w=800&q=80",
+      "imageHint": "minimalist desk"
+    },
+    {
+      "id": "user-cover-4",
+      "description": "A sunlit forest path.",
+      "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
+      "imageHint": "forest path"
     }
   ]
 }

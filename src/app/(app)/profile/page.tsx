@@ -34,7 +34,10 @@ export default function ProfilePage() {
 
   const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef);
 
-  const coverImage = PlaceHolderImages.find(i => i.id === 'user-profile-cover');
+  const defaultCoverImage = PlaceHolderImages.find(i => i.id === 'user-profile-cover');
+  const coverImage = userProfile?.coverPhotoURL || defaultCoverImage?.imageUrl;
+  const coverImageHint = userProfile?.coverPhotoURL ? 'user custom cover' : defaultCoverImage?.imageHint;
+
 
   const isLoading = isUserLoading || (user && isProfileLoading);
 
@@ -79,7 +82,7 @@ export default function ProfilePage() {
                     </Button>
                 </CardContent>
             </Card>
-             {user && <EditProfileDialog userProfile={{id: user.uid, displayName: user.displayName || '', email: user.email || '', bio: '', location: '', profilePhotoURL: user.photoURL || ''}} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} />}
+             {user && <EditProfileDialog userProfile={{id: user.uid, displayName: user.displayName || '', email: user.email || '', bio: '', location: '', profilePhotoURL: user.photoURL || '', coverPhotoURL: ''}} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} />}
         </div>
     )
   }
@@ -90,7 +93,7 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-2xl space-y-12">
       <Card className="overflow-hidden">
         <div className="relative h-48 w-full">
-            {coverImage && <Image src={coverImage.imageUrl} alt="Cover image" data-ai-hint={coverImage.imageHint} fill className="object-cover" />}
+            {coverImage && <Image src={coverImage} alt="Cover image" data-ai-hint={coverImageHint} fill className="object-cover" />}
         </div>
         <div className="p-6">
             <div className="relative -mt-20 flex items-end justify-between">
@@ -168,5 +171,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    

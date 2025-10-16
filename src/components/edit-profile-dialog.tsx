@@ -42,6 +42,7 @@ interface EditProfileDialogProps {
     bio: string;
     location: string;
     profilePhotoURL: string;
+    coverPhotoURL?: string;
   };
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -54,6 +55,7 @@ const formSchema = z.object({
 });
 
 const avatarOptions = PlaceHolderImages.filter(p => p.id.startsWith('user-avatar'));
+const coverImageOptions = PlaceHolderImages.filter(p => p.id.startsWith('user-cover'));
 
 export function EditProfileDialog({
   userProfile,
@@ -65,6 +67,7 @@ export function EditProfileDialog({
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [selectedAvatarUrl, setSelectedAvatarUrl] = useState(userProfile.profilePhotoURL);
+  const [selectedCoverUrl, setSelectedCoverUrl] = useState(userProfile.coverPhotoURL);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -83,6 +86,7 @@ export function EditProfileDialog({
       location: userProfile.location || '',
     });
     setSelectedAvatarUrl(userProfile.profilePhotoURL);
+    setSelectedCoverUrl(userProfile.coverPhotoURL);
   }, [userProfile, open, form]);
 
 
@@ -93,15 +97,26 @@ export function EditProfileDialog({
       const userDocRef = doc(firestore, 'users', user.uid);
       const updatedData: any = { ...values };
 
+      let authProfileNeedsUpdate = false;
+
       // Only update profilePhotoURL if it has changed
       if (selectedAvatarUrl !== userProfile.profilePhotoURL) {
         updatedData.profilePhotoURL = selectedAvatarUrl;
+        authProfileNeedsUpdate = true;
+      }
+      
+      // Only update coverPhotoURL if it has changed
+      if (selectedCoverUrl !== userProfile.coverPhotoURL) {
+          updatedData.coverPhotoURL = selectedCoverUrl;
+      }
+
+      if (values.displayName !== userProfile.displayName) {
+        authProfileNeedsUpdate = true;
       }
       
       await updateDoc(userDocRef, updatedData);
 
-      // Only update auth profile if display name or photo URL has changed
-      if (values.displayName !== userProfile.displayName || (updatedData.profilePhotoURL && updatedData.profilePhotoURL !== userProfile.profilePhotoURL)) {
+      if (authProfileNeedsUpdate) {
           await updateProfile(user, { 
               displayName: values.displayName,
               photoURL: updatedData.profilePhotoURL || userProfile.profilePhotoURL 
@@ -133,7 +148,29 @@ export function EditProfileDialog({
           <DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form id="edit-profile-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form id="edit-profile-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+             <div className="space-y-4">
+                <FormLabel>Cover Photo</FormLabel>
+                <div className="relative w-full aspect-video rounded-md overflow-hidden bg-muted">
+                    {selectedCoverUrl ? <Image src={selectedCoverUrl} alt="Selected cover" fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground">No cover selected</div> }
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                    {coverImageOptions.map(cover => (
+                        <button
+                            type="button"
+                            key={cover.id}
+                            onClick={() => setSelectedCoverUrl(cover.imageUrl)}
+                            className={cn(
+                                "relative aspect-video w-full overflow-hidden rounded-md ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring",
+                                selectedCoverUrl === cover.imageUrl && "ring-2 ring-primary"
+                            )}
+                        >
+                            <Image src={cover.imageUrl} alt={cover.description} fill className="object-cover" />
+                        </button>
+                    ))}
+                </div>
+              </div>
+            
             <div className="flex flex-col items-center gap-4">
                <Avatar className="h-24 w-24 border-2 border-primary">
                   <AvatarImage src={selectedAvatarUrl} />

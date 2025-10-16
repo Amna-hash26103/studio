@@ -28,6 +28,11 @@
           "description": "URL of the user's profile photo.",
           "format": "uri"
         },
+        "coverPhotoURL": {
+          "type": "string",
+          "description": "URL of the user's cover photo.",
+          "format": "uri"
+        },
         "bio": {
           "type": "string",
           "description": "A short biography or description of the user."
