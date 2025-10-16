@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -14,14 +15,9 @@ import { ReadAloudButton } from '@/components/read-aloud-button';
 import { translateText } from '@/ai/flows/translate-text-flow';
 import { collection, query, orderBy, serverTimestamp, addDoc, updateDoc, doc, arrayUnion, runTransaction } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
+import { DUMMY_PROFILES } from '@/lib/dummy-profiles';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
-const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
-const user3 = PlaceHolderImages.find((img) => img.id === 'user-avatar-3');
-const user4 = PlaceHolderImages.find((img) => img.id === 'user-avatar-4');
-const feedPost1 = PlaceHolderImages.find((img) => img.id === 'feed-post-3');
-const feedPost2 = PlaceHolderImages.find((img) => img.id === 'project-image-2');
-
 
 type Comment = {
     id: string;
@@ -49,51 +45,8 @@ type Post = {
   createdAt: any;
 };
 
-const initialPosts: Post[] = [
-    {
-        id: 'post-1',
-        author: 'Chloe',
-        authorId: 'chloe-123',
-        avatar: user2?.imageUrl,
-        time: '2 hours ago',
-        content: "Cycle syncing my workouts has been a game-changer! I feel so much more in tune with my body's energy levels throughout the month. Anyone else tried this?",
-        lang: 'en',
-        likes: 24,
-        likedBy: [],
-        comments: [
-            { id: 'comment-1-1', author: 'Elena', authorId: 'elena-456', avatar: user3?.imageUrl || '', content: 'Yes! I started last month and my energy during workouts is so much better.', createdAt: new Date() }
-        ],
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
-    },
-    {
-        id: 'post-2',
-        author: 'Elena',
-        authorId: 'elena-456',
-        avatar: user3?.imageUrl,
-        time: '8 hours ago',
-        content: 'Just finished a 7-day mindfulness challenge. Feeling so clear and grounded. Highly recommend taking a few minutes each day to just breathe and be present. 🧘‍♀️',
-        image: feedPost1 ? { imageUrl: feedPost1.imageUrl, imageHint: feedPost1.imageHint } : undefined,
-        lang: 'en',
-        likes: 42,
-        likedBy: [],
-        comments: [],
-        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000)
-    },
-    {
-        id: 'post-3',
-        author: 'Jasmine',
-        authorId: 'jasmine-789',
-        avatar: user4?.imageUrl,
-        time: 'Yesterday',
-        content: 'Working on a new creative project and feeling so inspired! It’s amazing what you can create when you give yourself the space to explore. ✨',
-        image: feedPost2 ? { imageUrl: feedPost2.imageUrl, imageHint: feedPost2.imageHint } : undefined,
-        lang: 'en',
-        likes: 58,
-        likedBy: [],
-        comments: [],
-        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
-    }
-];
+const initialPosts: Post[] = Object.values(DUMMY_PROFILES).flatMap(profile => profile.posts).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
 
 export default function FeedPage() {
   const [newPostContent, setNewPostContent] = useState('');
@@ -158,7 +111,7 @@ export default function FeedPage() {
     if (!commentText.trim() || !user || !firestore) return;
     
     // For initial posts, update locally
-    if (postId.startsWith('post-')) {
+    if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId)) {
         const newComment = {
             id: uuidv4(),
             author: user.displayName || 'Anonymous User',
@@ -204,7 +157,9 @@ export default function FeedPage() {
         const currentIsTranslated = postToTranslate.isTranslated;
         const originalContent = postToTranslate.originalContent || postToTranslate.content;
 
-        setLocalPosts(localPosts.map(p => p.id === postId ? {...p, isTranslated: !currentIsTranslated} : p));
+        // Immediately update UI for responsiveness
+        const newLocalPosts = localPosts.map(p => p.id === postId ? {...p, isTranslated: !currentIsTranslated, content: 'Translating...'} : p);
+        setLocalPosts(newLocalPosts);
 
         if (currentIsTranslated) {
              setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: originalContent, originalContent: undefined, isTranslated: false} : p));
@@ -213,7 +168,7 @@ export default function FeedPage() {
 
         try {
             const { translatedText } = await translateText({
-                text: postToTranslate.content,
+                text: originalContent,
                 targetLanguage: 'ur-RO',
             });
             setLocalPosts(localPosts.map(p =>
@@ -228,7 +183,8 @@ export default function FeedPage() {
             ));
         } catch (error) {
             console.error("Translation failed:", error);
-            setLocalPosts(localPosts.map(p => p.id === postId ? {...p, isTranslated: false} : p)); // revert on fail
+            // Revert back to original content on failure
+            setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: originalContent, isTranslated: false} : p)); 
         }
     };
     
@@ -236,12 +192,13 @@ export default function FeedPage() {
         if (!user || !firestore) return;
         
         // For initial posts, update locally
-        if (postId.startsWith('post-')) {
+        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId)) {
             const updatedPosts = localPosts.map(p => {
                 if (p.id === postId) {
                     const isLiked = p.likedBy.includes(user.uid);
                     const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user.uid) : [...p.likedBy, user.uid];
-                    const newLikes = newLikedBy.length;
+                    // For dummy posts, likes count is just the length of likedBy array.
+                    const newLikes = p.likes + (isLiked ? -1 : 1);
                     return { ...p, likes: newLikes, likedBy: newLikedBy };
                 }
                 return p;
@@ -327,19 +284,21 @@ function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onA
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Avatar className="ring-1 ring-primary">
-                    <AvatarImage src={post.avatar} />
-                    <AvatarFallback>{post.author.slice(0,2)}</AvatarFallback>
-                  </Avatar>
+                  <Link href={`/profile/${post.authorId}`}>
+                    <Avatar className="ring-1 ring-primary">
+                      <AvatarImage src={post.avatar} />
+                      <AvatarFallback>{post.author.slice(0,2)}</AvatarFallback>
+                    </Avatar>
+                  </Link>
                   <div>
-                    <p className="font-semibold">{post.author}</p>
+                    <Link href={`/profile/${post.authorId}`} className="font-semibold hover:underline">{post.author}</Link>
                     <p className="text-sm text-muted-foreground">{post.time}</p>
                   </div>
                 </div>
                  <div className='flex items-center gap-1'>
                     <ReadAloudButton textToRead={contentToRead} lang={langToRead} />
                     <Button variant="ghost" size="sm" onClick={() => onTranslate(post.id)}>
-                        {post.isTranslated ? 'Show Original' : 'Translate'}
+                        {post.content === 'Translating...' ? 'Translating...' : (post.isTranslated ? 'Show Original' : 'Translate')}
                     </Button>
                     <Button variant="ghost" size="icon">
                         <MoreHorizontal className="h-5 w-5" />
@@ -388,12 +347,14 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         <div className="w-full space-y-4">
             {comments.map(comment => (
                 <div key={comment.id} className="flex items-start gap-3">
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage src={comment.avatar} />
-                        <AvatarFallback>{comment.author.slice(0,1)}</AvatarFallback>
-                    </Avatar>
+                    <Link href={`/profile/${comment.authorId}`}>
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={comment.avatar} />
+                            <AvatarFallback>{comment.author.slice(0,1)}</AvatarFallback>
+                        </Avatar>
+                    </Link>
                     <div className="w-full rounded-lg bg-secondary px-4 py-2 flex-1">
-                        <p className="text-sm font-semibold">{comment.author}</p>
+                        <Link href={`/profile/${comment.authorId}`} className="text-sm font-semibold hover:underline">{comment.author}</Link>
                         <p className="text-sm">{comment.content}</p>
                     </div>
                      <ReadAloudButton textToRead={comment.content} lang={'en'} />
