@@ -38,6 +38,14 @@ import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { SupportBot } from './support-bot';
 import { FemmoraLogo } from './icons';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -172,10 +180,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
       <div className="w-full flex-1">
       </div>
-      <Button variant="ghost" size="icon" className="rounded-full">
-        <Bell className="h-5 w-5" />
-        <span className="sr-only">Notifications</span>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="rounded-full relative">
+            <Bell className="h-5 w-5" />
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="flex-col items-start gap-1">
+            <p className="font-medium">Welcome to FEMMORA! 🎉</p>
+            <p className="text-xs text-muted-foreground">
+              We're so happy to have you here. Explore the community!
+            </p>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="flex-col items-start gap-1">
+            <p className="font-medium">Hydration Reminder 💧</p>
+            <p className="text-xs text-muted-foreground">
+              Don't forget to drink some water.
+            </p>
+          </DropdownMenuItem>
+           <DropdownMenuSeparator />
+           <DropdownMenuItem className="flex-col items-start gap-1">
+            <p className="font-medium">New post from Elena!</p>
+            <p className="text-xs text-muted-foreground">
+              "Just finished a 7-day mindfulness challenge..."
+            </p>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   );
   
