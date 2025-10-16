@@ -45,7 +45,7 @@ type Post = {
   avatar?: string;
   time: string;
   content: string;
-  lang: 'en' | 'ur-RO'; // Language of the content
+  lang: 'en' | 'ur' | 'pa' | 'ps' | 'skr'; // Language of the content
   originalContent?: string;
   image?: { imageUrl: string; imageHint: string };
   likes: number;
@@ -305,11 +305,10 @@ function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onA
     const { user } = useUser();
     const isLiked = user ? post.likedBy?.includes(user.uid) : false;
     const languages = [
-        { code: 'ur-RO', name: 'Roman Urdu' },
-        { code: 'es', name: 'Spanish' },
-        { code: 'fr', name: 'French' },
-        { code: 'de', name: 'German' },
-        { code: 'hi', name: 'Hindi' },
+        { code: 'ur', name: 'Urdu' },
+        { code: 'pa', name: 'Punjabi' },
+        { code: 'ps', name: 'Pashto' },
+        { code: 'skr', name: 'Siraiki' },
     ];
 
     // Use original content for read aloud if it has been translated

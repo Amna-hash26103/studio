@@ -83,8 +83,17 @@ export default function LandingPage() {
               <DropdownMenuItem onSelect={() => setLanguage('en')}>
                 English
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setLanguage('ur-RO')}>
-                Roman Urdu
+              <DropdownMenuItem onSelect={() => setLanguage('ur')}>
+                Urdu
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setLanguage('pa')}>
+                Punjabi
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setLanguage('ps')}>
+                Pashto
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setLanguage('skr')}>
+                Siraiki
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
