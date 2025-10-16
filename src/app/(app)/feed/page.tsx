@@ -9,6 +9,7 @@ import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react
 import Image from 'next/image';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useUser } from '@/firebase';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -58,14 +59,15 @@ const initialPosts: Post[] = [
 
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const { user } = useUser();
 
   const handleAddComment = (postId: number, commentText: string) => {
-    if (!commentText.trim()) return;
+    if (!commentText.trim() || !user) return;
 
     const newComment: Comment = {
         id: uuidv4(),
-        author: 'Jane Doe', // This would be the current user
-        avatar: user1?.imageUrl || '',
+        author: user.displayName || 'Anonymous User',
+        avatar: user.photoURL || user1?.imageUrl || '',
         content: commentText,
     };
 
@@ -83,10 +85,10 @@ export default function FeedPage() {
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
             <Avatar className="ring-1 ring-primary">
-              <AvatarImage src={user1?.imageUrl} />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarImage src={user?.photoURL || user1?.imageUrl} />
+              <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
             </Avatar>
-            <Input placeholder="What's on your mind, Jane?" className="bg-secondary" />
+            <Input placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'friend'}?`} className="bg-secondary" />
             <Button>Post</Button>
           </div>
         </CardContent>
@@ -103,6 +105,7 @@ export default function FeedPage() {
 
 
 function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: number, text: string) => void }) {
+    const { user } = useUser();
     return (
         <Card>
             <CardHeader>
@@ -144,13 +147,13 @@ function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: n
                     </Button>
                 </div>
               </div>
-              <CommentSection comments={post.comments} onAddComment={(text) => onAddComment(post.id, text)} />
+              <CommentSection userAvatar={user?.photoURL || user1?.imageUrl} userInitial={user?.displayName?.slice(0,1) || 'U'} comments={post.comments} onAddComment={(text) => onAddComment(post.id, text)} />
             </CardFooter>
         </Card>
     );
 }
 
-function CommentSection({ comments, onAddComment }: { comments: Comment[], onAddComment: (text: string) => void }) {
+function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { comments: Comment[], onAddComment: (text: string) => void, userAvatar?: string, userInitial: string }) {
     const [commentText, setCommentText] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -175,8 +178,8 @@ function CommentSection({ comments, onAddComment }: { comments: Comment[], onAdd
             ))}
             <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
                 <Avatar className="ring-1 ring-primary">
-                  <AvatarImage src={user1?.imageUrl} />
-                  <AvatarFallback>JD</AvatarFallback>
+                  <AvatarImage src={userAvatar} />
+                  <AvatarFallback>{userInitial}</AvatarFallback>
                 </Avatar>
                 <div className="relative w-full">
                   <Input 
