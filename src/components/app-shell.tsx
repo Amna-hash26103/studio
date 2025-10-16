@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -35,6 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { SupportBot } from './support-bot';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -205,6 +207,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
         {isMobile && mobileNav}
       </div>
+      <SupportBot />
     </SidebarProvider>
   );
 }
