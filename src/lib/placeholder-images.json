@@ -27,7 +27,7 @@
     {
       "id": "nutrition-avatar",
       "description": "Avatar for nutrition chatbot, a friendly woman with fresh vegetables.",
-      "imageUrl": "https://images.unsplash.com/photo-1696575812898-33d8d75c5e1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBjb29raW5nJTIwaWxsdXN0cmF0aW9ufGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1696575812898-33d8d75c5e1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBjb29raW5nJTIwaWxsdXN0cmF0aW9ufGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "woman cooking illustration"
     },
     {
@@ -51,7 +51,7 @@
     {
       "id": "project-image-1",
       "description": "A team of women brainstorming in a startup meeting.",
-      "imageUrl": "https://images.unsplash.com/photo-1702047129200-89734f555f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFydHVwJTIwbWVldGluZ3xlbnwwfHx8fDE3NTk2MDE2OTF8MA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1702047129200-89734f555f38?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzdGFydHVwJTIwbWVldGluZ3xlbnwwfHx8fDE3NTk2MDE2OTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "startup meeting"
     },
     {
@@ -62,9 +62,9 @@
     },
     {
       "id": "user-avatar-default",
-      "description": "Default user avatar, a cute cartoon drawing of a person.",
-      "imageUrl": "https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg",
-      "imageHint": "cartoon person"
+      "description": "Default user avatar, an illustration of a woman meditating.",
+      "imageUrl": "https://i.postimg.cc/8PjLqTqM/calm-woman-meditating-illustration.jpg",
+      "imageHint": "woman meditating"
     },
     {
       "id": "user-avatar-1",
