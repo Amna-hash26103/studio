@@ -1,60 +1,53 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo, useEffect } from 'react';
-import { translations } from '@/lib/translations';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 type Locale = 'en' | 'ur';
 
-// Helper function to get nested values from an object using a string path
-const get = (obj: any, path: string) => {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
-};
-
 interface TranslationContextType {
+  t: (key: string) => string;
   language: Locale;
   changeLanguage: (lang: Locale) => void;
-  t: (key: string) => string;
 }
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-export function TranslationProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<Locale>('en');
+export function TranslationProvider({
+  children,
+  translations,
+  locale
+}: {
+  children: ReactNode;
+  translations: any;
+  locale: Locale;
+}) {
+  const router = useRouter();
+  const pathname = usePathname();
 
-  useEffect(() => {
-    const detectedLanguage =
-      typeof window !== 'undefined'
-        ? (localStorage.getItem('language') as Locale) ||
-          (navigator.language.split('-')[0] as Locale)
-        : 'en';
-    if (detectedLanguage === 'ur') {
-      setLanguage('ur');
-    } else {
-      setLanguage('en');
-    }
-  }, []);
-
-  const changeLanguage = useCallback((lang: Locale) => {
-    setLanguage(lang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('language', lang);
-    }
-  }, []);
+  const get = (obj: any, path: string) => {
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  };
 
   const t = useCallback(
     (key: string): string => {
-      const messages = translations[language];
-      const translation = get(messages, key);
-      return translation || key;
+      return get(translations, key) || key;
     },
-    [language]
+    [translations]
   );
+  
+  const changeLanguage = (newLocale: Locale) => {
+    // This will replace the current path with the new locale.
+    // e.g., from /en/settings to /ur/settings
+    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
+    router.replace(newPath);
+  };
 
   const value = useMemo(() => ({
-    language,
-    changeLanguage,
     t,
-  }), [language, changeLanguage, t]);
+    language: locale,
+    changeLanguage,
+  }), [t, locale, changeLanguage]);
 
   return (
     <TranslationContext.Provider value={value}>
@@ -68,16 +61,5 @@ export function useTranslation() {
   if (context === undefined) {
     throw new Error('useTranslation must be used within a TranslationProvider');
   }
-  return { t: context.t };
-}
-
-export function useLanguage() {
-  const context = useContext(TranslationContext);
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a TranslationProvider');
-  }
-  return {
-    language: context.language,
-    changeLanguage: context.changeLanguage,
-  };
+  return context;
 }

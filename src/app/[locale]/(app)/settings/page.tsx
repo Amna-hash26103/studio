@@ -28,7 +28,7 @@ export default function SettingsPage() {
   const { t, language, changeLanguage } = useTranslation();
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
-
+  
   const handleLanguageChange = (lang: string) => {
     if (lang === 'en' || lang === 'ur') {
       changeLanguage(lang);
