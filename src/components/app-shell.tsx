@@ -192,9 +192,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <DropdownMenuLabel>Notifications</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="flex-col items-start gap-1">
-            <p className="font-medium">Welcome to FEMMORA! 🎉</p>
+            <p className="font-medium">New post from Chloe! ✨</p>
             <p className="text-xs text-muted-foreground">
-              We're so happy to have you here. Explore the community!
+              "Cycle syncing my workouts has been a game-changer!..."
             </p>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
