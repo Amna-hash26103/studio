@@ -8,6 +8,7 @@ import '@/ai/flows/send-welcome-email.ts';
 import '@/ai/flows/translate-text-flow.ts';
 import '@/ai/flows/diet-agent-flow.ts';
 import '@/ai/flows/support-agent-flow.ts';
+import '@/ai/flows/text-to-speech-flow.ts';
 
     
     

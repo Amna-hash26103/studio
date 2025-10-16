@@ -15,6 +15,7 @@ import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import { dietAgent } from '@/ai/flows/diet-agent-flow';
+import { ReadAloudButton } from './read-aloud-button';
 
 const healthAvatar = PlaceHolderImages.find(
   (img) => img.id === 'health-avatar'
@@ -148,6 +149,7 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
               >
                 <p className="whitespace-pre-wrap text-sm">{message.content}</p>
               </div>
+               <ReadAloudButton textToRead={message.content} />
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={userAvatar?.imageUrl} />

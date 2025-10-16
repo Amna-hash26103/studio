@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser } from '@/firebase';
+import { ReadAloudButton } from '@/components/read-aloud-button';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -144,9 +145,12 @@ function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: s
                     <p className="text-sm text-muted-foreground">{post.time}</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-5 w-5" />
-                </Button>
+                 <div className='flex items-center gap-1'>
+                    <ReadAloudButton textToRead={post.content} />
+                    <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="h-5 w-5" />
+                    </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -194,10 +198,11 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
                         <AvatarImage src={comment.avatar} />
                         <AvatarFallback>{comment.author.slice(0,1)}</AvatarFallback>
                     </Avatar>
-                    <div className="w-full rounded-lg bg-secondary px-4 py-2">
+                    <div className="w-full rounded-lg bg-secondary px-4 py-2 flex-1">
                         <p className="text-sm font-semibold">{comment.author}</p>
                         <p className="text-sm">{comment.content}</p>
                     </div>
+                     <ReadAloudButton textToRead={comment.content} />
                 </div>
             ))}
             <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
