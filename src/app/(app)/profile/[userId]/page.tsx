@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 import { translateText } from '@/ai/flows/translate-text-flow';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { v4 as uuidv4 } from 'uuid';
@@ -181,15 +181,42 @@ export default function UserProfilePage() {
 
     const [localPosts, setLocalPosts] = useState<Post[]>([]);
 
-     React.useEffect(() => {
+     useEffect(() => {
         let allPosts: Post[] = [];
         if (isDummyProfile) {
             allPosts = DUMMY_PROFILES[userId].posts;
         } else if (firestorePosts) {
             allPosts = firestorePosts;
         }
-        setLocalPosts(allPosts.sort((a,b) => b.createdAt.toDate() - a.createdAt.toDate()));
-    }, [firestorePosts, isDummyProfile, userId]);
+        
+        // Add dummy "Just Now" post for the current user's profile
+        if (user && userId === user.uid) {
+            const justNowPost: Post = {
+                id: 'just-now-post',
+                author: user.displayName || 'You',
+                authorId: user.uid,
+                avatar: user.photoURL || '',
+                time: 'Just now',
+                content: 'Just joined the FEMMORA community! So excited to connect with everyone. ✨',
+                lang: 'en',
+                likes: 0,
+                likedBy: [],
+                comments: [],
+                createdAt: new Date(),
+            };
+            // Avoid adding duplicate dummy post
+            if (!allPosts.some(p => p.id === 'just-now-post')) {
+                allPosts.unshift(justNowPost);
+            }
+        }
+        
+        allPosts.sort((a,b) => {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+            return dateB.getTime() - dateA.getTime();
+        });
+        setLocalPosts(allPosts);
+    }, [firestorePosts, isDummyProfile, userId, user]);
 
 
     let profileData: DummyProfile | null = null;
@@ -210,7 +237,7 @@ export default function UserProfilePage() {
         if (!user || !firestore) return;
         
         // For dummy posts, update locally
-        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId)) {
+        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId) || postId === 'just-now-post') {
             const updatedPosts = localPosts.map(p => {
                 if (p.id === postId) {
                     const isLiked = p.likedBy.includes(user.uid);
@@ -300,7 +327,7 @@ export default function UserProfilePage() {
         if (!commentText.trim() || !user || !firestore) return;
         
         // For dummy posts, update locally
-        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId)) {
+        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId) || postId === 'just-now-post') {
             const newComment = {
                 id: uuidv4(),
                 author: user.displayName || 'Anonymous User',
