@@ -15,7 +15,6 @@ import { ReadAloudButton } from '@/components/read-aloud-button';
 import { translateText } from '@/ai/flows/translate-text-flow';
 import { collection, query, orderBy, serverTimestamp, addDoc, updateDoc, doc, arrayUnion, runTransaction } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
-import { DUMMY_PROFILES } from '@/lib/dummy-profiles';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
@@ -45,9 +44,6 @@ type Post = {
   createdAt: any;
 };
 
-const initialPosts: Post[] = Object.values(DUMMY_PROFILES).flatMap(profile => profile.posts).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-
 export default function FeedPage() {
   const [newPostContent, setNewPostContent] = useState('');
   const { user } = useUser();
@@ -55,37 +51,10 @@ export default function FeedPage() {
 
   const postsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    // This query will fail with the strict rules, which is expected.
-    // The error will be caught, and the app will rely on localPosts.
     return query(collection(firestore, 'community_posts'), orderBy('createdAt', 'desc'));
   }, [firestore]);
 
-  // useCollection will attempt to fetch, it may error out, which is fine.
-  const { data: firestorePosts, isLoading, error: firestoreError } = useCollection<Post>(postsQuery);
-  const [localPosts, setLocalPosts] = useState<Post[]>(initialPosts);
-
-  useEffect(() => {
-    // We combine the initial dummy posts with any successfully fetched firestore posts
-    const combined = [...initialPosts];
-    const firestorePostIds = new Set(initialPosts.map(p => p.id));
-    
-    if(firestorePosts) {
-      firestorePosts.forEach(fp => {
-        if (!firestorePostIds.has(fp.id)) {
-            combined.push(fp);
-        }
-      });
-    }
-
-    combined.sort((a, b) => {
-      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-      return dateB.getTime() - dateA.getTime();
-    });
-    
-    setLocalPosts(combined);
-  }, [firestorePosts]);
-
+  const { data: posts, isLoading, error: firestoreError } = useCollection<Post>(postsQuery);
 
   const handleAddPost = async () => {
     if (!newPostContent.trim() || !user || !firestore) return;
@@ -104,61 +73,17 @@ export default function FeedPage() {
     };
 
     try {
-        // This write will fail if rules are strict, which is okay for the demo.
-        // To make it work, a user would need to adjust rules.
-        const docRef = await addDoc(collection(firestore, 'community_posts'), newPostData);
-        
-        // Optimistically update the UI
-        const optimisticPost: Post = {
-            ...newPostData,
-            id: docRef.id,
-            createdAt: new Date(), // Use client-side date for optimistic update
-        };
-        setLocalPosts(prev => [optimisticPost, ...prev]);
-
+        await addDoc(collection(firestore, 'community_posts'), newPostData);
         setNewPostContent('');
     } catch (error) {
-        console.error("Error adding post (likely due to security rules):", error);
-        // Fallback: add locally if firestore fails, to allow demo to continue
-        const optimisticPost: Post = {
-            ...newPostData,
-            id: uuidv4(),
-            createdAt: new Date(),
-        };
-        setLocalPosts(prev => [optimisticPost, ...prev]);
-        setNewPostContent('');
+        console.error("Error adding post:", error);
     }
   };
 
   const handleAddComment = async (postId: string, commentText: string) => {
     if (!commentText.trim() || !user || !firestore) return;
     
-    const isDummyPost = initialPosts.some(p => p.id === postId);
-
-    // If it's a dummy post, update it only in the local state.
-    if (isDummyPost) {
-        const newComment = {
-            id: uuidv4(),
-            author: user.displayName || 'Anonymous User',
-            authorId: user.uid,
-            avatar: user.photoURL || user1?.imageUrl || '',
-            content: commentText,
-            createdAt: new Date(),
-        };
-        const updatedPosts = localPosts.map(p => {
-            if (p.id === postId) {
-                // Ensure comments array exists
-                const existingComments = p.comments || [];
-                return { ...p, comments: [...existingComments, newComment] };
-            }
-            return p;
-        });
-        setLocalPosts(updatedPosts);
-        return;
-    }
-
-    // For real posts, attempt to write to Firestore
-    const newCommentForFirestore = {
+    const newComment = {
         id: uuidv4(),
         author: user.displayName || 'Anonymous User',
         authorId: user.uid,
@@ -171,7 +96,7 @@ export default function FeedPage() {
 
     try {
         await updateDoc(postRef, {
-            comments: arrayUnion(newCommentForFirestore)
+            comments: arrayUnion(newComment)
         });
     } catch (error) {
         console.error("Error adding comment to Firestore:", error);
@@ -179,21 +104,16 @@ export default function FeedPage() {
   };
   
     const handleTranslatePost = async (postId: string) => {
-        const postIndex = localPosts.findIndex(p => p.id === postId);
-        if (postIndex === -1) return;
+        if(!firestore) return;
+        const postRef = doc(firestore, 'community_posts', postId);
+        const post = posts?.find(p => p.id === postId);
+        if (!post) return;
 
-        const postToTranslate = localPosts[postIndex];
-        const currentIsTranslated = postToTranslate.isTranslated;
-        const originalContent = postToTranslate.originalContent || postToTranslate.content;
-
-        // Immediately update UI for responsiveness
-        const updatedPosts = [...localPosts];
-        updatedPosts[postIndex] = {...postToTranslate, content: 'Translating...'};
-        setLocalPosts(updatedPosts);
+        const currentIsTranslated = post.isTranslated;
+        const originalContent = post.originalContent || post.content;
 
         if (currentIsTranslated) {
-             updatedPosts[postIndex] = {...postToTranslate, content: originalContent, originalContent: undefined, isTranslated: false};
-             setLocalPosts(updatedPosts);
+             await updateDoc(postRef, { content: originalContent, originalContent: null, isTranslated: false });
              return;
         }
 
@@ -202,42 +122,19 @@ export default function FeedPage() {
                 text: originalContent,
                 targetLanguage: 'ur-RO',
             });
-            updatedPosts[postIndex] = {
-                ...postToTranslate,
+            await updateDoc(postRef, {
                 originalContent: originalContent,
                 content: translatedText,
                 isTranslated: true
-            };
-            setLocalPosts(updatedPosts);
+            });
         } catch (error) {
             console.error("Translation failed:", error);
-            // Revert back to original content on failure
-            updatedPosts[postIndex] = {...postToTranslate, content: originalContent, isTranslated: false};
-            setLocalPosts(updatedPosts);
         }
     };
     
     const handleLikePost = async (postId: string) => {
         if (!user || !firestore) return;
         
-        const isDummyPost = initialPosts.some(p => p.id === postId);
-
-        // For dummy posts, update locally
-        if (isDummyPost) {
-            const updatedPosts = localPosts.map(p => {
-                if (p.id === postId) {
-                    const isLiked = p.likedBy.includes(user.uid);
-                    const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user.uid) : [...p.likedBy, user.uid];
-                    const newLikes = p.likes + (isLiked ? -1 : 1);
-                    return { ...p, likes: newLikes, likedBy: newLikedBy };
-                }
-                return p;
-            });
-            setLocalPosts(updatedPosts);
-            return;
-        }
-        
-        // For real posts, attempt transaction
         const postRef = doc(firestore, 'community_posts', postId);
 
         try {
@@ -292,9 +189,9 @@ export default function FeedPage() {
       </Card>
       
       <div className="space-y-6">
-        {isLoading && localPosts.length === 0 && <p>Loading posts...</p>}
+        {isLoading && <p>Loading posts...</p>}
         {firestoreError && <p className="text-center text-muted-foreground">Could not load live posts. Displaying demo content.</p>}
-        {localPosts.map(post => (
+        {posts && posts.map(post => (
           <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} onLike={handleLikePost} />
         ))}
       </div>

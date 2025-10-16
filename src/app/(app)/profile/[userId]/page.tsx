@@ -177,49 +177,7 @@ export default function UserProfilePage() {
         );
     }, [firestore, userId]);
     
-    const { data: firestorePosts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
-
-    const [localPosts, setLocalPosts] = useState<Post[]>([]);
-
-     useEffect(() => {
-        let allPosts: Post[] = [];
-        if (isDummyProfile) {
-            allPosts = DUMMY_PROFILES[userId].posts;
-        } 
-        
-        if (firestorePosts) {
-             allPosts = [...allPosts, ...firestorePosts];
-        }
-        
-        // Add dummy "Just Now" post for the current user's profile to show it's working
-        if (user && userId === user.uid && !isDummyProfile) {
-            const justNowPost: Post = {
-                id: 'just-now-post',
-                author: user.displayName || 'You',
-                authorId: user.uid,
-                avatar: user.photoURL || '',
-                time: 'Just now',
-                content: 'Welcome to my profile! This is a sample post. ✨',
-                lang: 'en',
-                likes: 0,
-                likedBy: [],
-                comments: [],
-                createdAt: new Date(),
-            };
-            // Avoid adding duplicate dummy post
-            if (!allPosts.some(p => p.id === 'just-now-post')) {
-                allPosts.unshift(justNowPost);
-            }
-        }
-        
-        allPosts.sort((a,b) => {
-            const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-            const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-            return dateB.getTime() - dateA.getTime();
-        });
-        setLocalPosts(allPosts);
-    }, [firestorePosts, isDummyProfile, userId, user]);
-
+    const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
 
     let profileData: DummyProfile | Partial<DummyProfile> | null = null;
     if (isDummyProfile) {
@@ -234,25 +192,10 @@ export default function UserProfilePage() {
         };
     }
     
+    const displayedPosts = isDummyProfile ? DUMMY_PROFILES[userId].posts : posts;
+    
     const handleLikePost = async (postId: string) => {
         if (!user || !firestore) return;
-
-        const isLocalPost = localPosts.find(p => p.id === postId && (DUMMY_PROFILES[p.authorId] || p.id === 'just-now-post'));
-
-        // For dummy or local-only posts, update locally
-        if (isLocalPost) {
-            const updatedPosts = localPosts.map(p => {
-                if (p.id === postId) {
-                    const isLiked = p.likedBy.includes(user.uid);
-                    const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user.uid) : [...p.likedBy, user.uid];
-                    const newLikes = p.likes + (isLiked ? -1 : 1);
-                    return { ...p, likes: newLikes, likedBy: newLikedBy };
-                }
-                return p;
-            });
-            setLocalPosts(updatedPosts);
-            return;
-        }
         
         const postRef = doc(firestore, 'community_posts', postId);
 
@@ -276,51 +219,49 @@ export default function UserProfilePage() {
     }
     
     const handleTranslatePost = async (postId: string) => {
-        const postIndex = localPosts.findIndex(p => p.id === postId);
-        if (postIndex === -1) return;
+        if (!firestore) return;
+        const postRef = doc(firestore, 'community_posts', postId);
+        const post = posts?.find(p => p.id === postId);
+        if (!post) return;
 
-        const postToTranslate = localPosts[postIndex];
-        const currentIsTranslated = postToTranslate.isTranslated;
-        const originalContent = postToTranslate.originalContent || postToTranslate.content;
-
-        const updatedPosts = [...localPosts];
-        updatedPosts[postIndex] = { ...postToTranslate, content: 'Translating...' };
-        setLocalPosts(updatedPosts);
+        const currentIsTranslated = post.isTranslated;
+        const originalContent = post.originalContent || post.content;
 
         if (currentIsTranslated) {
-            updatedPosts[postIndex] = { ...postToTranslate, content: originalContent, originalContent: undefined, isTranslated: false };
-            setLocalPosts(updatedPosts);
-            return;
+             await updateDoc(postRef, { content: originalContent, originalContent: null, isTranslated: false });
+             return;
         }
 
         try {
             const { translatedText } = await translateText({ text: originalContent, targetLanguage: 'ur-RO' });
-            updatedPosts[postIndex] = { ...postToTranslate, originalContent, content: translatedText, isTranslated: true };
-            setLocalPosts(updatedPosts);
+            await updateDoc(postRef, {
+                originalContent: originalContent,
+                content: translatedText,
+                isTranslated: true
+            });
         } catch (error) {
             console.error("Translation failed:", error);
-            updatedPosts[postIndex] = { ...postToTranslate, content: originalContent, isTranslated: false };
-            setLocalPosts(updatedPosts);
         }
     };
     
     const handleAddComment = async (postId: string, commentText: string) => {
         if (!commentText.trim() || !user || !firestore) return;
         
-        const isLocalPost = localPosts.find(p => p.id === postId && (DUMMY_PROFILES[p.authorId] || p.id === 'just-now-post'));
+        const newComment = {
+            id: uuidv4(),
+            author: user.displayName || 'You',
+            authorId: user.uid,
+            avatar: user.photoURL || '',
+            content: commentText,
+            createdAt: new Date(),
+        };
 
-        if (isLocalPost) {
-            const newComment = { id: uuidv4(), author: user.displayName || 'You', authorId: user.uid, avatar: user.photoURL || '', content: commentText, createdAt: new Date() };
-            const updatedPosts = localPosts.map(p => p.id === postId ? { ...p, comments: [...p.comments, newComment] } : p);
-            setLocalPosts(updatedPosts);
-            return;
-        }
-
-        const newCommentForFirestore = { id: uuidv4(), author: user.displayName || 'You', authorId: user.uid, avatar: user.photoURL || '', content: commentText, createdAt: new Date() };
         const postRef = doc(firestore, 'community_posts', postId);
 
         try {
-            await updateDoc(postRef, { comments: arrayUnion(newCommentForFirestore) });
+            await updateDoc(postRef, {
+                comments: arrayUnion(newComment)
+            });
         } catch (error) {
             console.error("Error adding comment: ", error);
         }
@@ -368,8 +309,8 @@ export default function UserProfilePage() {
 
             <div className="space-y-4">
                 <h2 className="text-xl font-bold">Posts</h2>
-                {localPosts && localPosts.length > 0 ? (
-                    localPosts.map(post => <PostCard key={post.id} post={post} onLike={handleLikePost} onTranslate={handleTranslatePost} onAddComment={handleAddComment} />)
+                {displayedPosts && displayedPosts.length > 0 ? (
+                    displayedPosts.map(post => <PostCard key={post.id} post={post} onLike={handleLikePost} onTranslate={handleTranslatePost} onAddComment={handleAddComment} />)
                 ) : (
                     <p className="text-muted-foreground text-center py-8">This user hasn't posted anything yet.</p>
                 )}
