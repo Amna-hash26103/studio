@@ -19,7 +19,7 @@ export function AppLayout({
     }
   }, [isUserLoading, user, router]);
 
-  if (isUserLoading || !user) {
+  if (isUserLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -32,6 +32,10 @@ export function AppLayout({
         </div>
       </div>
     );
+  }
+
+  if (!user) {
+    return null; // or a login redirect, but useEffect already handles this
   }
   
   return <AppShell>{children}</AppShell>;
