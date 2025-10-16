@@ -92,9 +92,9 @@ export function SupportBot() {
             <DialogTitle className="flex items-center gap-2">
               <Avatar className='h-8 w-8'>
                 <AvatarImage src={femmyAvatar?.imageUrl} />
-                <AvatarFallback>F</AvatarFallback>
+                <AvatarFallback>A</AvatarFallback>
               </Avatar>
-              Femmy Support
+              Aura Support
             </DialogTitle>
           </DialogHeader>
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -151,7 +151,7 @@ export function SupportBot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Femmy anything..."
+                placeholder="Ask Aura anything..."
                 disabled={isLoading}
                 autoComplete="off"
               />
