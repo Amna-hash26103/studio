@@ -29,11 +29,11 @@ type MealLog = {
   id: string;
   description: string;
   createdAt: Date;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  fiber: number;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  fiber?: number;
 };
 
 const formSchema = z.object({
@@ -357,11 +357,11 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
 
 function MealLogCard({ log }: { log: MealLog }) {
   const nutritionInfo = [
-    { label: 'Calories', value: log.calories.toFixed(0), unit: '' },
-    { label: 'Protein', value: log.protein.toFixed(1), unit: 'g' },
-    { label: 'Carbs', value: log.carbs.toFixed(1), unit: 'g' },
-    { label: 'Fat', value: log.fat.toFixed(1), unit: 'g' },
-    { label: 'Fiber', value: log.fiber.toFixed(1), unit: 'g' },
+    { label: 'Calories', value: (log.calories || 0).toFixed(0), unit: '' },
+    { label: 'Protein', value: (log.protein || 0).toFixed(1), unit: 'g' },
+    { label: 'Carbs', value: (log.carbs || 0).toFixed(1), unit: 'g' },
+    { label: 'Fat', value: (log.fat || 0).toFixed(1), unit: 'g' },
+    { label: 'Fiber', value: (log.fiber || 0).toFixed(1), unit: 'g' },
   ];
 
   return (
@@ -389,3 +389,4 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
+
