@@ -326,7 +326,7 @@ const LanguageContext = createContext<{
 
 export const useTranslation = () => useContext(LanguageContext);
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [lang, setLang] = useState('en');
   const [translations, setTranslations] = useState<Translations>(en);
 
