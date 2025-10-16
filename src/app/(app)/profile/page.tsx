@@ -11,9 +11,9 @@ export default function ProfilePage() {
   const { user, isUserLoading } = useUser();
 
   useEffect(() => {
-    // If the user is loaded, redirect to their specific profile page
+    // If the user is loaded, redirect to their settings page
     if (!isUserLoading && user) {
-      router.replace(`/profile/${user.uid}`);
+      router.replace(`/settings`);
     }
     // If no user is logged in after checking, redirect to login
     if (!isUserLoading && !user) {
@@ -24,7 +24,7 @@ export default function ProfilePage() {
   return (
     <div className="flex h-full w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="ml-2 text-muted-foreground">Loading your profile...</p>
+        <p className="ml-2 text-muted-foreground">Redirecting to settings...</p>
     </div>
   );
 }
