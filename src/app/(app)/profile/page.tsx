@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { useUser, useDoc, useMemoFirebase, useFirestore, useCollection } from '@/firebase';
 import { collection, doc, query, where, orderBy, runTransaction, updateDoc, arrayUnion } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { EditProfileDialog } from '@/components/edit-profile-dialog';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 import { Input } from '@/components/ui/input';
@@ -74,37 +74,90 @@ export default function ProfilePage() {
     );
   }, [user, firestore]);
 
-  const { data: posts, isLoading: isLoadingPosts } = useCollection<Post>(userPostsQuery);
+  const { data: firestorePosts, isLoading: isLoadingPosts } = useCollection<Post>(userPostsQuery);
+
+  const initialPosts = useMemo<Post[]>(() => {
+    if (!user || !userProfile) return [];
+    return [
+      {
+        id: 'initial-profile-post-1',
+        author: userProfile.displayName,
+        authorId: user.uid,
+        avatar: userProfile.profilePhotoURL,
+        time: 'Just now',
+        content: 'Excited to be part of the FEMMORA community! Ready to connect, grow, and thrive together. ✨',
+        lang: 'en',
+        likes: 0,
+        likedBy: [],
+        comments: [],
+        createdAt: new Date(),
+      },
+    ];
+  }, [user, userProfile]);
+
+  const [localPosts, setLocalPosts] = useState<Post[]>(initialPosts);
+
+  useEffect(() => {
+    // Start with initial posts, especially if firestore posts are loading
+    let combined = [...initialPosts];
+    
+    if (firestorePosts) {
+      const initialPostIds = new Set(initialPosts.map(p => p.id));
+      firestorePosts.forEach(fp => {
+        // Add firestore post only if it's not a duplicate of an initial one
+        if (!initialPostIds.has(fp.id)) {
+            combined.push(fp);
+        }
+      });
+    }
+
+    combined.sort((a, b) => {
+      const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+      const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
+    
+    setLocalPosts(combined);
+  }, [firestorePosts, initialPosts]);
 
   
   const handleTranslatePost = async (postId: string) => {
-      const postToTranslate = posts?.find(p => p.id === postId);
+      const postToTranslate = localPosts.find(p => p.id === postId);
       if (!postToTranslate) return;
 
-      // Optimistically toggle translation state
-      const originalContent = postToTranslate.originalContent || postToTranslate.content;
-      const isCurrentlyTranslated = postToTranslate.isTranslated;
+      // Handle local-only post
+      if (postId.startsWith('initial-')) {
+        const currentIsTranslated = postToTranslate.isTranslated;
+        const originalContent = postToTranslate.originalContent || postToTranslate.content;
 
-      // This part would require state management that can handle local updates.
-      // For simplicity, we're directly refetching, but a real app might use a state manager.
-      // The logic below is for a local-only state update.
+        if (currentIsTranslated) {
+            setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: originalContent, isTranslated: false, originalContent: undefined} : p));
+            return;
+        }
+
+        try {
+            const { translatedText } = await translateText({ text: postToTranslate.content, targetLanguage: 'ur-RO' });
+            setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: translatedText, isTranslated: true, originalContent: originalContent} : p));
+        } catch (error) {
+            console.error("Local translation failed:", error);
+        }
+        return;
+      }
+      
+      // Handle Firestore post
+      const postRef = doc(firestore!, 'community_posts', postId);
+      const isCurrentlyTranslated = postToTranslate.isTranslated;
+      const originalContent = postToTranslate.originalContent || postToTranslate.content;
 
       if (isCurrentlyTranslated) {
-          // Revert to original
-          const postRef = doc(firestore, 'community_posts', postId);
           await updateDoc(postRef, {
               content: originalContent,
               originalContent: null,
               isTranslated: false
           });
       } else {
-          // Fetch translation
           try {
-              const { translatedText } = await translateText({
-                  text: postToTranslate.content,
-                  targetLanguage: 'ur-RO',
-              });
-              const postRef = doc(firestore, 'community_posts', postId);
+              const { translatedText } = await translateText({ text: postToTranslate.content, targetLanguage: 'ur-RO' });
               await updateDoc(postRef, {
                   originalContent: originalContent,
                   content: translatedText,
@@ -118,15 +171,27 @@ export default function ProfilePage() {
 
   const handleLikePost = async (postId: string) => {
       if (!user || !firestore) return;
+
+      // For local initial posts
+      if (postId.startsWith('initial-')) {
+            const updatedPosts = localPosts.map(p => {
+                if (p.id === postId) {
+                    const isLiked = p.likedBy.includes(user.uid);
+                    const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user.uid) : [...p.likedBy, user.uid];
+                    return { ...p, likes: newLikedBy.length, likedBy: newLikedBy };
+                }
+                return p;
+            });
+            setLocalPosts(updatedPosts);
+            return;
+      }
       
       const postRef = doc(firestore, 'community_posts', postId);
 
       try {
           await runTransaction(firestore, async (transaction) => {
               const postDoc = await transaction.get(postRef);
-              if (!postDoc.exists()) {
-                  throw "Document does not exist!";
-              }
+              if (!postDoc.exists()) throw "Document does not exist!";
 
               const postData = postDoc.data() as Post;
               const likedBy = postData.likedBy || [];
@@ -134,12 +199,10 @@ export default function ProfilePage() {
               let newLikedBy;
 
               if (likedBy.includes(user.uid)) {
-                  // Unlike
-                  newLikes = postData.likes - 1;
+                  newLikes = (postData.likes || 1) - 1;
                   newLikedBy = likedBy.filter(uid => uid !== user.uid);
               } else {
-                  // Like
-                  newLikes = postData.likes + 1;
+                  newLikes = (postData.likes || 0) + 1;
                   newLikedBy = [...likedBy, user.uid];
               }
               
@@ -152,8 +215,8 @@ export default function ProfilePage() {
 
   const handleAddComment = async (postId: string, commentText: string) => {
     if (!commentText.trim() || !user || !firestore) return;
-    
-    const newComment = {
+
+     const newComment: Comment = {
         id: uuidv4(),
         author: user.displayName || 'Anonymous User',
         authorId: user.uid,
@@ -161,6 +224,18 @@ export default function ProfilePage() {
         content: commentText,
         createdAt: new Date(),
     };
+    
+    // For local initial posts
+    if (postId.startsWith('initial-')) {
+        const updatedPosts = localPosts.map(p => {
+            if (p.id === postId) {
+                return { ...p, comments: [...p.comments, newComment] };
+            }
+            return p;
+        });
+        setLocalPosts(updatedPosts);
+        return;
+    }
     
     const postRef = doc(firestore, 'community_posts', postId);
     try {
@@ -254,7 +329,7 @@ export default function ProfilePage() {
                 {user?.metadata.creationTime && <div className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> Joined {new Date(user.metadata.creationTime).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</div>}
             </div>
              <div className="mt-4 flex gap-6">
-                <div className="text-sm"><span className="font-bold">{posts?.length || 0}</span> Posts</div>
+                <div className="text-sm"><span className="font-bold">{localPosts.length || 0}</span> Posts</div>
                 <div className="text-sm"><span className="font-bold">{0}</span> Followers</div>
                 <div className="text-sm"><span className="font-bold">{0}</span> Following</div>
             </div>
@@ -268,11 +343,11 @@ export default function ProfilePage() {
           <TabsTrigger value="media">Media</TabsTrigger>
         </TabsList>
         <TabsContent value="posts">
-            {isLoadingPosts ? (
+            {isLoadingPosts && localPosts.length === 1 ? (
                  <Card><CardContent className="p-6">Loading posts...</CardContent></Card>
-            ) : posts && posts.length > 0 ? (
+            ) : localPosts && localPosts.length > 0 ? (
                 <div className="space-y-6">
-                    {posts.map(post => (
+                    {localPosts.map(post => (
                         <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} onLike={handleLikePost} />
                     ))}
                 </div>
