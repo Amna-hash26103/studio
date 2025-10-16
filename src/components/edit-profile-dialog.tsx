@@ -142,7 +142,7 @@ export function EditProfileDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Profile</DialogTitle>
           <DialogDescription>Make changes to your profile here. Click save when you're done.</DialogDescription>
@@ -181,7 +181,7 @@ export function EditProfileDialog({
               
               <div className="w-full">
                 <FormLabel>Change Picture</FormLabel>
-                <div className="mt-2 grid grid-cols-4 gap-2">
+                <div className="mt-2 grid grid-cols-5 gap-2 sm:grid-cols-6">
                     {avatarOptions.map(avatar => (
                         <button
                             type="button"
