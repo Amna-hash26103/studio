@@ -39,7 +39,7 @@
     {
       "id": "feed-post-2",
       "description": "Two friends having a conversation over coffee.",
-      "imageUrl": "https://images.unsplash.com/photo-1753351055728-23df89f9d273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmcmllbmRzJTIwdGFsa2luZyUyMGNhZmV8ZW58MHx8fHwxNzU5NjAxNjkxfDA&ixlibrb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1753351055728-23df89f9d273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmcmllbmRzJTIwdGFsa2luZyUyMGNhZmV8ZW58MHx8fHwxNzU5NjAxNjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "friends talking cafe"
     },
     {
@@ -59,12 +59,6 @@
       "description": "An artist painting in her studio.",
       "imageUrl": "https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnRpc3QlMjBzdHVkaW98ZW58MHx8fHwxNzU5NTQ2MTEwfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "artist studio"
-    },
-    {
-      "id": "user-avatar-default",
-      "description": "Default user avatar, an illustration of a woman meditating.",
-      "imageUrl": "https://i.postimg.cc/8PjLqTqM/calm-woman-meditating-illustration.jpg",
-      "imageHint": "woman meditating"
     },
     {
       "id": "user-avatar-1",
@@ -109,24 +103,6 @@
       "imageHint": "serene landscape"
     },
     {
-      "id": "user-cover-1",
-      "description": "A field of wildflowers at sunset.",
-      "imageUrl": "https://images.unsplash.com/photo-1526080676457-4544b4eb9b2d?w=800&q=80",
-      "imageHint": "wildflowers sunset"
-    },
-    {
-      "id": "user-cover-2",
-      "description": "An abstract pastel watercolor background.",
-      "imageUrl": "https://images.unsplash.com/photo-1569171731649-e70483515413?w=800&q=80",
-      "imageHint": "pastel watercolor"
-    },
-    {
-      "id": "user-cover-3",
-      "description": "A minimalist desk setup with plants.",
-      "imageUrl": "https://images.unsplash.com/photo-1512295767273-b684ac69f887?w=800&q=80",
-      "imageHint": "minimalist desk"
-    },
-    {
       "id": "user-cover-4",
       "description": "A sunlit forest path.",
       "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
@@ -137,12 +113,6 @@
       "description": "A misty mountain range at sunrise.",
       "imageUrl": "https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=800&q=80",
       "imageHint": "misty mountains"
-    },
-    {
-      "id": "user-cover-6",
-      "description": "Ocean waves crashing on a sandy beach.",
-      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723a996f329?w=800&q=80",
-      "imageHint": "ocean waves"
     },
     {
       "id": "user-cover-7",
