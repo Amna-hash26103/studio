@@ -24,6 +24,8 @@ import { ChatInterface } from '@/components/chat-interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { scheduleReminder } from '@/lib/reminders';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, serverTimestamp, addDoc, query, orderBy } from 'firebase/firestore';
 
 type MealLog = {
   id: string;
@@ -36,31 +38,6 @@ type MealLog = {
   fat: number;
   fiber: number;
 };
-
-const initialMealLogs: MealLog[] = [
-    {
-        id: '1',
-        userId: 'dummy-user',
-        description: 'A bowl of oatmeal with blueberries and almonds',
-        createdAt: { seconds: Math.floor(Date.now() / 1000) - 3600 * 2 }, // 2 hours ago
-        calories: 350,
-        protein: 10,
-        carbs: 60,
-        fat: 10,
-        fiber: 8,
-    },
-    {
-        id: '2',
-        userId: 'dummy-user',
-        description: 'Grilled chicken salad with avocado dressing',
-        createdAt: { seconds: Math.floor(Date.now() / 1000) - 3600 * 24 }, // yesterday
-        calories: 450,
-        protein: 35,
-        carbs: 15,
-        fat: 28,
-        fiber: 7,
-    }
-];
 
 const formSchema = z.object({
   mealDescription: z.string().min(10, {
@@ -76,17 +53,23 @@ type PoopLog = {
 
 export default function DietPage() {
   const { toast } = useToast();
-  const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
-  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const mealLogsQuery = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return query(collection(firestore, 'users', user.uid, 'mealLogs'), orderBy('createdAt', 'desc'));
+  }, [user, firestore]);
+  
+  const { data: mealLogs, isLoading: isLoadingLogs } = useCollection<MealLog>(mealLogsQuery);
+
   const [waterIntake, setWaterIntake] = useState(0); // in glasses
   const [poopLogs, setPoopLogs] = useState<PoopLog[]>([]);
 
   useEffect(() => {
-    // Schedule some fun reminders when the page loads
     const waterTimeout = scheduleReminder('water');
     const mealTimeout = scheduleReminder('meal');
 
-    // Clean up timers when the component unmounts
     return () => {
       clearTimeout(waterTimeout);
       clearTimeout(mealTimeout);
@@ -101,6 +84,11 @@ export default function DietPage() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'You must be logged in.' });
+        return;
+    }
+    
     try {
       const response = await dietAgent(`Analyze this meal: ${values.mealDescription}`);
       
@@ -111,15 +99,14 @@ export default function DietPage() {
 
       const nutritionData = JSON.parse(jsonMatch[1]);
       
-      const newLog: MealLog = {
-        id: uuidv4(),
-        userId: 'dummy-user',
+      const newLog = {
+        userId: user.uid,
         description: values.mealDescription,
-        createdAt: { seconds: Math.floor(Date.now() / 1000) },
+        createdAt: serverTimestamp(),
         ...nutritionData,
       };
 
-      setMealLogs(prevLogs => [newLog, ...prevLogs]);
+      await addDoc(collection(firestore, 'users', user.uid, 'mealLogs'), newLog);
 
       toast({
         title: 'Meal Logged!',
@@ -364,7 +351,7 @@ function MealLogCard({ log }: { log: MealLog }) {
             <div>
               <p className="font-semibold">{log.description}</p>
               <p className="text-sm text-muted-foreground">
-                {format(new Date(log.createdAt.seconds * 1000), 'MMMM d, yyyy, h:mm a')}
+                {log.createdAt ? format(new Date(log.createdAt.seconds * 1000), 'MMMM d, yyyy, h:mm a') : 'Just now'}
               </p>
             </div>
           </div>

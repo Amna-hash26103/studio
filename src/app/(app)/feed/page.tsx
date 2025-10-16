@@ -7,11 +7,12 @@ import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 import { translateText } from '@/ai/flows/translate-text-flow';
+import { collection, query, orderBy, serverTimestamp, addDoc, updateDoc, doc, arrayUnion, runTransaction } from 'firebase/firestore';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -19,13 +20,16 @@ const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
 type Comment = {
     id: string;
     author: string;
+    authorId: string;
     avatar: string;
     content: string;
+    createdAt: any;
 };
 
 type Post = {
   id: string;
   author: string;
+  authorId: string,
   avatar?: string;
   time: string;
   content: string;
@@ -33,101 +37,100 @@ type Post = {
   originalContent?: string;
   image?: { imageUrl: string; imageHint: string };
   likes: number;
+  likedBy: string[];
   comments: Comment[];
   isTranslated?: boolean;
+  createdAt: any;
 };
 
-const initialPosts: Post[] = [
-  {
-    id: '1',
-    author: 'Elena Rodriguez',
-    avatar: user1?.imageUrl,
-    time: '3h ago',
-    content: "Just finished a 7-day mindfulness challenge and feeling so centered. 🧘‍♀️ Taking just 10 minutes each morning to meditate has made a world of difference for my stress levels. Highly recommend! What are your favorite mindfulness practices? #mentalhealth #mindfulness #selfcare",
-    lang: 'en',
-    image: PlaceHolderImages.find((img) => img.id === 'feed-post-3'),
-    likes: 152,
-    comments: [
-        { id: 'c1', author: 'Chloe Chen', avatar: user2?.imageUrl || '', content: 'This is amazing! I need to try this.' }
-    ],
-  },
-  {
-    id: '2',
-    author: 'Chloe Chen',
-    avatar: user2?.imageUrl,
-    time: '8h ago',
-    content: "Cycle syncing my workouts has been a game-changer! ✨ During my follicular phase, I have so much energy for HIIT and strength training. Then I switch to yoga and long walks during my luteal phase. Anyone else try this? #cyclesyncing #womenshealth #fitness",
-    lang: 'en',
-    likes: 210,
-    comments: [],
-  },
-];
-
-
 export default function FeedPage() {
-  const [posts, setPosts] = useState<Post[]>(initialPosts);
   const [newPostContent, setNewPostContent] = useState('');
   const { user } = useUser();
+  const firestore = useFirestore();
 
-  const handleAddPost = () => {
-    if (!newPostContent.trim() || !user) return;
+  const postsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'community_posts'), orderBy('createdAt', 'desc'));
+  }, [firestore]);
 
-    const newPost: Post = {
-        id: uuidv4(),
+  const { data: posts, isLoading } = useCollection<Post>(postsQuery);
+  const [localPosts, setLocalPosts] = useState<Post[]>([]);
+
+  useMemo(() => {
+    if (posts) {
+        setLocalPosts(posts);
+    }
+  }, [posts]);
+
+
+  const handleAddPost = async () => {
+    if (!newPostContent.trim() || !user || !firestore) return;
+
+    const newPost = {
         author: user.displayName || 'Anonymous',
+        authorId: user.uid,
         avatar: user.photoURL || user1?.imageUrl,
         time: 'Just now',
         content: newPostContent,
         lang: 'en',
         likes: 0,
+        likedBy: [],
         comments: [],
+        createdAt: serverTimestamp(),
     };
 
-    setPosts([newPost, ...posts]);
-    setNewPostContent('');
+    try {
+        await addDoc(collection(firestore, 'community_posts'), newPost);
+        setNewPostContent('');
+    } catch (error) {
+        console.error("Error adding post:", error);
+    }
   };
 
-  const handleAddComment = (postId: string, commentText: string) => {
-    if (!commentText.trim() || !user) return;
+  const handleAddComment = async (postId: string, commentText: string) => {
+    if (!commentText.trim() || !user || !firestore) return;
 
-    const newComment: Comment = {
+    const newComment = {
         id: uuidv4(),
         author: user.displayName || 'Anonymous User',
+        authorId: user.uid,
         avatar: user.photoURL || user1?.imageUrl || '',
         content: commentText,
+        createdAt: serverTimestamp(),
     };
+    
+    const postRef = doc(firestore, 'community_posts', postId);
 
-    setPosts(posts.map(p => 
-        p.id === postId 
-        ? { ...p, comments: [...p.comments, newComment] } 
-        : p
-    ));
+    try {
+        await updateDoc(postRef, {
+            comments: arrayUnion(newComment)
+        });
+    } catch (error) {
+        console.error("Error adding comment: ", error);
+    }
   };
   
     const handleTranslatePost = async (postId: string) => {
-        const postToTranslate = posts.find(p => p.id === postId);
+        const postToTranslate = localPosts.find(p => p.id === postId);
         if (!postToTranslate) return;
 
-        // If it's already translated, revert to the original
-        if (postToTranslate.isTranslated) {
-            setPosts(posts.map(p =>
-                p.id === postId
-                    ? { ...p, content: p.originalContent || p.content, isTranslated: false }
-                    : p
-            ));
-            return;
+        setLocalPosts(localPosts.map(p => p.id === postId ? {...p, isTranslated: !p.isTranslated} : p));
+
+        if (postToTranslate.isTranslated && postToTranslate.originalContent) {
+             setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: p.originalContent, isTranslated: false} : p));
+             return;
         }
 
         try {
             const { translatedText } = await translateText({
                 text: postToTranslate.content,
-                targetLanguage: 'ur-RO', // Hardcoded for now
+                targetLanguage: 'ur-RO',
             });
-            setPosts(posts.map(p =>
+            setLocalPosts(localPosts.map(p =>
                 p.id === postId
                     ? {
                         ...p,
-                        originalContent: p.content, // Save original
+                        originalContent: p.content,
                         content: translatedText,
                         isTranslated: true
                     }
@@ -135,9 +138,42 @@ export default function FeedPage() {
             ));
         } catch (error) {
             console.error("Translation failed:", error);
-            // Optionally, show a toast to the user
+            setLocalPosts(localPosts.map(p => p.id === postId ? {...p, isTranslated: false} : p)); // revert on fail
         }
     };
+    
+    const handleLikePost = async (postId: string) => {
+        if (!user || !firestore) return;
+        const postRef = doc(firestore, 'community_posts', postId);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const postDoc = await transaction.get(postRef);
+                if (!postDoc.exists()) {
+                    throw "Document does not exist!";
+                }
+
+                const postData = postDoc.data() as Post;
+                const likedBy = postData.likedBy || [];
+                let newLikes;
+                let newLikedBy;
+
+                if (likedBy.includes(user.uid)) {
+                    // Unlike
+                    newLikes = postData.likes - 1;
+                    newLikedBy = likedBy.filter(uid => uid !== user.uid);
+                } else {
+                    // Like
+                    newLikes = postData.likes + 1;
+                    newLikedBy = [...likedBy, user.uid];
+                }
+                
+                transaction.update(postRef, { likes: newLikes, likedBy: newLikedBy });
+            });
+        } catch (e) {
+            console.error("Like transaction failed: ", e);
+        }
+    }
 
 
   return (
@@ -162,8 +198,8 @@ export default function FeedPage() {
       </Card>
       
       <div className="space-y-6">
-        {posts.map(post => (
-          <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} />
+        {localPosts.map(post => (
+          <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} onLike={handleLikePost} />
         ))}
       </div>
     </div>
@@ -171,8 +207,13 @@ export default function FeedPage() {
 }
 
 
-function PostCard({ post, onAddComment, onTranslate }: { post: Post, onAddComment: (postId: string, text: string) => void, onTranslate: (postId: string) => void }) {
+function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onAddComment: (postId: string, text: string) => void, onTranslate: (postId: string) => void, onLike: (postId: string) => void }) {
     const { user } = useUser();
+    const isLiked = user ? post.likedBy?.includes(user.uid) : false;
+
+    // Use original content for read aloud if it has been translated
+    const contentToRead = (post.isTranslated && post.originalContent) ? post.originalContent : post.content;
+    const langToRead = (post.isTranslated && post.originalContent) ? 'en' : post.lang;
     
     return (
         <Card>
@@ -189,7 +230,7 @@ function PostCard({ post, onAddComment, onTranslate }: { post: Post, onAddCommen
                   </div>
                 </div>
                  <div className='flex items-center gap-1'>
-                    <ReadAloudButton textToRead={post.content} lang={post.isTranslated ? 'ur-RO' : post.lang} />
+                    <ReadAloudButton textToRead={contentToRead} lang={langToRead} />
                     <Button variant="ghost" size="sm" onClick={() => onTranslate(post.id)}>
                         {post.isTranslated ? 'Show Original' : 'Translate'}
                     </Button>
@@ -210,8 +251,8 @@ function PostCard({ post, onAddComment, onTranslate }: { post: Post, onAddCommen
             <CardFooter className="flex flex-col items-start gap-4">
                <div className="flex w-full items-center justify-between text-muted-foreground">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                        <Heart className="h-4 w-4" /> {post.likes}
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2" onClick={() => onLike(post.id)}>
+                        <Heart className={cn("h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {post.likes}
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
                         <MessageCircle className="h-4 w-4" /> {post.comments.length}
@@ -271,3 +312,5 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
+
+    
