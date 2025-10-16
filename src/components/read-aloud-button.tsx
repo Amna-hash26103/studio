@@ -13,6 +13,19 @@ interface ReadAloudButtonProps {
   lang?: string; // The target language for translation and speech
 }
 
+// Function to create a simple hash for a cache key
+const createCacheKey = (text: string, lang: string) => {
+    let hash = 0;
+    const str = `${lang}-${text}`;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = (hash << 5) - hash + char;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return `tts-audio-cache-${hash}`;
+};
+
+
 export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -20,7 +33,7 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
   const { toast } = useToast();
 
   useEffect(() => {
-    // Cleanup audio when component unmounts or language changes
+    // Cleanup audio when component unmounts
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -28,7 +41,7 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
         setIsPlaying(false);
       }
     };
-  }, [lang]);
+  }, []);
 
   const handlePlay = async () => {
     if (isPlaying && audioRef.current) {
@@ -37,35 +50,42 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
       return;
     }
     
-    // If audio for the current language is already loaded, just play it
-    if (audioRef.current) {
-        audioRef.current.play();
-        setIsPlaying(true);
-        return;
-    }
-
     setIsLoading(true);
-    try {
-      let textToSpeak = textToRead;
+    
+    const cacheKey = createCacheKey(textToRead, lang);
 
-      // If a target language other than English is specified, translate the text first
-      if (lang !== 'en') {
-        try {
-            const translationResponse = await translateText({ text: textToRead, targetLanguage: lang });
-            textToSpeak = translationResponse.translatedText;
-        } catch (translationError) {
-            console.error(`Translation to ${lang} failed, using original text.`, translationError);
-            toast({
-                variant: 'destructive',
-                title: 'Translation Failed',
-                description: `Could not translate the text to the selected language.`,
-            });
-            // We can still try to speak the original text
+    try {
+      let audioDataUri = sessionStorage.getItem(cacheKey);
+
+      if (!audioDataUri) {
+        // --- Audio not in cache, so we fetch it ---
+        let textToSpeak = textToRead;
+
+        // If a target language other than English is specified, translate the text first
+        if (lang !== 'en') {
+          try {
+              const translationResponse = await translateText({ text: textToRead, targetLanguage: lang });
+              textToSpeak = translationResponse.translatedText;
+          } catch (translationError) {
+              console.error(`Translation to ${lang} failed, using original text.`, translationError);
+              toast({
+                  variant: 'destructive',
+                  title: 'Translation Failed',
+                  description: `Could not translate the text.`,
+              });
+          }
         }
+
+        // Generate speech from the (potentially translated) text
+        const response = await textToSpeech(textToSpeak);
+        audioDataUri = response.audioDataUri;
+        
+        // Save the newly fetched audio to session storage
+        sessionStorage.setItem(cacheKey, audioDataUri);
       }
 
-      const response = await textToSpeech(textToSpeak);
-      const audio = new Audio(response.audioDataUri);
+      // --- Play the audio (from cache or new) ---
+      const audio = new Audio(audioDataUri);
       audioRef.current = audio;
       
       audio.play();
@@ -75,13 +95,24 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
         setIsPlaying(false);
         audioRef.current = null; // Clear the ref once done
       };
+      
+      audio.onerror = () => {
+        setIsPlaying(false);
+        audioRef.current = null;
+        console.error("Error playing audio.");
+        toast({
+            variant: "destructive",
+            title: "Playback Error",
+            description: "Could not play the generated audio."
+        })
+      }
 
     } catch (error) {
-      console.error('Error generating speech:', error);
+      console.error('Error generating or playing speech:', error);
       toast({
         variant: 'destructive',
         title: 'Speech Error',
-        description: 'Could not generate audio for this text.',
+        description: 'Could not generate or play audio for this text.',
       });
     } finally {
       setIsLoading(false);
