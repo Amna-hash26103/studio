@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from '@/navigation';
-import { useTranslation } from '@/providers/translation-provider';
+import { useLocale } from 'next-intl';
 
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -27,7 +27,7 @@ export default function LandingPage() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const router = useRouter();
   const pathname = usePathname();
-  const { language } = useTranslation();
+  const locale = useLocale();
 
 
   useEffect(() => {
@@ -151,8 +151,8 @@ export default function LandingPage() {
     );
   }
 
-  const handleLanguageChange = (locale: 'en' | 'ur') => {
-    router.replace(pathname, { locale });
+  const handleLanguageChange = (nextLocale: string) => {
+    router.replace(pathname, {locale: nextLocale});
   };
 
   return (
@@ -171,10 +171,10 @@ export default function LandingPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => handleLanguageChange('en')} disabled={language === 'en'}>
+              <DropdownMenuItem onSelect={() => handleLanguageChange('en')} disabled={locale === 'en'}>
                 English
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => handleLanguageChange('ur')} disabled={language === 'ur'}>
+              <DropdownMenuItem onSelect={() => handleLanguageChange('ur')} disabled={locale === 'ur'}>
                 Urdu
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -298,5 +298,4 @@ export default function LandingPage() {
     </div>
   );
 }
-
     

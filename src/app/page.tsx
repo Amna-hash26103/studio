@@ -1,3 +1,5 @@
-import MarketingPage from './(marketing)/page';
-
-export default MarketingPage;
+import {redirect} from 'next/navigation';
+ 
+export default function RootPage() {
+  redirect('/en');
+}

@@ -1,29 +1,20 @@
-import { ReactNode } from 'react';
-import { notFound } from 'next/navigation';
-import { TranslationProvider } from '@/providers/translation-provider';
-
-type Props = {
-  children: ReactNode;
-  params: { locale: string };
-};
-
-async function getMessages(locale: string) {
-  try {
-    return (await import(`@/messages/${locale}.json`)).default;
-  } catch (error) {
-    notFound();
-  }
-}
-
+import {NextIntlClientProvider} from 'next-intl';
+import {getMessages} from 'next-intl/server';
+ 
 export default async function LocaleLayout({
   children,
-  params: { locale },
-}: Props) {
-  const messages = await getMessages(locale);
-
+  params: {locale}
+}: {
+  children: React.ReactNode;
+  params: {locale: string};
+}) {
+  // Providing all messages to the client
+  // side is the easiest way to get started
+  const messages = await getMessages();
+ 
   return (
-    <TranslationProvider translations={messages} locale={locale as 'en' | 'ur'}>
+    <NextIntlClientProvider messages={messages}>
       {children}
-    </TranslationProvider>
+    </NextIntlClientProvider>
   );
 }

@@ -22,24 +22,31 @@ import {
 } from '@/components/ui/select';
 import Link from 'next/link';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTranslation } from '@/providers/translation-provider';
+import { useTranslations, useLocale } from 'next-intl';
+import { usePathname, useRouter } from '@/navigation';
+import { useTransition } from 'react';
 
 export default function SettingsPage() {
-  const { t, language, changeLanguage } = useTranslation();
+  const t = useTranslations('settings');
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
   
-  const handleLanguageChange = (lang: string) => {
-    if (lang === 'en' || lang === 'ur') {
-      changeLanguage(lang);
-    }
+  const handleLanguageChange = (nextLocale: string) => {
+    startTransition(() => {
+      router.replace(pathname, {locale: nextLocale});
+    });
   };
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('settings.title')}</h1>
-        <p className="text-muted-foreground">{t('settings.description')}</p>
+        <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('description')}</p>
       </div>
 
       <Card>
@@ -110,8 +117,9 @@ export default function SettingsPage() {
               {t('appearance.language.description')}
             </p>
             <Select
-              value={language}
+              defaultValue={locale}
               onValueChange={handleLanguageChange}
+              disabled={isPending}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('appearance.language.selectPlaceholder')} />
