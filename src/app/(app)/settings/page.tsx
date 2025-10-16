@@ -13,69 +13,54 @@ import { useUser } from '@/firebase';
 import { useTheme } from 'next-themes';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import Link from 'next/link';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTranslation } from '@/providers/translation-provider';
 
 export default function SettingsPage() {
-  const { t, language, changeLanguage } = useTranslation();
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
-
-  const handleLanguageChange = (lang: string) => {
-    if (lang === 'en' || lang === 'ur') {
-      changeLanguage(lang);
-    }
-  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('settings.title')}</h1>
-        <p className="text-muted-foreground">{t('settings.description')}</p>
+        <h1 className="font-headline text-3xl font-bold">Settings</h1>
+        <p className="text-muted-foreground">Manage your account and app preferences.</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('account.title')}</CardTitle>
-          <CardDescription>{t('account.description')}</CardDescription>
+          <CardTitle>Account</CardTitle>
+          <CardDescription>Manage your account details.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">{t('account.emailLabel')}</Label>
+            <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={user?.email || ''} readOnly />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">{t('account.passwordLabel')}</Label>
+            <Label htmlFor="password">Password</Label>
             <Button variant="outline" className="w-full sm:w-auto">
-              {t('account.changePasswordButton')}
+              Change Password
             </Button>
           </div>
         </CardContent>
         <CardFooter>
           <Button asChild>
-            <Link href="/profile">{t('account.manageProfileButton')}</Link>
+            <Link href="/profile">Manage Profile</Link>
           </Button>
         </CardFooter>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('appearance.title')}</CardTitle>
-          <CardDescription>{t('appearance.description')}</CardDescription>
+          <CardTitle>Appearance</CardTitle>
+          <CardDescription>Customize the look and feel of the app.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <h3 className="font-medium">{t('appearance.theme.title')}</h3>
+            <h3 className="font-medium">Theme</h3>
             <p className="text-sm text-muted-foreground">
-              {t('appearance.theme.description')}
+              Choose how the app looks on your device.
             </p>
             <div className="flex space-x-2 rounded-lg bg-secondary p-1">
               <Button
@@ -84,7 +69,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Sun className="mr-2 h-4 w-4" />
-                {t('appearance.theme.light')}
+                Light
               </Button>
               <Button
                 variant={theme === 'dark' ? 'default' : 'ghost'}
@@ -92,7 +77,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Moon className="mr-2 h-4 w-4" />
-                {t('appearance.theme.dark')}
+                Dark
               </Button>
               <Button
                 variant={theme === 'system' ? 'default' : 'ghost'}
@@ -100,27 +85,9 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Monitor className="mr-2 h-4 w-4" />
-                {t('appearance.theme.system')}
+                System
               </Button>
             </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="font-medium">{t('appearance.language.title')}</h3>
-            <p className="text-sm text-muted-foreground">
-              {t('appearance.language.description')}
-            </p>
-            <Select
-              value={language}
-              onValueChange={handleLanguageChange}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={t('appearance.language.selectPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="ur">Urdu</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </CardContent>
       </Card>

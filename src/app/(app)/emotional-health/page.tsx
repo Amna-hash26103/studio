@@ -1,29 +1,17 @@
-import { ReactNode } from 'react';
-import { notFound } from 'next/navigation';
-import { TranslationProvider } from '@/providers/translation-provider';
+'use client';
 
-type Props = {
-  children: ReactNode;
-  params: { locale: string };
-};
+import { ChatInterface } from '@/components/chat-interface';
 
-async function getMessages(locale: string) {
-  try {
-    return (await import(`@/messages/${locale}.json`)).default;
-  } catch (error) {
-    notFound();
-  }
-}
-
-export default async function LocaleLayout({
-  children,
-  params: { locale },
-}: Props) {
-  const messages = await getMessages(locale);
-
+export default function EmotionalHealthPage() {
   return (
-    <TranslationProvider translations={messages} locale={locale as 'en' | 'ur'}>
-      {children}
-    </TranslationProvider>
+    <div className="mx-auto max-w-2xl space-y-12">
+      <div className="mb-6">
+        <h1 className="font-headline text-3xl font-bold">Emotional Health AI</h1>
+        <p className="text-muted-foreground">
+          Your personal guide for mindfulness and emotional balance.
+        </p>
+      </div>
+      <ChatInterface topic="emotionalWellbeing" />
+    </div>
   );
 }
