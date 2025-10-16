@@ -13,22 +13,22 @@ const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
 const posts = [
   {
     id: 1,
-    author: 'Jane Doe',
+    author: 'Elena Rodriguez',
     avatar: user1?.imageUrl,
-    time: '2h ago',
-    content: "Just launched my new project on sustainable fashion! ✨ It's been a long journey, but so rewarding. Check it out on my profile and let me know what you think! #sustainability #fashion #womeninbusiness",
-    image: PlaceHolderImages.find((img) => img.id === 'feed-post-1'),
-    likes: 128,
-    comments: 12,
+    time: '3h ago',
+    content: "Just finished a 7-day mindfulness challenge and feeling so centered. 🧘‍♀️ Taking just 10 minutes each morning to meditate has made a world of difference for my stress levels. Highly recommend! What are your favorite mindfulness practices? #mentalhealth #mindfulness #selfcare",
+    image: PlaceHolderImages.find((img) => img.id === 'feed-post-3'),
+    likes: 152,
+    comments: 18,
   },
   {
     id: 2,
-    author: 'Sarah Smith',
+    author: 'Chloe Chen',
     avatar: user2?.imageUrl,
-    time: '5h ago',
-    content: "Feeling so grateful for this community. Had a tough week, but reading all your supportive comments on my last post really lifted my spirits. Thank you all! ❤️",
-    likes: 256,
-    comments: 34,
+    time: '8h ago',
+    content: "Cycle syncing my workouts has been a game-changer! ✨ During my follicular phase, I have so much energy for HIIT and strength training. Then I switch to yoga and long walks during my luteal phase. Anyone else try this? #cyclesyncing #womenshealth #fitness",
+    likes: 210,
+    comments: 29,
   },
 ];
 
