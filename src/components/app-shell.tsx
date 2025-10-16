@@ -47,6 +47,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { ReadAloudButton } from './read-aloud-button';
+import { Loader2 } from 'lucide-react';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -65,7 +66,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   
   const accountNavItems = [
-    { href: `/profile`, icon: <User />, label: "Profile" },
     { href: `/settings`, icon: <Settings />, label: "Settings" },
   ];
 
@@ -225,7 +225,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     { href: `/period-tracker`, icon: <Droplets />, label: "Period Tracker" },
     { href: `/emotional-health`, icon: <Smile />, label: "Emotional Health" },
     { href: `/diet`, icon: <Salad />, label: "Diet" },
-    { href: `/profile`, icon: <User />, label: "Profile" },
+    { href: `/settings`, icon: <Settings />, label: "Settings" },
   ]
 
   const mobileNav = (
@@ -265,3 +265,5 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    
