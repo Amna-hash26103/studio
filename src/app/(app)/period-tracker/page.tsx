@@ -62,26 +62,42 @@ type DailyLog = {
 const initialPeriods: Period[] = [
     { 
         id: '1', 
-        startDate: subDays(new Date(), 30), 
-        endDate: subDays(new Date(), 25), 
-        duration: 5, 
-        createdAt: subDays(new Date(), 30)
+        startDate: subDays(new Date(), 62), 
+        endDate: subDays(new Date(), 57), 
+        duration: 6, 
+        createdAt: subDays(new Date(), 62)
     },
     { 
         id: '2', 
+        startDate: subDays(new Date(), 33), 
+        endDate: subDays(new Date(), 28), 
+        duration: 5, 
+        createdAt: subDays(new Date(), 33)
+    },
+    { 
+        id: '3', 
         startDate: subDays(new Date(), 2), 
         createdAt: subDays(new Date(), 2) 
     }, // Active cycle
 ];
 
 const initialDailyLogs: DailyLog[] = [
-    { id: 'log1', periodId: '1', date: subDays(new Date(), 30), flowLevel: 'light' },
-    { id: 'log2', periodId: '1', date: subDays(new Date(), 29), flowLevel: 'medium', notes: "Slight cramps" },
-    { id: 'log3', periodId: '1', date: subDays(new Date(), 28), flowLevel: 'medium' },
-    { id: 'log4', periodId: '1', date: subDays(new Date(), 27), flowLevel: 'heavy' },
-    { id: 'log5', periodId: '1', date: subDays(new Date(), 26), flowLevel: 'light' },
-    { id: 'log6', periodId: '2', date: subDays(new Date(), 2), flowLevel: 'spotting' },
-    { id: 'log7', periodId: '2', date: subDays(new Date(), 1), flowLevel: 'light' },
+    // Cycle 1
+    { id: 'log1', periodId: '1', date: subDays(new Date(), 62), flowLevel: 'light', notes: 'Feeling a bit tired.' },
+    { id: 'log2', periodId: '1', date: subDays(new Date(), 61), flowLevel: 'medium', notes: "Slight cramps in the morning." },
+    { id: 'log3', periodId: '1', date: subDays(new Date(), 60), flowLevel: 'heavy' },
+    { id: 'log4', periodId: '1', date: subDays(new Date(), 59), flowLevel: 'heavy', notes: 'Had to change pads often.' },
+    { id: 'log5', periodId: '1', date: subDays(new Date(), 58), flowLevel: 'medium' },
+    { id: 'log6', periodId: '1', date: subDays(new Date(), 57), flowLevel: 'light' },
+    // Cycle 2
+    { id: 'log7', periodId: '2', date: subDays(new Date(), 33), flowLevel: 'spotting' },
+    { id: 'log8', periodId: '2', date: subDays(new Date(), 32), flowLevel: 'light' },
+    { id: 'log9', periodId: '2', date: subDays(new Date(), 31), flowLevel: 'medium' },
+    { id: 'log10', periodId: '2', date: subDays(new Date(), 30), flowLevel: 'medium', notes: 'Felt bloated.' },
+    { id: 'log11', periodId: '2', date: subDays(new Date(), 29), flowLevel: 'light' },
+    // Active Cycle
+    { id: 'log12', periodId: '3', date: subDays(new Date(), 2), flowLevel: 'spotting', notes: 'Here we go again!' },
+    { id: 'log13', periodId: '3', date: subDays(new Date(), 1), flowLevel: 'light' },
 ];
 
 
@@ -138,7 +154,7 @@ function PeriodTrackerPage() {
         setDialogState({ showStart: true, date: dayStart });
       } 
       else {
-        if (isSameDay(dayStart, activeCycleStart)) {
+        if (isSameDay(dayStart, activeCycleStart) || isBefore(new Date(), dayStart)) {
           setDialogState({ showLog: true, date: dayStart });
         } else {
           setDialogState({ showEnd: true, date: dayStart });
@@ -155,9 +171,8 @@ function PeriodTrackerPage() {
 
     const startDate = startOfDay(dialogState.date);
     
-    // End any existing active cycle
     if (activeCycle) {
-      setPeriods(prev => prev.map(p => p.id === activeCycle.id ? { ...p, endDate: p.startDate, duration: 1 } : p));
+      setPeriods(prev => prev.map(p => p.id === activeCycle.id ? { ...p, endDate: subDays(startDate, 1), duration: differenceInDays(subDays(startDate, 1), p.startDate) + 1 } : p));
     }
     
     const newPeriod: Period = {
@@ -166,7 +181,7 @@ function PeriodTrackerPage() {
         createdAt: new Date()
     };
     
-    setPeriods(prev => [...prev, newPeriod]);
+    setPeriods(prev => [...prev, newPeriod].sort((a,b) => b.startDate.getTime() - a.startDate.getTime()));
 
     toast({
       title: "Period Logged",
@@ -174,7 +189,6 @@ function PeriodTrackerPage() {
     });
 
     setSelectedDate(startDate);
-    // Open log dialog for the new start date
     setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
 
     setIsProcessing(false);
@@ -215,7 +229,11 @@ function PeriodTrackerPage() {
   
   const handleOpenLogDialog = () => {
     const date = dialogState.date;
-    setDialogState({ showLog: true, date: date });
+    const isLoggable = isSameDay(date!, activeCycle!.startDate) || isBefore(new Date(), date!);
+    if (!isLoggable) return setDialogState({ showLog: true, date: date });
+
+    setDialogState({}); // Close the end dialog
+    setTimeout(() => setDialogState({ showLog: true, date: date }), 100); // Open log dialog
   };
   
   const handleSaveLog = async (logData: Omit<DailyLog, 'id' | 'periodId'>) => {
@@ -355,7 +373,7 @@ function PeriodTrackerPage() {
                 open={!!dialogState.showLog}
                 onOpenChange={(isOpen) => !isOpen && setDialogState({})}
                 date={dialogState.date}
-                dailyLog={activeCycleLogs?.find(log => isSameDay(log.date, dialogState.date!))}
+                dailyLog={activeCycleLogs?.find(log => isSameDay(log.date, dialogState.date!)) || dailyLogs.find(log => isSameDay(log.date, dialogState.date!))}
                 onSave={handleSaveLog}
             />
         )}
@@ -422,7 +440,7 @@ function CycleStats({ periods }: { periods: Period[] }) {
              <Card>
                 <CardHeader>
                     <CardTitle>Your Cycle Stats</CardTitle>
-                    <CardDescription>Log at least one full cycle to see your stats here.</CardDescription>
+                    <CardDescription>Log at least two full cycles to see your stats and predictions.</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center text-muted-foreground py-10">
                     <p>No stats to show yet.</p>
@@ -694,5 +712,3 @@ function PastCycleCard({ period, dailyLogs, index }: { period: Period, dailyLogs
 }
 
 export default PeriodTrackerPage;
-
-    

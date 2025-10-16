@@ -51,7 +51,7 @@ type PoopLog = {
 const initialMealLogs: MealLog[] = [
     {
         id: uuidv4(),
-        description: 'Grilled chicken salad with avocado',
+        description: 'Grilled chicken salad with avocado and vinaigrette',
         createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
         calories: 450,
         protein: 35,
@@ -61,23 +61,35 @@ const initialMealLogs: MealLog[] = [
     },
     {
         id: uuidv4(),
-        description: 'Oatmeal with berries and nuts',
+        description: 'Oatmeal with berries, nuts, and a drizzle of honey',
         createdAt: new Date(),
         calories: 320,
         protein: 10,
         carbs: 55,
         fat: 8,
         fiber: 10,
+    },
+    {
+        id: uuidv4(),
+        description: 'Lentil soup with a side of whole wheat bread',
+        createdAt: new Date(new Date().setDate(new Date().getDate() - 2)),
+        calories: 380,
+        protein: 18,
+        carbs: 65,
+        fat: 5,
+        fiber: 15,
     }
 ]
 
 export default function DietPage() {
   const { toast } = useToast();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
-  const [isLoadingLogs, setIsLoadingLogs] = useState(false); // In case we fetch from a remote source later
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false); 
 
-  const [waterIntake, setWaterIntake] = useState(0); // in glasses
-  const [poopLogs, setPoopLogs] = useState<PoopLog[]>([]);
+  const [waterIntake, setWaterIntake] = useState(3); // in glasses
+  const [poopLogs, setPoopLogs] = useState<PoopLog[]>([
+    { id: uuidv4(), type: '4', createdAt: new Date(new Date().setHours(8, 15, 0)) }
+  ]);
 
   useEffect(() => {
     const waterTimeout = scheduleReminder('water');
@@ -114,7 +126,7 @@ export default function DietPage() {
         ...nutritionData,
       };
 
-      setMealLogs(prev => [newLog, ...prev]);
+      setMealLogs(prev => [newLog, ...prev].sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
 
       toast({
         title: 'Meal Logged!',
@@ -138,7 +150,7 @@ export default function DietPage() {
         type,
         createdAt: new Date(),
     };
-    setPoopLogs(prev => [...prev, newLog]);
+    setPoopLogs(prev => [...prev, newLog].sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
     toast({
         title: "Bowel Movement Logged",
         description: `You've logged a Type ${type} movement.`
@@ -377,5 +389,3 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
-
-    

@@ -12,7 +12,6 @@ import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useState, useEffect } from 'react';
 import { EditProfileDialog } from '@/components/edit-profile-dialog';
-import { ReadAloudButton } from '@/components/read-aloud-button';
 
 const galleryImages = [
     PlaceHolderImages.find(i => i.id === 'feed-post-1'),
@@ -125,18 +124,9 @@ export default function ProfilePage() {
       
       <Tabs defaultValue="posts" className="w-full">
         <TabsList>
-            <div className='flex items-center p-1 rounded-md bg-muted'>
-                <TabsTrigger value="posts">Posts</TabsTrigger>
-                <ReadAloudButton textToRead="Posts tab" />
-            </div>
-            <div className='flex items-center p-1 rounded-md bg-muted'>
-                <TabsTrigger value="projects">Projects</TabsTrigger>
-                <ReadAloudButton textToRead="Projects tab" />
-            </div>
-            <div className='flex items-center p-1 rounded-md bg-muted'>
-                <TabsTrigger value="media">Media</TabsTrigger>
-                <ReadAloudButton textToRead="Media tab" />
-            </div>
+          <TabsTrigger value="posts">Posts</TabsTrigger>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="media">Media</TabsTrigger>
         </TabsList>
         <TabsContent value="posts">
             <Card>
