@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -13,7 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState, useRef, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from '@/navigation';
+import { useTranslation } from '@/providers/translation-provider';
 
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -25,6 +27,7 @@ export default function LandingPage() {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const router = useRouter();
   const pathname = usePathname();
+  const { language } = useTranslation();
 
 
   useEffect(() => {
@@ -148,6 +151,10 @@ export default function LandingPage() {
     );
   }
 
+  const handleLanguageChange = (locale: 'en' | 'ur') => {
+    router.replace(pathname, { locale });
+  };
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
@@ -156,6 +163,22 @@ export default function LandingPage() {
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Globe className="h-5 w-5" />
+                <span className="sr-only">Change language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => handleLanguageChange('en')} disabled={language === 'en'}>
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleLanguageChange('ur')} disabled={language === 'ur'}>
+                Urdu
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" asChild>
             <Link href="/login">Log In</Link>
           </Button>
@@ -275,3 +298,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
