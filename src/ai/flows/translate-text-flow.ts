@@ -64,7 +64,7 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async input => {
-    // Manually add the 'eq' helper for the template
+    // Manually register the 'eq' helper for the template
     const handlebars = await import('handlebars');
     handlebars.registerHelper('eq', function (a, b) {
       return a === b;
