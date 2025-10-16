@@ -2,16 +2,33 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, collection, query, where, orderBy } from 'firebase/firestore';
+import { useFirestore, useDoc, useMemoFirebase, useCollection, useUser } from '@/firebase';
+import { doc, collection, query, where, orderBy, runTransaction, updateDoc, arrayUnion } from 'firebase/firestore';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Loader2, Heart, MessageCircle, Share2, MoreHorizontal } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
+import { Loader2, Heart, MessageCircle, Share2, MoreHorizontal, Send } from 'lucide-react';
 import { DUMMY_PROFILES, DummyProfile } from '@/lib/dummy-profiles';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ReadAloudButton } from '@/components/read-aloud-button';
+import { translateText } from '@/ai/flows/translate-text-flow';
+import { useState } from 'react';
+import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { v4 as uuidv4 } from 'uuid';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+
+const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
+
+type Comment = {
+    id: string;
+    author: string;
+    authorId: string;
+    avatar: string;
+    content: string;
+    createdAt: any;
+};
 
 type Post = {
     id: string;
@@ -25,12 +42,14 @@ type Post = {
     image?: { imageUrl: string; imageHint: string };
     likes: number;
     likedBy: string[];
-    comments: any[];
+    comments: Comment[];
     isTranslated?: boolean;
     createdAt: any;
 };
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({ post, onLike, onTranslate, onAddComment }: { post: Post, onLike: (postId: string) => void, onTranslate: (postId: string) => void, onAddComment: (postId: string, text: string) => void }) {
+    const { user } = useUser();
+    const isLiked = user ? post.likedBy?.includes(user.uid) : false;
     const contentToRead = (post.isTranslated && post.originalContent) ? post.originalContent : post.content;
     const langToRead = (post.isTranslated && post.originalContent) ? 'en' : post.lang;
 
@@ -50,7 +69,9 @@ function PostCard({ post }: { post: Post }) {
                     </div>
                     <div className='flex items-center gap-1'>
                         <ReadAloudButton textToRead={contentToRead} lang={langToRead} />
-                        <Button variant="ghost" size="sm">Translate</Button>
+                        <Button variant="ghost" size="sm" onClick={() => onTranslate(post.id)}>
+                            {post.content === 'Translating...' ? 'Translating...' : (post.isTranslated ? 'Show Original' : 'Translate')}
+                        </Button>
                         <Button variant="ghost" size="icon"><MoreHorizontal className="h-5 w-5" /></Button>
                     </div>
                 </div>
@@ -66,8 +87,8 @@ function PostCard({ post }: { post: Post }) {
             <CardFooter className="flex flex-col items-start gap-4">
                 <div className="flex w-full items-center justify-between text-muted-foreground">
                     <div className="flex items-center gap-4">
-                        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                            <Heart className={cn("h-4 w-4")} /> {post.likes}
+                        <Button variant="ghost" size="sm" className="flex items-center gap-2" onClick={() => onLike(post.id)}>
+                            <Heart className={cn("h-4 w-4", isLiked && "fill-red-500 text-red-500")} /> {post.likes}
                         </Button>
                         <Button variant="ghost" size="sm" className="flex items-center gap-2">
                             <MessageCircle className="h-4 w-4" /> {post.comments.length}
@@ -77,14 +98,65 @@ function PostCard({ post }: { post: Post }) {
                         </Button>
                     </div>
                 </div>
+                <CommentSection userAvatar={user?.photoURL || user1?.imageUrl} userInitial={user?.displayName?.slice(0,1) || 'U'} comments={post.comments} onAddComment={(text) => onAddComment(post.id, text)} />
             </CardFooter>
         </Card>
     );
 }
 
+function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { comments: Comment[], onAddComment: (text: string) => void, userAvatar?: string, userInitial: string }) {
+    const [commentText, setCommentText] = useState('');
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!commentText.trim()) return;
+        onAddComment(commentText);
+        setCommentText('');
+    };
+
+    return (
+        <div className="w-full space-y-4">
+            {comments.map(comment => (
+                <div key={comment.id} className="flex items-start gap-3">
+                    <Link href={`/profile/${comment.authorId}`}>
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={comment.avatar} />
+                            <AvatarFallback>{comment.author.slice(0,1)}</AvatarFallback>
+                        </Avatar>
+                    </Link>
+                    <div className="w-full rounded-lg bg-secondary px-4 py-2 flex-1">
+                        <Link href={`/profile/${comment.authorId}`} className="text-sm font-semibold hover:underline">{comment.author}</Link>
+                        <p className="text-sm">{comment.content}</p>
+                    </div>
+                     <ReadAloudButton textToRead={comment.content} lang={'en'} />
+                </div>
+            ))}
+            <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
+                <Avatar className="ring-1 ring-primary">
+                  <AvatarImage src={userAvatar} />
+                  <AvatarFallback>{userInitial}</AvatarFallback>
+                </Avatar>
+                <div className="relative w-full">
+                  <Input 
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Write a comment..." 
+                    className="pr-10" 
+                  />
+                  <Button type="submit" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+
 export default function UserProfilePage() {
     const params = useParams();
     const userId = params.userId as string;
+    const { user } = useUser();
     const firestore = useFirestore();
 
     const isDummyProfile = DUMMY_PROFILES[userId];
@@ -97,15 +169,28 @@ export default function UserProfilePage() {
     const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef);
 
     const postsQuery = useMemoFirebase(() => {
-        if (!firestore || !userId || isDummyProfile) return null;
+        if (!firestore || !userId) return null;
         return query(
             collection(firestore, 'community_posts'),
             where('authorId', '==', userId),
             orderBy('createdAt', 'desc')
         );
-    }, [firestore, userId, isDummyProfile]);
-
+    }, [firestore, userId]);
+    
     const { data: firestorePosts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
+
+    const [localPosts, setLocalPosts] = useState<Post[]>([]);
+
+     React.useEffect(() => {
+        let allPosts: Post[] = [];
+        if (isDummyProfile) {
+            allPosts = DUMMY_PROFILES[userId].posts;
+        } else if (firestorePosts) {
+            allPosts = firestorePosts;
+        }
+        setLocalPosts(allPosts.sort((a,b) => b.createdAt.toDate() - a.createdAt.toDate()));
+    }, [firestorePosts, isDummyProfile, userId]);
+
 
     let profileData: DummyProfile | null = null;
     if (isDummyProfile) {
@@ -117,11 +202,142 @@ export default function UserProfilePage() {
             bio: userProfile.bio,
             profilePhotoURL: userProfile.profilePhotoURL,
             coverPhotoURL: userProfile.coverPhotoURL,
-            posts: firestorePosts || []
+            posts: [] // This will be populated by localPosts state
         };
     }
     
-    const posts = isDummyProfile ? DUMMY_PROFILES[userId].posts : firestorePosts;
+    const handleLikePost = async (postId: string) => {
+        if (!user || !firestore) return;
+        
+        // For dummy posts, update locally
+        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId)) {
+            const updatedPosts = localPosts.map(p => {
+                if (p.id === postId) {
+                    const isLiked = p.likedBy.includes(user.uid);
+                    const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user.uid) : [...p.likedBy, user.uid];
+                    const newLikes = p.likes + (isLiked ? -1 : 1);
+                    return { ...p, likes: newLikes, likedBy: newLikedBy };
+                }
+                return p;
+            });
+            setLocalPosts(updatedPosts);
+            return;
+        }
+        
+        const postRef = doc(firestore, 'community_posts', postId);
+
+        try {
+            await runTransaction(firestore, async (transaction) => {
+                const postDoc = await transaction.get(postRef);
+                if (!postDoc.exists()) {
+                    throw "Document does not exist!";
+                }
+
+                const postData = postDoc.data() as Post;
+                const likedBy = postData.likedBy || [];
+                let newLikes;
+                let newLikedBy;
+
+                if (likedBy.includes(user.uid)) {
+                    // Unlike
+                    newLikes = postData.likes - 1;
+                    newLikedBy = likedBy.filter(uid => uid !== user.uid);
+                } else {
+                    // Like
+                    newLikes = postData.likes + 1;
+                    newLikedBy = [...likedBy, user.uid];
+                }
+                
+                transaction.update(postRef, { likes: newLikes, likedBy: newLikedBy });
+            });
+        } catch (e) {
+            console.error("Like transaction failed: ", e);
+        }
+    }
+    
+    const handleTranslatePost = async (postId: string) => {
+        const postToTranslate = localPosts.find(p => p.id === postId);
+        if (!postToTranslate) return;
+
+        const currentIsTranslated = postToTranslate.isTranslated;
+        const originalContent = postToTranslate.originalContent || postToTranslate.content;
+
+        // Immediately update UI for responsiveness
+        const newLocalPosts = localPosts.map(p => p.id === postId ? {...p, isTranslated: !currentIsTranslated, content: 'Translating...'} : p);
+        setLocalPosts(newLocalPosts);
+
+        if (currentIsTranslated) {
+             setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: originalContent, originalContent: undefined, isTranslated: false} : p));
+             return;
+        }
+
+        try {
+            const { translatedText } = await translateText({
+                text: originalContent,
+                targetLanguage: 'ur-RO',
+            });
+            const finalPosts = localPosts.map(p =>
+                p.id === postId
+                    ? {
+                        ...p,
+                        originalContent: originalContent,
+                        content: translatedText,
+                        isTranslated: true
+                    }
+                    : p
+            );
+            // Need to update the original localPosts state, not the temporary one
+            setLocalPosts(currentPosts => currentPosts.map(p => p.id === postId ? finalPosts.find(fp => fp.id === postId)! : p));
+
+        } catch (error) {
+            console.error("Translation failed:", error);
+            // Revert back to original content on failure
+            setLocalPosts(currentPosts => currentPosts.map(p => p.id === postId ? {...p, content: originalContent, isTranslated: false} : p)); 
+        }
+    };
+    
+    const handleAddComment = async (postId: string, commentText: string) => {
+        if (!commentText.trim() || !user || !firestore) return;
+        
+        // For dummy posts, update locally
+        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId)) {
+            const newComment = {
+                id: uuidv4(),
+                author: user.displayName || 'Anonymous User',
+                authorId: user.uid,
+                avatar: user.photoURL || user1?.imageUrl || '',
+                content: commentText,
+                createdAt: new Date(),
+            };
+            const updatedPosts = localPosts.map(p => {
+                if (p.id === postId) {
+                    return { ...p, comments: [...p.comments, newComment] };
+                }
+                return p;
+            });
+            setLocalPosts(updatedPosts);
+            return;
+        }
+
+        const newComment = {
+            id: uuidv4(),
+            author: user.displayName || 'Anonymous User',
+            authorId: user.uid,
+            avatar: user.photoURL || user1?.imageUrl || '',
+            content: commentText,
+            createdAt: new Date(), // Using client-side date for optimistic update
+        };
+        
+        const postRef = doc(firestore, 'community_posts', postId);
+
+        try {
+            await updateDoc(postRef, {
+                comments: arrayUnion(newComment)
+            });
+        } catch (error) {
+            console.error("Error adding comment: ", error);
+        }
+      };
 
 
     if (isProfileLoading || arePostsLoading) {
@@ -165,8 +381,8 @@ export default function UserProfilePage() {
 
             <div className="space-y-4">
                 <h2 className="text-xl font-bold">Posts</h2>
-                {posts && posts.length > 0 ? (
-                    posts.map(post => <PostCard key={post.id} post={post} />)
+                {localPosts && localPosts.length > 0 ? (
+                    localPosts.map(post => <PostCard key={post.id} post={post} onLike={handleLikePost} onTranslate={handleTranslatePost} onAddComment={handleAddComment} />)
                 ) : (
                     <p className="text-muted-foreground">This user hasn't posted anything yet.</p>
                 )}
