@@ -66,7 +66,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   
   const accountNavItems = [
-    { href: `/profile`, icon: <User />, label: "Profile" },
     { href: `/settings`, icon: <Settings />, label: "Settings" },
   ];
 
@@ -90,10 +89,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const getActivePath = (href: string) => {
-    // Special handling for profile page, since it can have dynamic routes
-    if (href === '/profile') {
-        return pathname.startsWith('/profile');
-    }
     return pathname === href;
   }
 
@@ -228,14 +223,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const mobileNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: "Feed" },
     { href: `/period-tracker`, icon: <Droplets />, label: "Period Tracker" },
-    { href: `/profile`, icon: <User />, label: "Profile" },
-    { href: `/emotional-health`, icon: <Smile />, label: "Emotional Health" },
+    { href: `/emotional-health`, icon: <Smile />, label: "Health" },
     { href: `/settings`, icon: <Settings />, label: "Settings" },
   ]
 
   const mobileNav = (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background md:hidden">
-      <div className="grid h-16 grid-cols-5 items-center">
+      <div className="grid h-16 grid-cols-4 items-center">
         {mobileNavItems.map((item) => (
           <Link
             key={item.href}
@@ -270,3 +264,5 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    
