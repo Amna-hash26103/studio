@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { useUser, useDoc, useMemoFirebase, useFirestore } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { EditProfileDialog } from '@/components/edit-profile-dialog';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 
@@ -23,7 +23,7 @@ const galleryImages = [
 ]
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -32,9 +32,11 @@ export default function ProfilePage() {
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
-  const { data: userProfile, isLoading } = useDoc(userProfileRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef);
 
   const coverImage = PlaceHolderImages.find(i => i.id === 'user-profile-cover');
+
+  const isLoading = isUserLoading || (user && isProfileLoading);
 
   if (isLoading) {
     return (
@@ -66,15 +68,18 @@ export default function ProfilePage() {
     )
   }
 
-  // If after loading, there is still no user profile, show a message
   if (!userProfile) {
     return (
         <div className="mx-auto max-w-2xl space-y-12">
             <Card>
                 <CardContent className="p-6 text-center">
-                    <p>Could not load user profile. It might not exist yet.</p>
+                    <p>Could not load user profile. It might not exist yet or there was an error.</p>
+                     <Button onClick={() => setIsEditDialogOpen(true)} variant="outline" className="mt-4">
+                        Create Profile
+                    </Button>
                 </CardContent>
             </Card>
+             {user && <EditProfileDialog userProfile={{id: user.uid, displayName: user.displayName || '', email: user.email || '', bio: '', location: '', profilePhotoURL: user.photoURL || ''}} open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen} />}
         </div>
     )
   }
@@ -163,3 +168,5 @@ export default function ProfilePage() {
     </>
   );
 }
+
+    
