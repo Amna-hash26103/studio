@@ -17,6 +17,7 @@ import { supportAgent } from '@/ai/flows/support-agent-flow';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useTranslation } from '@/lib/i18n';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -31,6 +32,7 @@ export function SupportBot() {
   const [botName, setBotName] = useState('Aura');
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
+  const { t } = useTranslation();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
   const auraAvatar = PlaceHolderImages.find((img) => img.id === 'logo');
 
@@ -59,11 +61,11 @@ export function SupportBot() {
         setIsLoading(false);
       }).catch(err => {
         console.error("Support agent initial greeting failed:", err);
-        setMessages([{ role: 'assistant', content: "Hey! Having some trouble getting started, but I'm here. What's up?" }]);
+        setMessages([{ role: 'assistant', content: t('supportBot.initialError') }]);
         setIsLoading(false);
       });
     }
-  }, [isOpen, messages.length, botName]);
+  }, [isOpen, messages.length, botName, t]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -87,7 +89,7 @@ export function SupportBot() {
     } catch (error) {
       const errorMessage: Message = {
         role: 'assistant',
-        content: "Oops, seems like I'm having a moment. Could you try that again?",
+        content: t('supportBot.errorMessage'),
       };
       setMessages((prev) => [...prev, errorMessage]);
       console.error('Error calling support agent:', error);
@@ -103,7 +105,7 @@ export function SupportBot() {
           size="icon"
           className="rounded-full w-14 h-14 shadow-lg"
           onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle support chat"
+          aria-label={t('supportBot.toggleAriaLabel')}
         >
           {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
         </Button>
@@ -118,7 +120,7 @@ export function SupportBot() {
               </Avatar>
               <div className="flex flex-col">
                 <span>{botName}</span>
-                <span className="text-xs font-normal text-muted-foreground">Your support guide</span>
+                <span className="text-xs font-normal text-muted-foreground">{t('supportBot.title')}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
@@ -176,7 +178,7 @@ export function SupportBot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={`Ask ${botName} anything...`}
+                placeholder={t('supportBot.placeholder', { botName: botName })}
                 disabled={isLoading}
                 autoComplete="off"
               />

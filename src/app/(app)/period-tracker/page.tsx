@@ -51,6 +51,7 @@ import {
   Timestamp,
   writeBatch
 } from 'firebase/firestore';
+import { useTranslation } from '@/lib/i18n';
 
 type Period = {
   id: string;
@@ -89,6 +90,7 @@ function PeriodTrackerPage() {
   const { toast } = useToast();
   const { user } = useUser();
   const firestore = useFirestore();
+  const { t } = useTranslation();
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -167,8 +169,8 @@ function PeriodTrackerPage() {
       if (isBefore(dayStart, activeCycleStart)) {
         toast({
             variant: 'destructive',
-            title: 'Invalid Date',
-            description: "You can't select a date before your current cycle started.",
+            title: t('periodTracker.invalidDateTitle'),
+            description: t('periodTracker.invalidDateDescription'),
         })
       } 
       else if (isBefore(dayStart, new Date()) || isSameDay(dayStart, new Date())) {
@@ -180,7 +182,7 @@ function PeriodTrackerPage() {
       }
       else {
         // Future date in active cycle - maybe log symptoms? For now, do nothing.
-         toast({ title: "Future Date", description: "You can log your flow for today or past days." });
+         toast({ title: t('periodTracker.futureDateTitle'), description: t('periodTracker.futureDateDescription') });
       }
     } else {
       setDialogState({ showStart: true, date: dayStart });
@@ -215,8 +217,8 @@ function PeriodTrackerPage() {
     try {
         await batch.commit();
         toast({
-          title: "Period Logged",
-          description: "Your new cycle has been successfully recorded.",
+          title: t('periodTracker.periodLoggedTitle'),
+          description: t('periodTracker.newCycleSuccess'),
         });
 
         setSelectedDate(startDate);
@@ -224,7 +226,7 @@ function PeriodTrackerPage() {
         setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
     } catch (error) {
         console.error("Error starting period:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not start new cycle.' });
+        toast({ variant: 'destructive', title: t('common.error'), description: t('periodTracker.newCycleError') });
     }
 
     setIsProcessing(false);
@@ -241,8 +243,8 @@ function PeriodTrackerPage() {
       if (isBefore(endDate, startDate)) {
           toast({
               variant: 'destructive',
-              title: "End Date Error",
-              description: "End date cannot be before the start date.",
+              title: t('periodTracker.endDateErrorTitle'),
+              description: t('periodTracker.endDateErrorDescription'),
           });
           setIsProcessing(false);
           return;
@@ -254,12 +256,12 @@ function PeriodTrackerPage() {
       try {
           await updateDoc(periodRef, { endDate, duration });
           toast({
-            title: "Period Ended",
-            description: "Your cycle has been successfully ended.",
+            title: t('periodTracker.periodEndedTitle'),
+            description: t('periodTracker.endCycleSuccess'),
           });
       } catch(error) {
           console.error("Error ending period:", error);
-          toast({ variant: 'destructive', title: 'Error', description: 'Could not end cycle.' });
+          toast({ variant: 'destructive', title: t('common.error'), description: t('periodTracker.endCycleError') });
       }
 
       setIsProcessing(false);
@@ -292,10 +294,10 @@ function PeriodTrackerPage() {
             ...logData
           });
       }
-      toast({ title: 'Daily log saved!' });
+      toast({ title: t('periodTracker.logSavedTitle') });
     } catch(error) {
         console.error("Error saving log:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not save daily log.' });
+        toast({ variant: 'destructive', title: t('common.error'), description: t('periodTracker.logSavedError') });
     }
   };
 
@@ -337,16 +339,16 @@ function PeriodTrackerPage() {
           }
         `}</style>
         <div>
-          <h1 className="font-headline text-3xl font-bold">Cycle Tracker</h1>
-          <p className="text-muted-foreground">Track your menstrual cycle to understand your body better.</p>
+          <h1 className="font-headline text-3xl font-bold">{t('periodTracker.title')}</h1>
+          <p className="text-muted-foreground">{t('periodTracker.subtitle')}</p>
         </div>
 
         <CycleStats periods={periods || []} />
 
         <Card>
           <CardHeader>
-            <CardTitle>Log Your Period</CardTitle>
-             <CardDescription>Select a day to start, end, or log your flow.</CardDescription>
+            <CardTitle>{t('periodTracker.logPeriodTitle')}</CardTitle>
+             <CardDescription>{t('periodTracker.logPeriodDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="p-2 md:p-6 flex justify-center">
             {isLoadingPeriods ? (
@@ -367,7 +369,7 @@ function PeriodTrackerPage() {
                   footer={
                     activeCycle &&
                     <div className="text-center text-sm text-muted-foreground pt-2">
-                        Active cycle started on {format(activeCycle.startDate, 'MMMM d')}
+                        {t('periodTracker.activeCycleStart', { date: format(activeCycle.startDate, 'MMMM d') })}
                     </div>
                   }
                 />
@@ -381,17 +383,17 @@ function PeriodTrackerPage() {
        <Dialog open={dialogState.showStart} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Start New Cycle?</DialogTitle>
+                    <DialogTitle>{t('periodTracker.startCycleDialog.title')}</DialogTitle>
                     <DialogDescription>
-                        Do you want to start a new period cycle on {dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : ''}?
-                        {activeCycle ? ' This will end your current active cycle.' : ''}
+                        {t('periodTracker.startCycleDialog.description', { date: dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : '' })}
+                        {activeCycle ? ` ${t('periodTracker.startCycleDialog.activeCycleWarning')}` : ''}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>Cancel</Button>
+                    <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>{t('common.cancel')}</Button>
                     <Button onClick={handleStartPeriod} disabled={isProcessing}>
                         {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Start Cycle
+                        {t('periodTracker.startCycleDialog.startButton')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -400,18 +402,18 @@ function PeriodTrackerPage() {
         <Dialog open={dialogState.showEnd} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>End Current Cycle?</DialogTitle>
+                    <DialogTitle>{t('periodTracker.endCycleDialog.title')}</DialogTitle>
                     <DialogDescription>
-                        Do you want to end your current cycle on {dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : ''}? You can also log your flow for this day.
+                        {t('periodTracker.endCycleDialog.description', { date: dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : '' })}
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="sm:justify-between">
-                    <Button variant="secondary" onClick={handleOpenLogDialog} disabled={isProcessing}>Log Flow</Button>
+                    <Button variant="secondary" onClick={handleOpenLogDialog} disabled={isProcessing}>{t('periodTracker.endCycleDialog.logFlowButton')}</Button>
                     <div className="flex gap-2 justify-end">
-                      <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>Cancel</Button>
+                      <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>{t('common.cancel')}</Button>
                       <Button onClick={handleEndPeriod} disabled={isProcessing}>
                           {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          End Cycle
+                          {t('periodTracker.endCycleDialog.endButton')}
                       </Button>
                     </div>
                 </DialogFooter>
@@ -432,6 +434,7 @@ function PeriodTrackerPage() {
 }
 
 function CycleStats({ periods }: { periods: Period[] }) {
+    const { t } = useTranslation();
     const stats = useMemo(() => {
         const completedCycles = periods.filter(p => p.endDate).sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 
@@ -489,11 +492,11 @@ function CycleStats({ periods }: { periods: Period[] }) {
         return (
              <Card>
                 <CardHeader>
-                    <CardTitle>Your Cycle Stats</CardTitle>
-                    <CardDescription>Log at least two full cycles to see your stats and predictions.</CardDescription>
+                    <CardTitle>{t('periodTracker.stats.title')}</CardTitle>
+                    <CardDescription>{t('periodTracker.stats.noStatsDescription')}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-center text-muted-foreground py-10">
-                    <p>No stats to show yet.</p>
+                    <p>{t('periodTracker.stats.noStatsYet')}</p>
                 </CardContent>
             </Card>
         )
@@ -501,11 +504,11 @@ function CycleStats({ periods }: { periods: Period[] }) {
 
     const chartConfig = {
       duration: {
-        label: "Duration (Days)",
+        label: t('periodTracker.stats.durationLabel'),
         color: "hsl(var(--primary))",
       },
       length: {
-        label: "Length (Days)",
+        label: t('periodTracker.stats.lengthLabel'),
         color: "hsl(var(--primary))",
       },
     } satisfies React.ComponentProps<typeof ChartContainer>["config"];
@@ -514,27 +517,27 @@ function CycleStats({ periods }: { periods: Period[] }) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Your Cycle Stats</CardTitle>
-                <CardDescription>An overview of your menstrual cycle patterns.</CardDescription>
+                <CardTitle>{t('periodTracker.stats.title')}</CardTitle>
+                <CardDescription>{t('periodTracker.stats.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <Card className="p-4">
                         <CardHeader className="p-2 pb-0">
-                           <CardTitle className="text-4xl font-bold">{stats.averageCycleLength || '-'}<span className="text-lg font-normal text-muted-foreground"> days</span></CardTitle>
-                           <CardDescription className="flex items-center justify-center gap-2"><Repeat className="h-4 w-4" /> Average Cycle Length</CardDescription>
+                           <CardTitle className="text-4xl font-bold">{stats.averageCycleLength || '-'}<span className="text-lg font-normal text-muted-foreground"> {t('periodTracker.stats.days')}</span></CardTitle>
+                           <CardDescription className="flex items-center justify-center gap-2"><Repeat className="h-4 w-4" /> {t('periodTracker.stats.avgCycleLength')}</CardDescription>
                         </CardHeader>
                     </Card>
                      <Card className="p-4">
                         <CardHeader className="p-2 pb-0">
-                           <CardTitle className="text-4xl font-bold">{stats.averagePeriodDuration || '-'}<span className="text-lg font-normal text-muted-foreground"> days</span></CardTitle>
-                           <CardDescription className="flex items-center justify-center gap-2"><Droplets className="h-4 w-4" /> Average Period Length</CardDescription>
+                           <CardTitle className="text-4xl font-bold">{stats.averagePeriodDuration || '-'}<span className="text-lg font-normal text-muted-foreground"> {t('periodTracker.stats.days')}</span></CardTitle>
+                           <CardDescription className="flex items-center justify-center gap-2"><Droplets className="h-4 w-4" /> {t('periodTracker.stats.avgPeriodLength')}</CardDescription>
                         </CardHeader>
                     </Card>
                      <Card className="p-4">
                         <CardHeader className="p-2 pb-0">
-                           <CardTitle className="text-4xl font-bold">{stats.predictedNextStart ? format(stats.predictedNextStart, 'MMM d') : 'N/A'}</CardTitle>
-                           <CardDescription className="flex items-center justify-center gap-2"><Target className="h-4 w-4" /> Predicted Next Period</CardDescription>
+                           <CardTitle className="text-4xl font-bold">{stats.predictedNextStart ? format(stats.predictedNextStart, 'MMM d') : t('periodTracker.stats.notApplicable')}</CardTitle>
+                           <CardDescription className="flex items-center justify-center gap-2"><Target className="h-4 w-4" /> {t('periodTracker.stats.predictedNextPeriod')}</CardDescription>
                         </CardHeader>
                     </Card>
                 </div>
@@ -542,7 +545,7 @@ function CycleStats({ periods }: { periods: Period[] }) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {stats.cycleLengthData.length > 0 && (
                         <div>
-                            <h3 className="font-semibold text-center mb-4">Cycle Length History</h3>
+                            <h3 className="font-semibold text-center mb-4">{t('periodTracker.stats.cycleLengthHistory')}</h3>
                              <ChartContainer config={chartConfig} className="h-[250px] w-full">
                                 <BarChart accessibilityLayer data={stats.cycleLengthData}>
                                     <CartesianGrid vertical={false} />
@@ -564,7 +567,7 @@ function CycleStats({ periods }: { periods: Period[] }) {
                     )}
                     {stats.periodDurationData.length > 0 && (
                         <div>
-                            <h3 className="font-semibold text-center mb-4">Period Duration History</h3>
+                            <h3 className="font-semibold text-center mb-4">{t('periodTracker.stats.periodDurationHistory')}</h3>
                             <ChartContainer config={chartConfig} className="h-[250px] w-full">
                                 <BarChart accessibilityLayer data={stats.periodDurationData}>
                                     <CartesianGrid vertical={false} />
@@ -592,7 +595,7 @@ function CycleStats({ periods }: { periods: Period[] }) {
 
 
 function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, dailyLog?: DailyLog, onSave: (log: Omit<DailyLog, 'id'|'periodId'|'userId'> & {date: Date}) => void }) {
-    
+    const { t } = useTranslation();
     const [flow, setFlow] = useState<'spotting' | 'light' | 'medium' | 'heavy'>('light');
     const [notes, setNotes] = useState('');
     const [isSaving, setIsSaving] = useState(false);
@@ -622,23 +625,23 @@ function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: b
     }
 
     const flowOptions = [
-        { value: 'spotting', label: 'Spotting', icon: <CircleDot /> },
-        { value: 'light', label: 'Light', icon: <Droplet /> },
-        { value: 'medium', label: 'Medium', icon: <Droplets /> },
-        { value: 'heavy', label: 'Heavy', icon: <Waves /> },
+        { value: 'spotting', label: t('periodTracker.flow.spotting'), icon: <CircleDot /> },
+        { value: 'light', label: t('periodTracker.flow.light'), icon: <Droplet /> },
+        { value: 'medium', label: t('periodTracker.flow.medium'), icon: <Droplets /> },
+        { value: 'heavy', label: t('periodTracker.flow.heavy'), icon: <Waves /> },
     ];
     
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Log Flow</DialogTitle>
-                    <DialogDescription>Log your menstrual flow for {format(date, 'MMMM d, yyyy')}</DialogDescription>
+                    <DialogTitle>{t('periodTracker.logFlowDialog.title')}</DialogTitle>
+                    <DialogDescription>{t('periodTracker.logFlowDialog.description', { date: format(date, 'MMMM d, yyyy') })}</DialogDescription>
                 </DialogHeader>
 
                 <div className="space-y-6 py-4">
                     <div className="space-y-2">
-                        <Label>Flow</Label>
+                        <Label>{t('periodTracker.logFlowDialog.flowLabel')}</Label>
                         <RadioGroup value={flow} onValueChange={(value) => setFlow(value as any)} className="grid grid-cols-2 gap-4">
                             {flowOptions.map(option => (
                                 <Label key={option.value} htmlFor={option.value} className={cn("flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer w-full transition-colors", {"border-primary bg-primary/10 text-primary": flow === option.value})}>
@@ -650,16 +653,16 @@ function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: b
                         </RadioGroup>
                     </div>
                     <div className="space-y-2">
-                         <Label htmlFor="notes">Notes (optional)</Label>
-                         <Textarea id="notes" placeholder="e.g., cramps, fatigue, etc." value={notes} onChange={(e) => setNotes(e.target.value)} />
+                         <Label htmlFor="notes">{t('periodTracker.logFlowDialog.notesLabel')}</Label>
+                         <Textarea id="notes" placeholder={t('periodTracker.logFlowDialog.notesPlaceholder')} value={notes} onChange={(e) => setNotes(e.target.value)} />
                     </div>
                 </div>
 
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>Cancel</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>{t('common.cancel')}</Button>
                     <Button onClick={handleSave} disabled={isSaving}>
                         {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Log
+                        {t('common.save')}
                     </Button>
                 </DialogFooter>
             </DialogContent>
@@ -670,15 +673,16 @@ function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: b
 function BleedingHistory({ periods }: { periods: Period[] }) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { t } = useTranslation();
 
   if (periods.length === 0) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Bleeding History</CardTitle>
+          <CardTitle>{t('periodTracker.bleedingHistory.title')}</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>No completed cycles yet. Log your first period to get started!</p>
+          <p>{t('periodTracker.bleedingHistory.noCompletedCycles')}</p>
         </CardContent>
       </Card>
     );
@@ -687,7 +691,7 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bleeding History</CardTitle>
+        <CardTitle>{t('periodTracker.bleedingHistory.title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {periods.map((period, index) => (
@@ -705,6 +709,7 @@ function BleedingHistory({ periods }: { periods: Period[] }) {
 }
 
 function PastCycleCard({ period, index, userId, firestore }: { period: Period, index: number, userId?: string, firestore?: any }) {
+  const { t } = useTranslation();
   
   const dailyLogsQuery = useMemoFirebase(() => {
     if (!userId || !firestore) return null;
@@ -735,25 +740,25 @@ function PastCycleCard({ period, index, userId, firestore }: { period: Period, i
       <CardHeader>
         <div className="flex justify-between items-center">
           <p className="text-lg font-semibold">
-            Cycle #{index}
+            {t('periodTracker.bleedingHistory.cycle', { index: index })}
           </p>
           <p className="text-sm text-muted-foreground">
             {format(startDate, 'MMM dd')} -{' '}
-            {period.endDate ? format(endDate, 'MMM dd, yyyy') : 'Ongoing'}
+            {period.endDate ? format(endDate, 'MMM dd, yyyy') : t('periodTracker.bleedingHistory.ongoing')}
           </p>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex justify-between items-baseline">
-          <span className="text-sm font-medium">Duration:</span>
+          <span className="text-sm font-medium">{t('periodTracker.bleedingHistory.duration')}:</span>
           <span className="text-sm">
-            {period.duration || 0} days
+            {t('periodTracker.stats.daysCount', { count: period.duration || 0 })}
           </span>
         </div>
         {flowPattern && flowPattern.length > 0 && (
           <div className="space-y-1">
             <span className="text-sm font-medium">
-              Flow Pattern:
+              {t('periodTracker.bleedingHistory.flowPattern')}:
             </span>
             <div className="flex gap-2 flex-wrap">
               {flowPattern.map((flow, i) => (
@@ -766,14 +771,14 @@ function PastCycleCard({ period, index, userId, firestore }: { period: Period, i
         )}
         {allNotes && (
           <div className="space-y-1">
-            <span className="text-sm font-medium">Notes:</span>
+            <span className="text-sm font-medium">{t('periodTracker.bleedingHistory.notes')}:</span>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
               {allNotes}
             </p>
           </div>
         )}
         {(!dailyLogs || dailyLogs.length === 0) && (
-            <p className="text-sm text-muted-foreground">No daily logs for this cycle.</p>
+            <p className="text-sm text-muted-foreground">{t('periodTracker.bleedingHistory.noLogs')}</p>
         )}
       </CardContent>
     </Card>

@@ -8,7 +8,7 @@ import { FemmoraLogo } from '@/components/icons';
 import { HeartHandshake, Users, Globe, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ReadAloudButton } from '@/components/read-aloud-button';
-import { useState } from 'react';
+import { useTranslation, languages } from '@/lib/i18n';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,47 +20,38 @@ import {
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
-  const [language, setLanguage] = useState('en');
-
-  const audioContent = {
-    hero: `Empower Your Journey. Together.`,
-    heroSubtitle: `FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.`,
-    thrive: `A Space to Thrive.`,
-    thriveSubtitle: `At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.`,
-    features: `Features Designed for You.`,
-    featuresSubtitle: `Everything you need to support your personal and professional growth, all in one place.`,
-  };
+  const { t, setLanguage, lang } = useTranslation();
 
   const features = [
     {
       icon: <Smile className="h-8 w-8 text-primary" />,
-      title: "SoulSpace: Emotional Wellness Companion",
-      description: "A safe digital haven where emotions are met with empathy. Whether you’re overwhelmed, reflective, or healing, SoulSpace listens — offering guided reflections, gentle prompts, and supportive AI companions who speak your heart’s language.",
+      title: t('landing.features.soulspace.title'),
+      description: t('landing.features.soulspace.description'),
     },
     {
       icon: <HeartHandshake className="h-8 w-8 text-primary" />,
-      title: "HerHealth: Smart Health Insights",
-      description: "Track your cycles, sleep, and stress in one serene space. HerHealth uses adaptive AI to understand you — recommending lifestyle tweaks, reminders, and supportive routines that honor your body’s rhythm.",
+      title: t('landing.features.herhealth.title'),
+      description: t('landing.features.herhealth.description'),
     },
     {
       icon: <UtensilsCrossed className="h-8 w-8 text-primary" />,
-      title: "Nourish: Personalized Diet & Nutrition Guide",
-      description: "Built for every woman’s journey — from strength to self-care. Nourish curates meal suggestions that match your mood, health goals, and culture. Each recommendation comes from a place of love, not restriction.",
+      title: t('landing.features.nourish.title'),
+      description: t('landing.features.nourish.description'),
     },
     {
       icon: <Activity className="h-8 w-8 text-primary" />,
-      title: "Evolve: Gentle Fitness & Energy Flow",
-      description: "Move at your pace — yoga, mindful movement, and women-focused workouts guided by your energy levels and emotional state. Every motion in Evolve celebrates what your body can do, not what it must.",
+      title: t('landing.features.evolve.title'),
+      description: t('landing.features.evolve.description'),
     },
     {
       icon: <Users className="h-8 w-8 text-primary" />,
-      title: "Circle: The FEMMORA Community",
-      description: "A beautifully moderated space for women to connect, share stories, and lift one another. From daily check-ins to creative challenges, Circle celebrates unity without comparison — a digital sisterhood of strength.",
+      title: t('landing.features.circle.title'),
+      description: t('landing.features.circle.description'),
     },
     {
       icon: <BrainCircuit className="h-8 w-8 text-primary" />,
-      title: "FEMMind: Your AI-Guided Growth Partner",
-      description: "Three fine-tuned, empathetic LLMs — customized to support Health, Emotional Wellness, and Life Guidance. They don’t just respond — they understand, blending science with empathy to offer advice that uplifts, not instructs.",
+      title: t('landing.features.femmind.title'),
+      description: t('landing.features.femmind.description'),
     },
   ];
 
@@ -80,28 +71,18 @@ export default function LandingPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setLanguage('en')}>
-                English
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setLanguage('ur')}>
-                Urdu
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setLanguage('pa')}>
-                Punjabi
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setLanguage('ps')}>
-                Pashto
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => setLanguage('skr')}>
-                Siraiki
-              </DropdownMenuItem>
+              {languages.map(({code, name}) => (
+                <DropdownMenuItem key={code} onSelect={() => setLanguage(code)}>
+                  {name}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           <Button variant="ghost" asChild>
-            <Link href="/login">Log In</Link>
+            <Link href="/login">{t('landing.login')}</Link>
           </Button>
           <Button asChild>
-            <Link href="/signup">Sign Up</Link>
+            <Link href="/signup">{t('landing.signup')}</Link>
           </Button>
         </nav>
       </header>
@@ -111,19 +92,19 @@ export default function LandingPage() {
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                  {audioContent.hero}
+                  {t('landing.hero.title')}
                 </h1>
-                <ReadAloudButton textToRead={audioContent.hero} lang={language} />
+                <ReadAloudButton textToRead={t('landing.hero.title')} lang={lang} />
             </div>
             <div className='flex items-center justify-center'>
                  <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
-                    {audioContent.heroSubtitle}
+                    {t('landing.hero.subtitle')}
                 </p>
-                <ReadAloudButton textToRead={audioContent.heroSubtitle} lang={language} />
+                <ReadAloudButton textToRead={t('landing.hero.subtitle')} lang={lang} />
             </div>
             <div className="mt-8 flex justify-center">
               <Button size="lg" asChild>
-                <Link href="/signup">Join the Community</Link>
+                <Link href="/signup">{t('landing.hero.cta')}</Link>
               </Button>
             </div>
           </div>
@@ -146,15 +127,15 @@ export default function LandingPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                      {audioContent.thrive}
+                      {t('landing.thrive.title')}
                     </h2>
-                    <ReadAloudButton textToRead={audioContent.thrive} lang={language} />
+                    <ReadAloudButton textToRead={t('landing.thrive.title')} lang={lang} />
                 </div>
                 <div className='flex items-center'>
                     <p className="text-muted-foreground md:text-lg">
-                      {audioContent.thriveSubtitle}
+                      {t('landing.thrive.subtitle')}
                     </p>
-                    <ReadAloudButton textToRead={audioContent.thriveSubtitle} lang={language} />
+                    <ReadAloudButton textToRead={t('landing.thrive.subtitle')} lang={lang} />
                 </div>
               </div>
             </div>
@@ -165,15 +146,15 @@ export default function LandingPage() {
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                  {audioContent.features}
+                  {t('landing.features.title')}
                 </h2>
-                <ReadAloudButton textToRead={audioContent.features} lang={language} />
+                <ReadAloudButton textToRead={t('landing.features.title')} lang={lang} />
             </div>
             <div className='flex items-center justify-center'>
                 <p className="mt-4 text-muted-foreground md:text-lg">
-                    {audioContent.featuresSubtitle}
+                    {t('landing.features.subtitle')}
                 </p>
-                <ReadAloudButton textToRead={audioContent.featuresSubtitle} lang={language} />
+                <ReadAloudButton textToRead={t('landing.features.subtitle')} lang={lang} />
             </div>
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -197,7 +178,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} FEMMORA. All rights reserved.
+              © {new Date().getFullYear()} FEMMORA. {t('landing.footer.rights')}
             </span>
           </div>
           <nav className="flex gap-4">
@@ -205,19 +186,19 @@ export default function LandingPage() {
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Privacy
+              {t('landing.footer.privacy')}
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Terms
+              {t('landing.footer.terms')}
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Contact
+              {t('landing.footer.contact')}
             </Link>
           </nav>
         </div>

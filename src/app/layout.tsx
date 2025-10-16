@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
+import { LanguageProvider } from '@/lib/i18n';
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",
@@ -47,7 +48,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <FirebaseClientProvider>
-              {children}
+              <LanguageProvider>
+                {children}
+              </LanguageProvider>
               <Toaster />
             </FirebaseClientProvider>
           </ThemeProvider>

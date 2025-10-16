@@ -16,6 +16,7 @@ import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import { ReadAloudButton } from './read-aloud-button';
+import { useTranslation } from '@/lib/i18n';
 
 const healthAvatar = PlaceHolderImages.find(
   (img) => img.id === 'health-avatar'
@@ -42,6 +43,7 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ topic, agent, initialMessage }: ChatInterfaceProps) {
+  const { t, lang } = useTranslation();
   
   const avatars: Record<Topic, typeof healthAvatar> = {
     health: healthAvatar,
@@ -50,23 +52,23 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
   };
   
   const placeholders: Record<Topic, string> = {
-    health: "e.g., How can I do a breast self-exam?",
-    emotionalWellbeing: "e.g., I've been feeling down lately...",
-    nutrition: "e.g., What are some healthy snack ideas?",
+    health: t('chat.placeholders.health'),
+    emotionalWellbeing: t('chat.placeholders.emotionalWellbeing'),
+    nutrition: t('chat.placeholders.nutrition'),
   };
   
   const defaultInitialMessages: Record<Topic, Message> = {
       health: {
           role: 'assistant',
-          content: "Hi! I'm your Healthcare assistant. How can I help you today?",
+          content: t('chat.initialMessages.health'),
       },
       emotionalWellbeing: {
           role: 'assistant',
-          content: "Hello. It's okay to not be okay. If you feel like talking, I'm here to listen.",
+          content: t('chat.initialMessages.emotionalWellbeing'),
       },
       nutrition: {
           role: 'assistant',
-          content: "Hey there! I'm your Diet guide. Ask me anything about healthy eating!",
+          content: t('chat.initialMessages.nutrition'),
       },
   }
   
@@ -78,7 +80,7 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
 
   useEffect(() => {
     setMessages([ initialMessage ? { role: 'assistant', content: initialMessage } : defaultInitialMessages[topic] ]);
-  }, [topic, initialMessage]);
+  }, [topic, initialMessage, t]); // Add 't' to dependencies
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -118,7 +120,7 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
     } catch (error) {
       const errorMessage: Message = {
         role: 'assistant',
-        content: "I'm sorry, something went wrong. Please try again later.",
+        content: t('chat.errorMessage'),
       };
       setMessages((prev) => [...prev, errorMessage]);
       console.error('Error calling AI:', error);
@@ -157,7 +159,7 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
               >
                 <p className="whitespace-pre-wrap text-sm">{message.content}</p>
               </div>
-               <ReadAloudButton textToRead={message.content} />
+               <ReadAloudButton textToRead={message.content} lang={lang} />
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={userAvatar?.imageUrl} />

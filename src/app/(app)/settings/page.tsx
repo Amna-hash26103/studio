@@ -28,6 +28,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from '@/lib/i18n';
 
 const formSchema = z.object({
   displayName: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -44,6 +45,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [botName, setBotName] = useState('Aura');
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [isSaving, setIsSaving] = useState(false);
 
   const userProfileRef = useMemoFirebase(() => {
@@ -87,8 +89,8 @@ export default function SettingsPage() {
   const handleSaveBotName = () => {
     localStorage.setItem('chatbotName', botName);
     toast({
-      title: 'Chatbot name saved!',
-      description: `Your support assistant is now named ${botName}.`,
+      title: t('settings.chatbot.saveSuccessTitle'),
+      description: t('settings.chatbot.saveSuccessDescription', { botName: botName }),
     });
     window.dispatchEvent(new Event('storage'));
   };
@@ -130,15 +132,15 @@ export default function SettingsPage() {
       }
 
       toast({
-        title: "Profile Updated!",
-        description: "Your changes have been saved successfully.",
+        title: t('settings.profile.updateSuccessTitle'),
+        description: t('settings.profile.updateSuccessDescription'),
       });
     } catch (error) {
       console.error('Error updating profile:', error);
       toast({
         variant: 'destructive',
-        title: "Update failed",
-        description: "There was a problem saving your profile. Please try again.",
+        title: t('settings.profile.updateFailedTitle'),
+        description: t('settings.profile.updateFailedDescription'),
       });
     } finally {
       setIsSaving(false);
@@ -150,10 +152,8 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">
-          Manage your profile, account, and app preferences.
-        </p>
+        <h1 className="font-headline text-3xl font-bold">{t('settings.title')}</h1>
+        <p className="text-muted-foreground">{t('settings.subtitle')}</p>
       </div>
 
       {isLoading ? (
@@ -161,16 +161,16 @@ export default function SettingsPage() {
       ) : (
         <Card>
             <CardHeader>
-                <CardTitle className="flex items-center gap-2"><UserIcon /> Profile</CardTitle>
-                <CardDescription>This is how others will see you on the site.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><UserIcon /> {t('settings.profile.title')}</CardTitle>
+                <CardDescription>{t('settings.profile.description')}</CardDescription>
             </CardHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleProfileSubmit)}>
                     <CardContent className="space-y-6">
                         <div className="space-y-4">
-                            <Label>Cover Photo</Label>
+                            <Label>{t('settings.profile.coverPhotoLabel')}</Label>
                             <div className="relative w-full aspect-[16/9] rounded-md overflow-hidden bg-muted">
-                                {selectedCoverUrl ? <Image src={selectedCoverUrl} alt="Selected cover" fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground">No cover selected</div> }
+                                {selectedCoverUrl ? <Image src={selectedCoverUrl} alt="Selected cover" fill className="object-cover" /> : <div className="w-full h-full flex items-center justify-center text-muted-foreground">{t('settings.profile.noCoverSelected')}</div> }
                             </div>
                             <div className="grid grid-cols-4 gap-2">
                                 {coverImageOptions.map(cover => (
@@ -189,7 +189,7 @@ export default function SettingsPage() {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <Label>Profile Picture</Label>
+                            <Label>{t('settings.profile.profilePictureLabel')}</Label>
                             <div className="grid grid-cols-5 gap-2 sm:grid-cols-6 md:grid-cols-8">
                                 {avatarOptions.map(avatar => (
                                     <button
@@ -212,9 +212,9 @@ export default function SettingsPage() {
                         name="displayName"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Display Name</FormLabel>
+                            <FormLabel>{t('settings.profile.displayNameLabel')}</FormLabel>
                             <FormControl>
-                                <Input placeholder="Your full name" {...field} />
+                                <Input placeholder={t('settings.profile.displayNamePlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -225,9 +225,9 @@ export default function SettingsPage() {
                         name="bio"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Bio</FormLabel>
+                            <FormLabel>{t('settings.profile.bioLabel')}</FormLabel>
                             <FormControl>
-                                <Textarea placeholder="Tell us a little about yourself" {...field} />
+                                <Textarea placeholder={t('settings.profile.bioPlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -238,9 +238,9 @@ export default function SettingsPage() {
                         name="location"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Location</FormLabel>
+                            <FormLabel>{t('settings.profile.locationLabel')}</FormLabel>
                             <FormControl>
-                                <Input placeholder="Where are you in the world?" {...field} />
+                                <Input placeholder={t('settings.profile.locationPlaceholder')} {...field} />
                             </FormControl>
                             <FormMessage />
                             </FormItem>
@@ -250,7 +250,7 @@ export default function SettingsPage() {
                     <CardFooter>
                         <Button type="submit" disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            {isSaving ? "Saving..." : "Save Profile"}
+                            {isSaving ? t('common.saving') : t('common.save')}
                         </Button>
                     </CardFooter>
                 </form>
@@ -260,18 +260,18 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Account</CardTitle>
-          <CardDescription>Manage your account details.</CardDescription>
+          <CardTitle>{t('settings.account.title')}</CardTitle>
+          <CardDescription>{t('settings.account.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{t('settings.account.emailLabel')}</Label>
             <Input id="email" type="email" value={user?.email || ''} readOnly />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{t('settings.account.passwordLabel')}</Label>
             <Button variant="outline" className="w-full sm:w-auto">
-              Change Password
+              {t('settings.account.changePasswordButton')}
             </Button>
           </div>
         </CardContent>
@@ -279,17 +279,13 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>
-            Customize the look and feel of the app.
-          </CardDescription>
+          <CardTitle>{t('settings.appearance.title')}</CardTitle>
+          <CardDescription>{t('settings.appearance.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <h3 className="font-medium">Theme</h3>
-            <p className="text-sm text-muted-foreground">
-              Choose how the app looks on your device.
-            </p>
+            <h3 className="font-medium">{t('settings.appearance.theme.title')}</h3>
+            <p className="text-sm text-muted-foreground">{t('settings.appearance.theme.description')}</p>
             <div className="flex space-x-2 rounded-lg bg-secondary p-1">
               <Button
                 variant={theme === 'light' ? 'default' : 'ghost'}
@@ -297,7 +293,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Sun className="mr-2 h-4 w-4" />
-                Light
+                {t('settings.appearance.theme.light')}
               </Button>
               <Button
                 variant={theme === 'dark' ? 'default' : 'ghost'}
@@ -305,7 +301,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Moon className="mr-2 h-4 w-4" />
-                Dark
+                {t('settings.appearance.theme.dark')}
               </Button>
               <Button
                 variant={theme === 'system' ? 'default' : 'ghost'}
@@ -313,7 +309,7 @@ export default function SettingsPage() {
                 className="w-full"
               >
                 <Monitor className="mr-2 h-4 w-4" />
-                System
+                {t('settings.appearance.theme.system')}
               </Button>
             </div>
           </div>
@@ -323,15 +319,15 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Bot /> Chatbot
+            <Bot /> {t('settings.chatbot.title')}
           </CardTitle>
           <CardDescription>
-            Personalize your AI support assistant.
+            {t('settings.chatbot.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="botName">Chatbot Name</Label>
+            <Label htmlFor="botName">{t('settings.chatbot.nameLabel')}</Label>
             <Input
               id="botName"
               value={botName}
@@ -341,7 +337,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button onClick={handleSaveBotName}>Save Name</Button>
+          <Button onClick={handleSaveBotName}>{t('settings.chatbot.saveButton')}</Button>
         </CardFooter>
       </Card>
     </div>
@@ -349,11 +345,12 @@ export default function SettingsPage() {
 }
 
 function ProfileSkeleton() {
+    const { t } = useTranslation();
     return (
         <Card>
              <CardHeader>
-                <CardTitle className="flex items-center gap-2"><UserIcon /> Profile</CardTitle>
-                <CardDescription>This is how others will see you on the site.</CardDescription>
+                <CardTitle className="flex items-center gap-2"><UserIcon /> {t('settings.profile.title')}</CardTitle>
+                <CardDescription>{t('settings.profile.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <Skeleton className="w-full h-48" />
@@ -376,5 +373,3 @@ function ProfileSkeleton() {
         </Card>
     )
 }
-
-    

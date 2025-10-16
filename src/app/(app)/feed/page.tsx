@@ -20,6 +20,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useTranslation } from '@/lib/i18n';
+import { languages } from '@/lib/i18n';
+
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -94,6 +97,7 @@ export default function FeedPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const [allPosts, setAllPosts] = useState<Post[]>(DUMMY_POSTS);
+  const { t } = useTranslation();
 
   const postsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -278,20 +282,20 @@ export default function FeedPage() {
               <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
             </Avatar>
             <Input 
-                placeholder={`What's on your mind, ${user?.displayName?.split(' ')[0] || 'friend'}?`} 
+                placeholder={t('feed.postPlaceholder', { name: user?.displayName?.split(' ')[0] || t('common.friend') })} 
                 className="bg-secondary"
                 value={newPostContent}
                 onChange={(e) => setNewPostContent(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddPost()}
             />
-            <Button onClick={handleAddPost}>Post</Button>
+            <Button onClick={handleAddPost}>{t('feed.postButton')}</Button>
           </div>
         </CardContent>
       </Card>
       
       <div className="space-y-6">
-        {isLoading && allPosts.length === 0 && <p>Loading posts...</p>}
-        {firestoreError && allPosts.length === 2 && <p className="text-center text-muted-foreground">Could not load live posts. Displaying demo content.</p>}
+        {isLoading && allPosts.length === 0 && <p>{t('common.loading')} {t('feed.posts').toLowerCase()}...</p>}
+        {firestoreError && allPosts.length === 2 && <p className="text-center text-muted-foreground">{t('feed.firestoreError')}</p>}
         {allPosts.map(post => (
           <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} onLike={handleLikePost} />
         ))}
@@ -303,14 +307,9 @@ export default function FeedPage() {
 
 function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onAddComment: (postId: string, text: string) => void, onTranslate: (postId: string, lang: string) => void, onLike: (postId: string) => void }) {
     const { user } = useUser();
+    const { t } = useTranslation();
     const isLiked = user ? post.likedBy?.includes(user.uid) : false;
-    const languages = [
-        { code: 'ur', name: 'Urdu' },
-        { code: 'pa', name: 'Punjabi' },
-        { code: 'ps', name: 'Pashto' },
-        { code: 'skr', name: 'Siraiki' },
-    ];
-
+    
     // Use original content for read aloud if it has been translated
     const contentToRead = (post.isTranslated && post.originalContent) ? post.originalContent : post.content;
     const langToRead = (post.isTranslated && post.originalContent) ? 'en' : post.lang;
@@ -335,18 +334,18 @@ function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onA
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="sm" className="flex items-center gap-1">
                                 <Languages className="h-4 w-4" />
-                                <span>{post.isTranslated ? 'Translated' : 'Translate'}</span>
+                                <span>{post.isTranslated ? t('feed.translated') : t('feed.translate')}</span>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             {post.isTranslated && (
                                 <DropdownMenuItem onClick={() => onTranslate(post.id, post.translatedLang || '')}>
-                                    Show Original
+                                    {t('feed.showOriginal')}
                                 </DropdownMenuItem>
                             )}
                             {languages.map((lang) => (
                                 <DropdownMenuItem key={lang.code} onClick={() => onTranslate(post.id, lang.code)}>
-                                    Translate to {lang.name}
+                                    {t('feed.translateTo', { language: lang.name })}
                                 </DropdownMenuItem>
                             ))}
                         </DropdownMenuContent>
@@ -375,7 +374,7 @@ function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onA
                         <MessageCircle className="h-4 w-4" /> {post.comments?.length || 0}
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                        <Share2 className="h-4 w-4" /> Share
+                        <Share2 className="h-4 w-4" /> {t('feed.share')}
                     </Button>
                 </div>
               </div>
@@ -387,6 +386,7 @@ function PostCard({ post, onAddComment, onTranslate, onLike }: { post: Post, onA
 
 function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { comments: Comment[], onAddComment: (text: string) => void, userAvatar?: string, userInitial: string }) {
     const [commentText, setCommentText] = useState('');
+    const { t } = useTranslation();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -419,7 +419,7 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
                   <Input 
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Write a comment..." 
+                    placeholder={t('feed.commentPlaceholder')}
                     className="pr-10" 
                   />
                   <Button type="submit" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2" disabled={!commentText.trim()}>
@@ -430,12 +430,3 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
-    
-
-    
-
-
-
-    
-
-    

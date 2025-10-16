@@ -26,6 +26,20 @@ export async function translateText(input: TranslateTextInput): Promise<Translat
   return translateTextFlow(input);
 }
 
+const romanUrduExamples = `
+Example 1:
+English: "Empower Your Journey. Together."
+Roman Urdu: "Apne Safar ko Taqat dein. Ek Saath."
+
+Example 2:
+English: "A Space to Thrive"
+Roman Urdu: "Aage Barhne ki Jagah"
+
+Example 3:
+English: "FEMMORA is a sanctuary for women to connect, share, and flourish."
+Roman Urdu: "FEMMORA khawateen ke liye jurrne, apni baat kehne, aur aage barhne ki ek panahgah hai."
+`;
+
 const translateTextFlow = ai.defineFlow(
   {
     name: 'translateTextFlow',
@@ -35,32 +49,27 @@ const translateTextFlow = ai.defineFlow(
   async input => {
     let systemPrompt: string;
 
-    if (input.targetLanguage === 'ur-RO') {
-      systemPrompt = `
-        Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters).
-        Your translations should be easy to read and sound like how a native speaker would write Urdu using the English alphabet.
-
-        Here are some examples of the style I want:
-        Example 1:
-        English: "Empower Your Journey. Together."
-        Roman Urdu: "Apne Safar ko Taqat dein. Ek Saath."
-
-        Example 2:
-        English: "A Space to Thrive"
-        Roman Urdu: "Aage Barhne ki Jagah"
-
-        Example 3:
-        English: "FEMMORA is a sanctuary for women to connect, share, and flourish."
-        Roman Urdu: "FEMMORA khawateen ke liye jurrne, apni baat kehne, aur aage barhne ki ek panahgah hai."
-
-        Now, please translate the following text in the same style. Return only the translated text.
-      `;
-    } else {
-      systemPrompt = `Translate the following text to ${input.targetLanguage}. Return only the translated text.`;
+    // Handle Roman Urdu specifically
+    if (input.targetLanguage.toLowerCase() === 'ur-ro') {
+      systemPrompt = `Translate the following English text into natural, conversational Roman Urdu (Urdu written in the Latin alphabet). Your translations should be easy to read and sound like how a native speaker would write. Use the following examples for style guidance:\n${romanUrduExamples}\n\nReturn only the translated text.`;
+    } 
+    // Handle other languages that need a specific script or style
+    else if (input.targetLanguage === 'ur') {
+        systemPrompt = `Translate the following English text into Urdu, using the Nastaliq script. Return only the translated text.`;
+    } else if (input.targetLanguage === 'pa') {
+        systemPrompt = `Translate the following English text into Punjabi, using the Shahmukhi script. Return only the translated text.`;
+    } else if (input.targetLanguage === 'ps') {
+        systemPrompt = `Translate the following English text into Pashto. Return only the translated text.`;
+    } else if (input.targetLanguage === 'skr') {
+        systemPrompt = `Translate the following English text into Saraiki, using the Shahmukhi script. Return only the translated text.`;
+    }
+    // Default for all other languages
+    else {
+      systemPrompt = `Translate the following English text to the language with code "${input.targetLanguage}". Return only the translated text.`;
     }
     
     const llmResponse = await ai.generate({
-      prompt: `${systemPrompt}\n\nText: ${input.text}`,
+      prompt: `${systemPrompt}\n\nText to translate: "${input.text}"`,
       model: 'googleai/gemini-2.5-flash',
       output: {
         schema: TranslateTextOutputSchema,
