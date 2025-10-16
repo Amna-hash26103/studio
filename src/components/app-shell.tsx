@@ -47,15 +47,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { toast } = useToast();
 
-  const navItems = [
+  const mainNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: "Feed" },
     { href: `/healthcare`, icon: <HeartPulse />, label: "Healthcare" },
     { href: `/emotional-health`, icon: <Smile />, label: "Emotional Health" },
     { href: `/diet`, icon: <Salad />, label: "Diet" },
     { href: `/period-tracker`, icon: <Droplets />, label: "Period Tracker" },
+  ];
+  
+  const accountNavItems = [
     { href: `/profile`, icon: <User />, label: "Profile" },
     { href: `/settings`, icon: <Settings />, label: "Settings" },
   ];
+
 
   const handleLogout = async () => {
     try {
@@ -82,44 +86,61 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sidebarContent = (
     <>
       <SidebarHeader className="p-4">
-        <Link href="/feed" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-            <FemmoraLogo className="h-8 w-8 text-primary" />
-            <span className="font-bold text-lg group-data-[collapsible=icon]:hidden">FEMMORA</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Avatar className="h-12 w-12 border-2 border-primary">
+            <AvatarImage src={user?.photoURL || undefined} />
+            <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+            <span className="text-sm font-semibold truncate">Welcome back,</span>
+            <span className="text-lg font-bold truncate">{user?.displayName?.split(' ')[0]}</span>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent className="p-2">
-        <SidebarMenu>
-        {navItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-            <SidebarMenuButton
-                asChild
-                isActive={getActivePath(item.href)}
-                tooltip={{ children: item.label }}
-            >
-                <Link href={item.href}>
-                {item.icon}
-                <span>{item.label}</span>
-                </Link>
-            </SidebarMenuButton>
-            </SidebarMenuItem>
-        ))}
-        </SidebarMenu>
+        <SidebarGroup>
+            <SidebarGroupLabel>MAIN</SidebarGroupLabel>
+            <SidebarMenu>
+            {mainNavItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                    asChild
+                    isActive={getActivePath(item.href)}
+                    tooltip={{ children: item.label }}
+                >
+                    <Link href={item.href}>
+                    {item.icon}
+                    <span>{item.label}</span>
+                    </Link>
+                </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
+            </SidebarMenu>
+        </SidebarGroup>
+        <SidebarSeparator />
+        <SidebarGroup>
+            <SidebarGroupLabel>ACCOUNT</SidebarGroupLabel>
+             <SidebarMenu>
+            {accountNavItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                <SidebarMenuButton
+                    asChild
+                    isActive={getActivePath(item.href)}
+                    tooltip={{ children: item.label }}
+                >
+                    <Link href={item.href}>
+                    {item.icon}
+                    <span>{item.label}</span>
+                    </Link>
+                </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
+            </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
       <SidebarFooter className="p-2 space-y-2">
         <SidebarSeparator />
          <SidebarMenu>
-            <SidebarMenuItem>
-                <div className="flex items-center gap-2 p-2">
-                    <Avatar className="h-8 w-8 border">
-                        <AvatarImage src={user?.photoURL || undefined} />
-                        <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
-                    </Avatar>
-                    <div className="group-data-[collapsible=icon]:hidden flex flex-col">
-                        <span className="text-sm font-semibold truncate">{user?.displayName}</span>
-                        <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
-                    </div>
-                </div>
-            </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleLogout} tooltip={{ children: "Log Out" }}>
                 <LogOut />
@@ -133,7 +154,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const headerContent = (
     <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <div className="md:hidden">
+      <Link href="/feed" className="flex items-center gap-2 md:hidden">
+          <FemmoraLogo className="h-8 w-8 text-primary" />
+          <span className="sr-only">FEMMORA</span>
+      </Link>
+      <div className="md:hidden ml-auto">
         <SidebarTrigger />
       </div>
       <div className="hidden md:block">
