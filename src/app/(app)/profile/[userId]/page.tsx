@@ -159,7 +159,7 @@ export default function UserProfilePage() {
     const { user } = useUser();
     const firestore = useFirestore();
 
-    const isDummyProfile = DUMMY_PROFILES[userId];
+    const isDummyProfile = !!DUMMY_PROFILES[userId];
 
     const userProfileRef = useMemoFirebase(() => {
         if (!firestore || !userId || isDummyProfile) return null;
@@ -185,19 +185,21 @@ export default function UserProfilePage() {
         let allPosts: Post[] = [];
         if (isDummyProfile) {
             allPosts = DUMMY_PROFILES[userId].posts;
-        } else if (firestorePosts) {
-            allPosts = firestorePosts;
+        } 
+        
+        if (firestorePosts) {
+             allPosts = [...allPosts, ...firestorePosts];
         }
         
-        // Add dummy "Just Now" post for the current user's profile
-        if (user && userId === user.uid) {
+        // Add dummy "Just Now" post for the current user's profile to show it's working
+        if (user && userId === user.uid && !isDummyProfile) {
             const justNowPost: Post = {
                 id: 'just-now-post',
                 author: user.displayName || 'You',
                 authorId: user.uid,
                 avatar: user.photoURL || '',
                 time: 'Just now',
-                content: 'Just joined the FEMMORA community! So excited to connect with everyone. ✨',
+                content: 'Welcome to my profile! This is a sample post. ✨',
                 lang: 'en',
                 likes: 0,
                 likedBy: [],
@@ -219,7 +221,7 @@ export default function UserProfilePage() {
     }, [firestorePosts, isDummyProfile, userId, user]);
 
 
-    let profileData: DummyProfile | null = null;
+    let profileData: DummyProfile | Partial<DummyProfile> | null = null;
     if (isDummyProfile) {
         profileData = DUMMY_PROFILES[userId];
     } else if (userProfile) {
@@ -229,15 +231,16 @@ export default function UserProfilePage() {
             bio: userProfile.bio,
             profilePhotoURL: userProfile.profilePhotoURL,
             coverPhotoURL: userProfile.coverPhotoURL,
-            posts: [] // This will be populated by localPosts state
         };
     }
     
     const handleLikePost = async (postId: string) => {
         if (!user || !firestore) return;
-        
-        // For dummy posts, update locally
-        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId) || postId === 'just-now-post') {
+
+        const isLocalPost = localPosts.find(p => p.id === postId && (DUMMY_PROFILES[p.authorId] || p.id === 'just-now-post'));
+
+        // For dummy or local-only posts, update locally
+        if (isLocalPost) {
             const updatedPosts = localPosts.map(p => {
                 if (p.id === postId) {
                     const isLiked = p.likedBy.includes(user.uid);
@@ -256,24 +259,14 @@ export default function UserProfilePage() {
         try {
             await runTransaction(firestore, async (transaction) => {
                 const postDoc = await transaction.get(postRef);
-                if (!postDoc.exists()) {
-                    throw "Document does not exist!";
-                }
-
+                if (!postDoc.exists()) throw "Document does not exist!";
+                
                 const postData = postDoc.data() as Post;
                 const likedBy = postData.likedBy || [];
-                let newLikes;
-                let newLikedBy;
-
-                if (likedBy.includes(user.uid)) {
-                    // Unlike
-                    newLikes = postData.likes - 1;
-                    newLikedBy = likedBy.filter(uid => uid !== user.uid);
-                } else {
-                    // Like
-                    newLikes = postData.likes + 1;
-                    newLikedBy = [...likedBy, user.uid];
-                }
+                const newLikes = likedBy.includes(user.uid) ? postData.likes - 1 : postData.likes + 1;
+                const newLikedBy = likedBy.includes(user.uid)
+                    ? likedBy.filter(uid => uid !== user.uid)
+                    : [...likedBy, user.uid];
                 
                 transaction.update(postRef, { likes: newLikes, likedBy: newLikedBy });
             });
@@ -283,84 +276,51 @@ export default function UserProfilePage() {
     }
     
     const handleTranslatePost = async (postId: string) => {
-        const postToTranslate = localPosts.find(p => p.id === postId);
-        if (!postToTranslate) return;
+        const postIndex = localPosts.findIndex(p => p.id === postId);
+        if (postIndex === -1) return;
 
+        const postToTranslate = localPosts[postIndex];
         const currentIsTranslated = postToTranslate.isTranslated;
         const originalContent = postToTranslate.originalContent || postToTranslate.content;
 
-        // Immediately update UI for responsiveness
-        const newLocalPosts = localPosts.map(p => p.id === postId ? {...p, isTranslated: !currentIsTranslated, content: 'Translating...'} : p);
-        setLocalPosts(newLocalPosts);
+        const updatedPosts = [...localPosts];
+        updatedPosts[postIndex] = { ...postToTranslate, content: 'Translating...' };
+        setLocalPosts(updatedPosts);
 
         if (currentIsTranslated) {
-             setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: originalContent, originalContent: undefined, isTranslated: false} : p));
-             return;
+            updatedPosts[postIndex] = { ...postToTranslate, content: originalContent, originalContent: undefined, isTranslated: false };
+            setLocalPosts(updatedPosts);
+            return;
         }
 
         try {
-            const { translatedText } = await translateText({
-                text: originalContent,
-                targetLanguage: 'ur-RO',
-            });
-            const finalPosts = localPosts.map(p =>
-                p.id === postId
-                    ? {
-                        ...p,
-                        originalContent: originalContent,
-                        content: translatedText,
-                        isTranslated: true
-                    }
-                    : p
-            );
-            // Need to update the original localPosts state, not the temporary one
-            setLocalPosts(currentPosts => currentPosts.map(p => p.id === postId ? finalPosts.find(fp => fp.id === postId)! : p));
-
+            const { translatedText } = await translateText({ text: originalContent, targetLanguage: 'ur-RO' });
+            updatedPosts[postIndex] = { ...postToTranslate, originalContent, content: translatedText, isTranslated: true };
+            setLocalPosts(updatedPosts);
         } catch (error) {
             console.error("Translation failed:", error);
-            // Revert back to original content on failure
-            setLocalPosts(currentPosts => currentPosts.map(p => p.id === postId ? {...p, content: originalContent, isTranslated: false} : p)); 
+            updatedPosts[postIndex] = { ...postToTranslate, content: originalContent, isTranslated: false };
+            setLocalPosts(updatedPosts);
         }
     };
     
     const handleAddComment = async (postId: string, commentText: string) => {
         if (!commentText.trim() || !user || !firestore) return;
         
-        // For dummy posts, update locally
-        if (Object.values(DUMMY_PROFILES).flatMap(p => p.posts).some(p => p.id === postId) || postId === 'just-now-post') {
-            const newComment = {
-                id: uuidv4(),
-                author: user.displayName || 'Anonymous User',
-                authorId: user.uid,
-                avatar: user.photoURL || user1?.imageUrl || '',
-                content: commentText,
-                createdAt: new Date(),
-            };
-            const updatedPosts = localPosts.map(p => {
-                if (p.id === postId) {
-                    return { ...p, comments: [...p.comments, newComment] };
-                }
-                return p;
-            });
+        const isLocalPost = localPosts.find(p => p.id === postId && (DUMMY_PROFILES[p.authorId] || p.id === 'just-now-post'));
+
+        if (isLocalPost) {
+            const newComment = { id: uuidv4(), author: user.displayName || 'You', authorId: user.uid, avatar: user.photoURL || '', content: commentText, createdAt: new Date() };
+            const updatedPosts = localPosts.map(p => p.id === postId ? { ...p, comments: [...p.comments, newComment] } : p);
             setLocalPosts(updatedPosts);
             return;
         }
 
-        const newComment = {
-            id: uuidv4(),
-            author: user.displayName || 'Anonymous User',
-            authorId: user.uid,
-            avatar: user.photoURL || user1?.imageUrl || '',
-            content: commentText,
-            createdAt: new Date(), // Using client-side date for optimistic update
-        };
-        
+        const newCommentForFirestore = { id: uuidv4(), author: user.displayName || 'You', authorId: user.uid, avatar: user.photoURL || '', content: commentText, createdAt: new Date() };
         const postRef = doc(firestore, 'community_posts', postId);
 
         try {
-            await updateDoc(postRef, {
-                comments: arrayUnion(newComment)
-            });
+            await updateDoc(postRef, { comments: arrayUnion(newCommentForFirestore) });
         } catch (error) {
             console.error("Error adding comment: ", error);
         }
@@ -383,7 +343,7 @@ export default function UserProfilePage() {
         <div className="mx-auto max-w-4xl space-y-8">
             <Card>
                 <CardContent className="p-0">
-                    <div className="relative h-48 w-full">
+                    <div className="relative h-48 w-full bg-muted">
                         {profileData.coverPhotoURL && (
                             <Image
                                 src={profileData.coverPhotoURL}
@@ -395,7 +355,7 @@ export default function UserProfilePage() {
                         <div className="absolute -bottom-12 left-6">
                             <Avatar className="h-24 w-24 border-4 border-background ring-1 ring-primary">
                                 <AvatarImage src={profileData.profilePhotoURL} />
-                                <AvatarFallback>{profileData.displayName.slice(0, 2)}</AvatarFallback>
+                                <AvatarFallback>{profileData.displayName?.slice(0, 2)}</AvatarFallback>
                             </Avatar>
                         </div>
                     </div>
@@ -411,7 +371,7 @@ export default function UserProfilePage() {
                 {localPosts && localPosts.length > 0 ? (
                     localPosts.map(post => <PostCard key={post.id} post={post} onLike={handleLikePost} onTranslate={handleTranslatePost} onAddComment={handleAddComment} />)
                 ) : (
-                    <p className="text-muted-foreground">This user hasn't posted anything yet.</p>
+                    <p className="text-muted-foreground text-center py-8">This user hasn't posted anything yet.</p>
                 )}
             </div>
         </div>
