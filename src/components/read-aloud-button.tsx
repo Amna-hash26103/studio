@@ -10,12 +10,8 @@ import { translateText } from '@/ai/flows/translate-text-flow';
 
 interface ReadAloudButtonProps {
   textToRead: string;
-  lang?: string; // The language of the textToRead
+  lang?: string; // The target language for translation and speech
 }
-
-// For now, let's hardcode the target "reading" language.
-// In the future, this could come from user settings.
-const TARGET_READING_LANGUAGE = 'ur-RO'; 
 
 export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +20,15 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
   const { toast } = useToast();
 
   useEffect(() => {
-    // Cleanup audio when component unmounts
+    // Cleanup audio when component unmounts or language changes
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
+        setIsPlaying(false);
       }
     };
-  }, []);
+  }, [lang]);
 
   const handlePlay = async () => {
     if (isPlaying && audioRef.current) {
@@ -40,6 +37,7 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
       return;
     }
     
+    // If audio for the current language is already loaded, just play it
     if (audioRef.current) {
         audioRef.current.play();
         setIsPlaying(true);
@@ -50,14 +48,19 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
     try {
       let textToSpeak = textToRead;
 
-      // Translate if the source language is different from the target reading language
-      if (lang !== TARGET_READING_LANGUAGE) {
+      // If a target language other than English is specified, translate the text first
+      if (lang !== 'en') {
         try {
-            const translationResponse = await translateText({ text: textToRead, targetLanguage: TARGET_READING_LANGUAGE });
+            const translationResponse = await translateText({ text: textToRead, targetLanguage: lang });
             textToSpeak = translationResponse.translatedText;
         } catch (translationError) {
-            console.error("Translation failed, using original text.", translationError);
-            // Optional: toast a message that translation failed
+            console.error(`Translation to ${lang} failed, using original text.`, translationError);
+            toast({
+                variant: 'destructive',
+                title: 'Translation Failed',
+                description: `Could not translate the text to the selected language.`,
+            });
+            // We can still try to speak the original text
         }
       }
 

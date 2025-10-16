@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -7,11 +8,20 @@ import { FemmoraLogo } from '@/components/icons';
 import { HeartHandshake, Users, Globe, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ReadAloudButton } from '@/components/read-aloud-button';
+import { useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
+  const [language, setLanguage] = useState('en');
+
   const audioContent = {
     hero: `Empower Your Journey. Together.`,
     heroSubtitle: `FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.`,
@@ -62,6 +72,22 @@ export default function LandingPage() {
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Globe className="h-5 w-5" />
+                <span className="sr-only">Select language</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setLanguage('en')}>
+                English
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setLanguage('ur-RO')}>
+                Roman Urdu
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button variant="ghost" asChild>
             <Link href="/login">Log In</Link>
           </Button>
@@ -78,13 +104,13 @@ export default function LandingPage() {
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                   {audioContent.hero}
                 </h1>
-                <ReadAloudButton textToRead={audioContent.hero} />
+                <ReadAloudButton textToRead={audioContent.hero} lang={language} />
             </div>
             <div className='flex items-center justify-center'>
                  <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
                     {audioContent.heroSubtitle}
                 </p>
-                <ReadAloudButton textToRead={audioContent.heroSubtitle} />
+                <ReadAloudButton textToRead={audioContent.heroSubtitle} lang={language} />
             </div>
             <div className="mt-8 flex justify-center">
               <Button size="lg" asChild>
@@ -113,13 +139,13 @@ export default function LandingPage() {
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                       {audioContent.thrive}
                     </h2>
-                    <ReadAloudButton textToRead={audioContent.thrive} />
+                    <ReadAloudButton textToRead={audioContent.thrive} lang={language} />
                 </div>
                 <div className='flex items-center'>
                     <p className="text-muted-foreground md:text-lg">
                       {audioContent.thriveSubtitle}
                     </p>
-                    <ReadAloudButton textToRead={audioContent.thriveSubtitle} />
+                    <ReadAloudButton textToRead={audioContent.thriveSubtitle} lang={language} />
                 </div>
               </div>
             </div>
@@ -132,13 +158,13 @@ export default function LandingPage() {
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                   {audioContent.features}
                 </h2>
-                <ReadAloudButton textToRead={audioContent.features} />
+                <ReadAloudButton textToRead={audioContent.features} lang={language} />
             </div>
             <div className='flex items-center justify-center'>
                 <p className="mt-4 text-muted-foreground md:text-lg">
                     {audioContent.featuresSubtitle}
                 </p>
-                <ReadAloudButton textToRead={audioContent.featuresSubtitle} />
+                <ReadAloudButton textToRead={audioContent.featuresSubtitle} lang={language} />
             </div>
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
