@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for translating text from one language to another.
@@ -9,7 +10,6 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { render } from 'genkit';
 
 const TranslateTextInputSchema = z.object({
   text: z.string().describe('The text to translate.'),
@@ -33,14 +33,11 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async input => {
-    const prompt = await render('translate-text', {
-      helpers: {
-        eq: (a: string, b: string) => a === b,
-      },
-      input,
-      template: `
-        {{#if (eq targetLanguage 'ur-RO')}}
-        Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters). 
+    let systemPrompt: string;
+
+    if (input.targetLanguage === 'ur-RO') {
+      systemPrompt = `
+        Translate the following text into natural, conversational Roman Urdu (Urdu written in English characters).
         Your translations should be easy to read and sound like how a native speaker would write Urdu using the English alphabet.
 
         Here are some examples of the style I want:
@@ -56,18 +53,14 @@ const translateTextFlow = ai.defineFlow(
         English: "FEMMORA is a sanctuary for women to connect, share, and flourish."
         Roman Urdu: "FEMMORA khawateen ke liye jurrne, apni baat kehne, aur aage barhne ki ek panahgah hai."
 
-        Now, please translate the following text in the same style.
-        {{else}}
-        Translate the following text to {{targetLanguage}}.
-        {{/if}}
-
-        Text: {{{text}}}
-
-        Return only the translated text.`,
-    });
-
+        Now, please translate the following text in the same style. Return only the translated text.
+      `;
+    } else {
+      systemPrompt = `Translate the following text to ${input.targetLanguage}. Return only the translated text.`;
+    }
+    
     const llmResponse = await ai.generate({
-      prompt,
+      prompt: `${systemPrompt}\n\nText: ${input.text}`,
       model: 'googleai/gemini-2.5-flash',
       output: {
         schema: TranslateTextOutputSchema,
