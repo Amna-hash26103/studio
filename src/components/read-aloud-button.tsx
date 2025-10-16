@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -5,12 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Play, Square, Volume2 } from 'lucide-react';
 import { textToSpeech } from '@/ai/flows/text-to-speech-flow';
 import { useToast } from '@/hooks/use-toast';
+import { translateText } from '@/ai/flows/translate-text-flow';
 
 interface ReadAloudButtonProps {
   textToRead: string;
+  lang?: string; // The language of the textToRead
 }
 
-export function ReadAloudButton({ textToRead }: ReadAloudButtonProps) {
+// For now, let's hardcode the target "reading" language.
+// In the future, this could come from user settings.
+const TARGET_READING_LANGUAGE = 'ur-RO'; 
+
+export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -41,7 +48,20 @@ export function ReadAloudButton({ textToRead }: ReadAloudButtonProps) {
 
     setIsLoading(true);
     try {
-      const response = await textToSpeech(textToRead);
+      let textToSpeak = textToRead;
+
+      // Translate if the source language is different from the target reading language
+      if (lang !== TARGET_READING_LANGUAGE) {
+        try {
+            const translationResponse = await translateText({ text: textToRead, targetLanguage: TARGET_READING_LANGUAGE });
+            textToSpeak = translationResponse.translatedText;
+        } catch (translationError) {
+            console.error("Translation failed, using original text.", translationError);
+            // Optional: toast a message that translation failed
+        }
+      }
+
+      const response = await textToSpeech(textToSpeak);
       const audio = new Audio(response.audioDataUri);
       audioRef.current = audio;
       
@@ -50,7 +70,7 @@ export function ReadAloudButton({ textToRead }: ReadAloudButtonProps) {
 
       audio.onended = () => {
         setIsPlaying(false);
-        audioRef.current = null;
+        audioRef.current = null; // Clear the ref once done
       };
 
     } catch (error) {

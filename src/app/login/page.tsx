@@ -59,11 +59,14 @@ export default function LoginPage() {
       router.push('/feed');
     } catch (error: any) {
       console.error('Error signing in:', error);
-      let description = "Invalid email or password. Please try again.";
+      let description = "An unexpected error occurred. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        description = "Invalid email or password. Please try again.";
+      }
       
       toast({
         variant: 'destructive',
-        title: "Uh oh! Something went wrong.",
+        title: "Login Failed",
         description: description,
       });
     }

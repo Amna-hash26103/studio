@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser } from '@/firebase';
 import { ReadAloudButton } from '@/components/read-aloud-button';
+import { translateText } from '@/ai/flows/translate-text-flow';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
@@ -28,9 +29,12 @@ type Post = {
   avatar?: string;
   time: string;
   content: string;
+  lang: 'en' | 'ur-RO'; // Language of the content
+  originalContent?: string;
   image?: { imageUrl: string; imageHint: string };
   likes: number;
   comments: Comment[];
+  isTranslated?: boolean;
 };
 
 const initialPosts: Post[] = [
@@ -40,6 +44,7 @@ const initialPosts: Post[] = [
     avatar: user1?.imageUrl,
     time: '3h ago',
     content: "Just finished a 7-day mindfulness challenge and feeling so centered. 🧘‍♀️ Taking just 10 minutes each morning to meditate has made a world of difference for my stress levels. Highly recommend! What are your favorite mindfulness practices? #mentalhealth #mindfulness #selfcare",
+    lang: 'en',
     image: PlaceHolderImages.find((img) => img.id === 'feed-post-3'),
     likes: 152,
     comments: [
@@ -52,6 +57,7 @@ const initialPosts: Post[] = [
     avatar: user2?.imageUrl,
     time: '8h ago',
     content: "Cycle syncing my workouts has been a game-changer! ✨ During my follicular phase, I have so much energy for HIIT and strength training. Then I switch to yoga and long walks during my luteal phase. Anyone else try this? #cyclesyncing #womenshealth #fitness",
+    lang: 'en',
     likes: 210,
     comments: [],
   },
@@ -72,6 +78,7 @@ export default function FeedPage() {
         avatar: user.photoURL || user1?.imageUrl,
         time: 'Just now',
         content: newPostContent,
+        lang: 'en',
         likes: 0,
         comments: [],
     };
@@ -96,6 +103,41 @@ export default function FeedPage() {
         : p
     ));
   };
+  
+    const handleTranslatePost = async (postId: string) => {
+        const postToTranslate = posts.find(p => p.id === postId);
+        if (!postToTranslate) return;
+
+        // If it's already translated, revert to the original
+        if (postToTranslate.isTranslated) {
+            setPosts(posts.map(p =>
+                p.id === postId
+                    ? { ...p, content: p.originalContent || p.content, isTranslated: false }
+                    : p
+            ));
+            return;
+        }
+
+        try {
+            const { translatedText } = await translateText({
+                text: postToTranslate.content,
+                targetLanguage: 'ur-RO', // Hardcoded for now
+            });
+            setPosts(posts.map(p =>
+                p.id === postId
+                    ? {
+                        ...p,
+                        originalContent: p.content, // Save original
+                        content: translatedText,
+                        isTranslated: true
+                    }
+                    : p
+            ));
+        } catch (error) {
+            console.error("Translation failed:", error);
+            // Optionally, show a toast to the user
+        }
+    };
 
 
   return (
@@ -121,7 +163,7 @@ export default function FeedPage() {
       
       <div className="space-y-6">
         {posts.map(post => (
-          <PostCard key={post.id} post={post} onAddComment={handleAddComment} />
+          <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} />
         ))}
       </div>
     </div>
@@ -129,8 +171,9 @@ export default function FeedPage() {
 }
 
 
-function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: string, text: string) => void }) {
+function PostCard({ post, onAddComment, onTranslate }: { post: Post, onAddComment: (postId: string, text: string) => void, onTranslate: (postId: string) => void }) {
     const { user } = useUser();
+    
     return (
         <Card>
             <CardHeader>
@@ -146,9 +189,12 @@ function PostCard({ post, onAddComment }: { post: Post, onAddComment: (postId: s
                   </div>
                 </div>
                  <div className='flex items-center gap-1'>
-                    <ReadAloudButton textToRead={post.content} />
+                    <ReadAloudButton textToRead={post.content} lang={post.isTranslated ? 'ur-RO' : post.lang} />
+                    <Button variant="ghost" size="sm" onClick={() => onTranslate(post.id)}>
+                        {post.isTranslated ? 'Show Original' : 'Translate'}
+                    </Button>
                     <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-5 w-5" />
+                        <MoreHorizontal className="h-5 w-5" />
                     </Button>
                 </div>
               </div>
@@ -202,7 +248,7 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
                         <p className="text-sm font-semibold">{comment.author}</p>
                         <p className="text-sm">{comment.content}</p>
                     </div>
-                     <ReadAloudButton textToRead={comment.content} />
+                     <ReadAloudButton textToRead={comment.content} lang={'en'} />
                 </div>
             ))}
             <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
