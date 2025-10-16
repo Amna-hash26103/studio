@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
-import './../lib/i18n';
+import './lib/i18n';
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",

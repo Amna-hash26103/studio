@@ -1,0 +1,28 @@
+{
+    "title": "ترتیبات",
+    "description": "اپنے اکاؤنٹ، ظاہری شکل، اور زبان کی ترجیحات کا نظم کریں۔",
+    "account": {
+        "title": "اکاؤنٹ",
+        "description": "اپنے اکاؤنٹ کی ترتیبات کا نظم کریں۔",
+        "emailLabel": "ای میل",
+        "passwordLabel": "پاس ورڈ",
+        "changePasswordButton": "پاس ورڈ تبدیل کریں",
+        "manageProfileButton": "پروفائل کا نظم کریں"
+    },
+    "appearance": {
+        "title": "ظاہری شکل",
+        "description": "ایپلی کیشن کی شکل و صورت کو حسب ضرورت بنائیں۔",
+        "theme": {
+            "title": "تھیم",
+            "description": "ایپلی کیشن کے لیے رنگ سکیم منتخب کریں۔",
+            "light": "ہلکا",
+            "dark": "گہرا",
+            "system": "سسٹم"
+        },
+        "language": {
+            "title": "زبان",
+            "description": "اپنی پسندیدہ زبان منتخب کریں۔",
+            "selectPlaceholder": "ایک زبان منتخب کریں"
+        }
+    }
+}

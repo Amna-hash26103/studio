@@ -22,14 +22,12 @@ import {
 } from '@/components/ui/select';
 import Link from 'next/link';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 export default function SettingsPage() {
   const { t, i18n } = useTranslation();
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
-  const router = useRouter();
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
