@@ -86,15 +86,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const sidebarContent = (
     <>
       <SidebarHeader className="p-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-12 w-12 border-2 border-primary">
+        <div className="flex flex-col items-center text-center gap-2 group-data-[collapsible=icon]:hidden">
+          <Avatar className="h-20 w-20 border-2 border-primary">
             <AvatarImage src={user?.photoURL || undefined} />
             <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+          <div className="flex flex-col">
             <span className="text-sm font-semibold truncate">Welcome back,</span>
             <span className="text-lg font-bold truncate">{user?.displayName?.split(' ')[0]}</span>
           </div>
+        </div>
+         <div className="hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+            <Avatar className="h-10 w-10 border-2 border-primary">
+                <AvatarImage src={user?.photoURL || undefined} />
+                <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
+            </Avatar>
         </div>
       </SidebarHeader>
       <SidebarContent className="p-2">
