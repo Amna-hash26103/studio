@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { ReadAloudButton } from '@/components/read-aloud-button';
@@ -17,6 +17,11 @@ import { cn } from '@/lib/utils';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
+const user3 = PlaceHolderImages.find((img) => img.id === 'user-avatar-3');
+const user4 = PlaceHolderImages.find((img) => img.id === 'user-avatar-4');
+const feedPost1 = PlaceHolderImages.find((img) => img.id === 'feed-post-3');
+const feedPost2 = PlaceHolderImages.find((img) => img.id === 'project-image-2');
+
 
 type Comment = {
     id: string;
@@ -44,6 +49,52 @@ type Post = {
   createdAt: any;
 };
 
+const initialPosts: Post[] = [
+    {
+        id: 'post-1',
+        author: 'Chloe',
+        authorId: 'chloe-123',
+        avatar: user2?.imageUrl,
+        time: '2 hours ago',
+        content: "Cycle syncing my workouts has been a game-changer! I feel so much more in tune with my body's energy levels throughout the month. Anyone else tried this?",
+        lang: 'en',
+        likes: 24,
+        likedBy: [],
+        comments: [
+            { id: 'comment-1-1', author: 'Elena', authorId: 'elena-456', avatar: user3?.imageUrl || '', content: 'Yes! I started last month and my energy during workouts is so much better.', createdAt: new Date() }
+        ],
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
+    },
+    {
+        id: 'post-2',
+        author: 'Elena',
+        authorId: 'elena-456',
+        avatar: user3?.imageUrl,
+        time: '8 hours ago',
+        content: 'Just finished a 7-day mindfulness challenge. Feeling so clear and grounded. Highly recommend taking a few minutes each day to just breathe and be present. 🧘‍♀️',
+        image: feedPost1 ? { imageUrl: feedPost1.imageUrl, imageHint: feedPost1.imageHint } : undefined,
+        lang: 'en',
+        likes: 42,
+        likedBy: [],
+        comments: [],
+        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000)
+    },
+    {
+        id: 'post-3',
+        author: 'Jasmine',
+        authorId: 'jasmine-789',
+        avatar: user4?.imageUrl,
+        time: 'Yesterday',
+        content: 'Working on a new creative project and feeling so inspired! It’s amazing what you can create when you give yourself the space to explore. ✨',
+        image: feedPost2 ? { imageUrl: feedPost2.imageUrl, imageHint: feedPost2.imageHint } : undefined,
+        lang: 'en',
+        likes: 58,
+        likedBy: [],
+        comments: [],
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+    }
+];
+
 export default function FeedPage() {
   const [newPostContent, setNewPostContent] = useState('');
   const { user } = useUser();
@@ -54,14 +105,29 @@ export default function FeedPage() {
     return query(collection(firestore, 'community_posts'), orderBy('createdAt', 'desc'));
   }, [firestore]);
 
-  const { data: posts, isLoading } = useCollection<Post>(postsQuery);
-  const [localPosts, setLocalPosts] = useState<Post[]>([]);
+  const { data: firestorePosts, isLoading } = useCollection<Post>(postsQuery);
+  const [localPosts, setLocalPosts] = useState<Post[]>(initialPosts);
 
-  useMemo(() => {
-    if (posts) {
-        setLocalPosts(posts);
+  useEffect(() => {
+    if (firestorePosts) {
+      const combined = [...initialPosts];
+      const firestorePostIds = new Set(initialPosts.map(p => p.id));
+      
+      firestorePosts.forEach(fp => {
+        if (!firestorePostIds.has(fp.id)) {
+            combined.push(fp);
+        }
+      });
+
+      combined.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
+        return dateB.getTime() - dateA.getTime();
+      });
+      
+      setLocalPosts(combined);
     }
-  }, [posts]);
+  }, [firestorePosts]);
 
 
   const handleAddPost = async () => {
@@ -73,7 +139,7 @@ export default function FeedPage() {
         avatar: user.photoURL || user1?.imageUrl,
         time: 'Just now',
         content: newPostContent,
-        lang: 'en',
+        lang: 'en' as const,
         likes: 0,
         likedBy: [],
         comments: [],
@@ -90,6 +156,26 @@ export default function FeedPage() {
 
   const handleAddComment = async (postId: string, commentText: string) => {
     if (!commentText.trim() || !user || !firestore) return;
+    
+    // For initial posts, update locally
+    if (postId.startsWith('post-')) {
+        const newComment = {
+            id: uuidv4(),
+            author: user.displayName || 'Anonymous User',
+            authorId: user.uid,
+            avatar: user.photoURL || user1?.imageUrl || '',
+            content: commentText,
+            createdAt: new Date(),
+        };
+        const updatedPosts = localPosts.map(p => {
+            if (p.id === postId) {
+                return { ...p, comments: [...p.comments, newComment] };
+            }
+            return p;
+        });
+        setLocalPosts(updatedPosts);
+        return;
+    }
 
     const newComment = {
         id: uuidv4(),
@@ -115,10 +201,13 @@ export default function FeedPage() {
         const postToTranslate = localPosts.find(p => p.id === postId);
         if (!postToTranslate) return;
 
-        setLocalPosts(localPosts.map(p => p.id === postId ? {...p, isTranslated: !p.isTranslated} : p));
+        const currentIsTranslated = postToTranslate.isTranslated;
+        const originalContent = postToTranslate.originalContent || postToTranslate.content;
 
-        if (postToTranslate.isTranslated && postToTranslate.originalContent) {
-             setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: p.originalContent, isTranslated: false} : p));
+        setLocalPosts(localPosts.map(p => p.id === postId ? {...p, isTranslated: !currentIsTranslated} : p));
+
+        if (currentIsTranslated) {
+             setLocalPosts(localPosts.map(p => p.id === postId ? {...p, content: originalContent, originalContent: undefined, isTranslated: false} : p));
              return;
         }
 
@@ -131,7 +220,7 @@ export default function FeedPage() {
                 p.id === postId
                     ? {
                         ...p,
-                        originalContent: p.content,
+                        originalContent: originalContent,
                         content: translatedText,
                         isTranslated: true
                     }
@@ -145,6 +234,22 @@ export default function FeedPage() {
     
     const handleLikePost = async (postId: string) => {
         if (!user || !firestore) return;
+        
+        // For initial posts, update locally
+        if (postId.startsWith('post-')) {
+            const updatedPosts = localPosts.map(p => {
+                if (p.id === postId) {
+                    const isLiked = p.likedBy.includes(user.uid);
+                    const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user.uid) : [...p.likedBy, user.uid];
+                    const newLikes = newLikedBy.length;
+                    return { ...p, likes: newLikes, likedBy: newLikedBy };
+                }
+                return p;
+            });
+            setLocalPosts(updatedPosts);
+            return;
+        }
+        
         const postRef = doc(firestore, 'community_posts', postId);
 
         try {
@@ -199,6 +304,7 @@ export default function FeedPage() {
       </Card>
       
       <div className="space-y-6">
+        {isLoading && localPosts.length === 0 && <p>Loading posts...</p>}
         {localPosts.map(post => (
           <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} onLike={handleLikePost} />
         ))}
