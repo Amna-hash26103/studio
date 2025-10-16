@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -9,6 +10,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from '@/components/ui/card';
 import {
   Dialog,
@@ -29,9 +31,15 @@ import {
   Droplet,
   Droplets,
   Waves,
+  CalendarDays,
+  Target,
+  Repeat
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DayModifiers } from 'react-day-picker';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from 'recharts';
+import { ChartTooltip, ChartTooltipContent, ChartContainer } from "@/components/ui/chart";
+
 
 type Period = {
   id: string;
@@ -57,6 +65,22 @@ type DailyLog = {
 // --- DUMMY DATA ---
 const today = new Date();
 const initialPeriods: Period[] = [
+  {
+    id: 'past-cycle-3',
+    userId: 'dummy-user',
+    startDate: { seconds: Math.floor(subDays(today, 92).getTime() / 1000), nanoseconds: 0 },
+    endDate: { seconds: Math.floor(subDays(today, 87).getTime() / 1000), nanoseconds: 0 },
+    duration: 6,
+    createdAt: { seconds: Math.floor(subDays(today, 92).getTime() / 1000), nanoseconds: 0 },
+  },
+  {
+    id: 'past-cycle-2',
+    userId: 'dummy-user',
+    startDate: { seconds: Math.floor(subDays(today, 63).getTime() / 1000), nanoseconds: 0 },
+    endDate: { seconds: Math.floor(subDays(today, 58).getTime() / 1000), nanoseconds: 0 },
+    duration: 5,
+    createdAt: { seconds: Math.floor(subDays(today, 63).getTime() / 1000), nanoseconds: 0 },
+  },
   {
     id: 'past-cycle-1',
     userId: 'dummy-user',
@@ -272,6 +296,8 @@ function PeriodTrackerPage() {
           <p className="text-muted-foreground">Track your menstrual cycle to understand your body better.</p>
         </div>
 
+        <CycleStats periods={periods} />
+
         <Card>
           <CardHeader>
             <CardTitle>Log Your Period</CardTitle>
@@ -352,6 +378,166 @@ function PeriodTrackerPage() {
     </>
   );
 }
+
+function CycleStats({ periods }: { periods: Period[] }) {
+    const stats = useMemo(() => {
+        const completedCycles = periods.filter(p => p.endDate).sort((a, b) => a.startDate.seconds - b.startDate.seconds);
+
+        if (completedCycles.length < 2) {
+            const avgPeriodDuration = completedCycles.length > 0 ? completedCycles.reduce((sum, p) => sum + (p.duration || 0), 0) / completedCycles.length : 0;
+            return {
+                averageCycleLength: 0,
+                averagePeriodDuration: Math.round(avgPeriodDuration),
+                predictedNextStart: null,
+                cycleLengthData: [],
+                periodDurationData: completedCycles.map(p => ({
+                    name: format(new Date(p.startDate.seconds * 1000), 'MMM'),
+                    duration: p.duration
+                })),
+            };
+        }
+
+        const cycleLengths = [];
+        for (let i = 1; i < completedCycles.length; i++) {
+            const currentCycleStart = startOfDay(new Date(completedCycles[i].startDate.seconds * 1000));
+            const prevCycleStart = startOfDay(new Date(completedCycles[i - 1].startDate.seconds * 1000));
+            cycleLengths.push(differenceInDays(currentCycleStart, prevCycleStart));
+        }
+
+        const totalCycleLength = cycleLengths.reduce((sum, length) => sum + length, 0);
+        const averageCycleLength = cycleLengths.length > 0 ? totalCycleLength / cycleLengths.length : 0;
+
+        const totalPeriodDuration = completedCycles.reduce((sum, p) => sum + (p.duration || 0), 0);
+        const averagePeriodDuration = completedCycles.length > 0 ? totalPeriodDuration / completedCycles.length : 0;
+
+        const lastCycleStart = new Date(completedCycles[completedCycles.length - 1].startDate.seconds * 1000);
+        const predictedNextStart = averageCycleLength > 0 ? addDays(lastCycleStart, averageCycleLength) : null;
+        
+        const cycleLengthData = completedCycles.slice(1).map((p, i) => ({
+             name: format(new Date(p.startDate.seconds * 1000), 'MMM'),
+             length: cycleLengths[i]
+        }));
+        
+        const periodDurationData = completedCycles.map(p => ({
+            name: format(new Date(p.startDate.seconds * 1000), 'MMM'),
+            duration: p.duration
+        }));
+
+        return {
+            averageCycleLength: Math.round(averageCycleLength),
+            averagePeriodDuration: Math.round(averagePeriodDuration),
+            predictedNextStart,
+            cycleLengthData,
+            periodDurationData
+        };
+
+    }, [periods]);
+
+    if (stats.averageCycleLength === 0 && stats.averagePeriodDuration === 0) {
+        return (
+             <Card>
+                <CardHeader>
+                    <CardTitle>Your Cycle Stats</CardTitle>
+                    <CardDescription>Log at least one full cycle to see your stats here.</CardDescription>
+                </CardHeader>
+                <CardContent className="text-center text-muted-foreground py-10">
+                    <p>No stats to show yet.</p>
+                </CardContent>
+            </Card>
+        )
+    }
+
+    const chartConfig = {
+      duration: {
+        label: "Duration (Days)",
+        color: "hsl(var(--primary))",
+      },
+      length: {
+        label: "Length (Days)",
+        color: "hsl(var(--primary))",
+      },
+    } satisfies React.ComponentProps<typeof ChartContainer>["config"];
+
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Your Cycle Stats</CardTitle>
+                <CardDescription>An overview of your menstrual cycle patterns.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <Card className="p-4">
+                        <CardHeader className="p-2 pb-0">
+                           <CardTitle className="text-4xl font-bold">{stats.averageCycleLength}<span className="text-lg font-normal text-muted-foreground"> days</span></CardTitle>
+                           <CardDescription className="flex items-center justify-center gap-2"><Repeat className="h-4 w-4" /> Average Cycle Length</CardDescription>
+                        </CardHeader>
+                    </Card>
+                     <Card className="p-4">
+                        <CardHeader className="p-2 pb-0">
+                           <CardTitle className="text-4xl font-bold">{stats.averagePeriodDuration}<span className="text-lg font-normal text-muted-foreground"> days</span></CardTitle>
+                           <CardDescription className="flex items-center justify-center gap-2"><Droplets className="h-4 w-4" /> Average Period Length</CardDescription>
+                        </CardHeader>
+                    </Card>
+                     <Card className="p-4">
+                        <CardHeader className="p-2 pb-0">
+                           <CardTitle className="text-4xl font-bold">{stats.predictedNextStart ? format(stats.predictedNextStart, 'MMM d') : 'N/A'}</CardTitle>
+                           <CardDescription className="flex items-center justify-center gap-2"><Target className="h-4 w-4" /> Predicted Next Period</CardDescription>
+                        </CardHeader>
+                    </Card>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {stats.cycleLengthData.length > 0 && (
+                        <div>
+                            <h3 className="font-semibold text-center mb-4">Cycle Length History</h3>
+                             <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                                <BarChart accessibilityLayer data={stats.cycleLengthData}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        tickLine={false}
+                                        tickMargin={10}
+                                        axisLine={false}
+                                    />
+                                    <YAxis />
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent indicator="dashed" />}
+                                    />
+                                    <Bar dataKey="length" fill="var(--color-length)" radius={4} />
+                                </BarChart>
+                            </ChartContainer>
+                        </div>
+                    )}
+                    {stats.periodDurationData.length > 0 && (
+                        <div>
+                            <h3 className="font-semibold text-center mb-4">Period Duration History</h3>
+                            <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                                <BarChart accessibilityLayer data={stats.periodDurationData}>
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                        dataKey="name"
+                                        tickLine={false}
+                                        tickMargin={10}
+                                        axisLine={false}
+                                    />
+                                    <YAxis />
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent indicator="dashed" />}
+                                    />
+                                    <Bar dataKey="duration" fill="var(--color-duration)" radius={4} />
+                                </BarChart>
+                            </ChartContainer>
+                        </div>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
 
 function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, activeCycle: Period, dailyLog?: DailyLog, onSave: (log: Omit<DailyLog, 'id'|'periodId'>) => void }) {
     const { toast } = useToast();
@@ -525,3 +711,5 @@ function PastCycleCard({ period, dailyLogs, index }: { period: Period, dailyLogs
 }
 
 export default PeriodTrackerPage;
+
+    
