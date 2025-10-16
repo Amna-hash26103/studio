@@ -74,101 +74,50 @@ export default function ProfilePage() {
     );
   }, [user, firestore]);
 
-  const { data: userPosts, isLoading: isLoadingPosts } = useCollection<Post>(userPostsQuery);
+  const { data: posts, isLoading: isLoadingPosts } = useCollection<Post>(userPostsQuery);
 
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  useEffect(() => {
-    const initialPost: Post = {
-        id: 'initial-user-post-1',
-        author: user?.displayName || "You",
-        authorId: user?.uid || 'user-id',
-        avatar: user?.photoURL || PlaceHolderImages.find(p => p.id === 'user-avatar-1')?.imageUrl,
-        time: 'Just now',
-        content: 'Just set up my profile! Excited to connect with everyone here. ✨',
-        lang: 'en',
-        likes: 0,
-        likedBy: [],
-        comments: [],
-        isTranslated: false,
-        createdAt: new Date(),
-    };
-
-    if (userPosts) {
-      const combined = [initialPost, ...userPosts];
-       // Deduplicate posts
-      const uniquePosts = Array.from(new Map(combined.map(p => [p.id, p])).values());
-      uniquePosts.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-        return dateB.getTime() - dateA.getTime();
-      });
-      setPosts(uniquePosts);
-    } else {
-      setPosts([initialPost]);
-    }
-  }, [userPosts, user]);
   
   const handleTranslatePost = async (postId: string) => {
-      const postToTranslate = posts.find(p => p.id === postId);
+      const postToTranslate = posts?.find(p => p.id === postId);
       if (!postToTranslate) return;
 
       // Optimistically toggle translation state
       const originalContent = postToTranslate.originalContent || postToTranslate.content;
       const isCurrentlyTranslated = postToTranslate.isTranslated;
 
-      const updatedPosts = posts.map(p => 
-        p.id === postId ? { ...p, isTranslated: !isCurrentlyTranslated } : p
-      );
-      setPosts(updatedPosts);
-      
-      // If we are showing the original, just revert the content
+      // This part would require state management that can handle local updates.
+      // For simplicity, we're directly refetching, but a real app might use a state manager.
+      // The logic below is for a local-only state update.
+
       if (isCurrentlyTranslated) {
-          const revertPosts = posts.map(p => 
-            p.id === postId ? { ...p, content: originalContent, originalContent: undefined, isTranslated: false } : p
-          );
-          setPosts(revertPosts);
-          return;
-      }
-      
-      // Otherwise, fetch translation
-      try {
-          const { translatedText } = await translateText({
-              text: postToTranslate.content,
-              targetLanguage: 'ur-RO',
+          // Revert to original
+          const postRef = doc(firestore, 'community_posts', postId);
+          await updateDoc(postRef, {
+              content: originalContent,
+              originalContent: null,
+              isTranslated: false
           });
-          const translatedPosts = posts.map(p =>
-              p.id === postId
-                  ? {
-                      ...p,
-                      originalContent: originalContent,
-                      content: translatedText,
-                      isTranslated: true
-                  }
-                  : p
-          );
-          setPosts(translatedPosts);
-      } catch (error) {
-          console.error("Translation failed:", error);
-          // Revert optimistic update on failure
-          setPosts(posts.map(p => p.id === postId ? { ...p, isTranslated: false } : p));
+      } else {
+          // Fetch translation
+          try {
+              const { translatedText } = await translateText({
+                  text: postToTranslate.content,
+                  targetLanguage: 'ur-RO',
+              });
+              const postRef = doc(firestore, 'community_posts', postId);
+              await updateDoc(postRef, {
+                  originalContent: originalContent,
+                  content: translatedText,
+                  isTranslated: true
+              });
+          } catch (error) {
+              console.error("Translation failed:", error);
+          }
       }
   };
 
   const handleLikePost = async (postId: string) => {
-      if (!user || !firestore || postId.startsWith('initial-')) {
-          const updatedPosts = posts.map(p => {
-              if (p.id === postId) {
-                  const isLiked = p.likedBy.includes(user?.uid || '');
-                  const newLikedBy = isLiked ? p.likedBy.filter(uid => uid !== user?.uid) : [...p.likedBy, user?.uid || ''];
-                  const newLikes = newLikedBy.length;
-                  return { ...p, likes: newLikes, likedBy: newLikedBy };
-              }
-              return p;
-          });
-          setPosts(updatedPosts);
-          return;
-      };
+      if (!user || !firestore) return;
       
       const postRef = doc(firestore, 'community_posts', postId);
 
@@ -210,30 +159,16 @@ export default function ProfilePage() {
         authorId: user.uid,
         avatar: user.photoURL || PlaceHolderImages.find(p => p.id === 'user-avatar-1')?.imageUrl || '',
         content: commentText,
-        createdAt: new Date(), // Using client-side date for optimistic update
+        createdAt: new Date(),
     };
-
-    const updatedPosts = posts.map(p => {
-        if (p.id === postId) {
-            const updatedComments = [...(p.comments || []), newComment];
-            return { ...p, comments: updatedComments };
-        }
-        return p;
-    });
-    setPosts(updatedPosts);
     
-    if (postId.startsWith('initial-')) {
-        return;
-    }
-
     const postRef = doc(firestore, 'community_posts', postId);
     try {
         await updateDoc(postRef, {
-            comments: arrayUnion({ ...newComment, createdAt: new Date() }) // Use serverTimestamp in real app if needed
+            comments: arrayUnion({ ...newComment, createdAt: new Date() }) 
         });
     } catch (error) {
         console.error("Error adding comment: ", error);
-        // Revert local state on error if needed
     }
   };
 
@@ -484,5 +419,7 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
+
+    
 
     
