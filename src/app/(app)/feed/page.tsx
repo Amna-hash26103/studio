@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, MessageCircle, MoreHorizontal, Send, Share2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { ReadAloudButton } from '@/components/read-aloud-button';
@@ -17,6 +17,12 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
+const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
+const user3 = PlaceHolderImages.find((img) => img.id === 'user-avatar-3');
+
+const postImage1 = PlaceHolderImages.find(p => p.id === 'feed-post-1');
+const postImage2 = PlaceHolderImages.find(p => p.id === 'feed-post-2');
+const postImage3 = PlaceHolderImages.find(p => p.id === 'feed-post-3');
 
 type Comment = {
     id: string;
@@ -44,17 +50,63 @@ type Post = {
   createdAt: any;
 };
 
+const DUMMY_POSTS: Post[] = [
+    {
+        id: 'dummy-1',
+        author: 'Chloe',
+        authorId: 'dummy-user-chloe',
+        avatar: user2?.imageUrl,
+        time: '2h ago',
+        content: `Just wrapped up a big project and feeling so accomplished! ✨ It's amazing what you can do when you put your mind to it. How's everyone else's week going?`,
+        lang: 'en',
+        image: postImage1 ? { imageUrl: postImage1.imageUrl, imageHint: postImage1.imageHint } : undefined,
+        likes: 24,
+        likedBy: [],
+        comments: [
+            { id: uuidv4(), author: 'Jasmine', authorId: 'dummy-user-jasmine', avatar: user3?.imageUrl || '', content: 'That’s awesome, congrats!', createdAt: new Date() },
+        ],
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000)
+    },
+    {
+        id: 'dummy-2',
+        author: 'Elena',
+        authorId: 'dummy-user-elena',
+        avatar: user3?.imageUrl,
+        time: '1d ago',
+        content: `I've been trying out mindfulness for the past week, and it's been a game-changer for my stress levels. Highly recommend the 'Calm' app if anyone is looking for a place to start! 🧘‍♀️`,
+        lang: 'en',
+        image: postImage3 ? { imageUrl: postImage3.imageUrl, imageHint: postImage3.imageHint } : undefined,
+        likes: 42,
+        likedBy: [],
+        comments: [],
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+    },
+];
+
 export default function FeedPage() {
   const [newPostContent, setNewPostContent] = useState('');
   const { user } = useUser();
   const firestore = useFirestore();
+  const [allPosts, setAllPosts] = useState<Post[]>(DUMMY_POSTS);
 
   const postsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'community_posts'), orderBy('createdAt', 'desc'));
   }, [firestore]);
 
-  const { data: posts, isLoading, error: firestoreError } = useCollection<Post>(postsQuery);
+  const { data: firestorePosts, isLoading, error: firestoreError } = useCollection<Post>(postsQuery);
+  
+  useEffect(() => {
+    if (firestorePosts) {
+      const combined = [...DUMMY_POSTS, ...firestorePosts].sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : a.createdAt;
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : b.createdAt;
+        return dateB.getTime() - dateA.getTime();
+      });
+      const uniquePosts = Array.from(new Set(combined.map(p => p.id))).map(id => combined.find(p => p.id === id)!);
+      setAllPosts(uniquePosts);
+    }
+  }, [firestorePosts]);
 
   const handleAddPost = async () => {
     if (!newPostContent.trim() || !user || !firestore) return;
@@ -79,10 +131,31 @@ export default function FeedPage() {
         console.error("Error adding post:", error);
     }
   };
-
+  
   const handleAddComment = async (postId: string, commentText: string) => {
-    if (!commentText.trim() || !user || !firestore) return;
+     if (!commentText.trim() || !user || !firestore) return;
     
+    // Handle dummy posts locally
+    if (postId.startsWith('dummy-')) {
+        setAllPosts(prevPosts => prevPosts.map(p => {
+            if (p.id === postId) {
+                const newComment = {
+                    id: uuidv4(),
+                    author: user.displayName || 'You',
+                    authorId: user.uid,
+                    avatar: user.photoURL || user1?.imageUrl || '',
+                    content: commentText,
+                    createdAt: new Date(),
+                };
+                return { ...p, comments: [...p.comments, newComment] };
+            }
+            return p;
+        }));
+        return;
+    }
+
+    // Handle firestore posts
+    const postRef = doc(firestore, 'community_posts', postId);
     const newComment = {
         id: uuidv4(),
         author: user.displayName || 'Anonymous User',
@@ -91,8 +164,6 @@ export default function FeedPage() {
         content: commentText,
         createdAt: serverTimestamp(),
     };
-    
-    const postRef = doc(firestore, 'community_posts', postId);
 
     try {
         await updateDoc(postRef, {
@@ -104,17 +175,17 @@ export default function FeedPage() {
   };
   
     const handleTranslatePost = async (postId: string) => {
-        if(!firestore) return;
-        const postRef = doc(firestore, 'community_posts', postId);
-        const post = posts?.find(p => p.id === postId);
+        const post = allPosts.find(p => p.id === postId);
         if (!post) return;
-
-        const currentIsTranslated = post.isTranslated;
+        
         const originalContent = post.originalContent || post.content;
-
-        if (currentIsTranslated) {
-             await updateDoc(postRef, { content: originalContent, originalContent: null, isTranslated: false });
-             return;
+        
+        if (post.isTranslated) {
+            setAllPosts(prev => prev.map(p => p.id === postId ? { ...p, content: originalContent, isTranslated: false, originalContent: undefined } : p));
+            if (!postId.startsWith('dummy-') && firestore) {
+                 await updateDoc(doc(firestore, 'community_posts', postId), { content: originalContent, originalContent: null, isTranslated: false });
+            }
+            return;
         }
 
         try {
@@ -122,19 +193,41 @@ export default function FeedPage() {
                 text: originalContent,
                 targetLanguage: 'ur-RO',
             });
-            await updateDoc(postRef, {
-                originalContent: originalContent,
-                content: translatedText,
-                isTranslated: true
-            });
+            setAllPosts(prev => prev.map(p => p.id === postId ? { ...p, content: translatedText, isTranslated: true, originalContent: originalContent } : p));
+
+            if (!postId.startsWith('dummy-') && firestore) {
+                 await updateDoc(doc(firestore, 'community_posts', postId), {
+                    originalContent: originalContent,
+                    content: translatedText,
+                    isTranslated: true
+                });
+            }
         } catch (error) {
             console.error("Translation failed:", error);
         }
     };
     
     const handleLikePost = async (postId: string) => {
-        if (!user || !firestore) return;
+        if (!user) return;
         
+        // Handle dummy posts locally
+        if (postId.startsWith('dummy-')) {
+             setAllPosts(prevPosts => prevPosts.map(p => {
+                if (p.id === postId) {
+                    const isLiked = p.likedBy.includes(user.uid);
+                    if (isLiked) {
+                        return { ...p, likes: p.likes - 1, likedBy: p.likedBy.filter(id => id !== user.uid) };
+                    } else {
+                        return { ...p, likes: p.likes + 1, likedBy: [...p.likedBy, user.uid] };
+                    }
+                }
+                return p;
+            }));
+            return;
+        }
+
+        // Handle firestore posts
+        if (!firestore) return;
         const postRef = doc(firestore, 'community_posts', postId);
 
         try {
@@ -189,9 +282,9 @@ export default function FeedPage() {
       </Card>
       
       <div className="space-y-6">
-        {isLoading && <p>Loading posts...</p>}
-        {firestoreError && <p className="text-center text-muted-foreground">Could not load live posts. Displaying demo content.</p>}
-        {posts && posts.map(post => (
+        {isLoading && allPosts.length === 0 && <p>Loading posts...</p>}
+        {firestoreError && allPosts.length === 2 && <p className="text-center text-muted-foreground">Could not load live posts. Displaying demo content.</p>}
+        {allPosts.map(post => (
           <PostCard key={post.id} post={post} onAddComment={handleAddComment} onTranslate={handleTranslatePost} onLike={handleLikePost} />
         ))}
       </div>
@@ -266,6 +359,7 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (!commentText.trim()) return;
         onAddComment(commentText);
         setCommentText('');
     };
@@ -297,7 +391,7 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
                     placeholder="Write a comment..." 
                     className="pr-10" 
                   />
-                  <Button type="submit" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2">
+                  <Button type="submit" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2" disabled={!commentText.trim()}>
                     <Send className="h-4 w-4" />
                   </Button>
                 </div>
@@ -308,3 +402,4 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
     
 
     
+
