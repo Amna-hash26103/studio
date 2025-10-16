@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -14,11 +15,32 @@ import { useTheme } from 'next-themes';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { Monitor, Moon, Sun } from 'lucide-react';
+import { Bot, Monitor, Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
+  const [botName, setBotName] = useState('Aura');
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const storedBotName = localStorage.getItem('chatbotName');
+    if (storedBotName) {
+      setBotName(storedBotName);
+    }
+  }, []);
+
+  const handleSaveBotName = () => {
+    localStorage.setItem('chatbotName', botName);
+    toast({
+      title: 'Chatbot name saved!',
+      description: `Your support assistant is now named ${botName}.`,
+    });
+    // Force a re-render of other components if necessary by dispatching a custom event
+    window.dispatchEvent(new Event('storage'));
+  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -94,6 +116,31 @@ export default function SettingsPage() {
             </div>
           </div>
         </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bot /> Chatbot
+          </CardTitle>
+          <CardDescription>
+            Personalize your AI support assistant.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Label htmlFor="botName">Chatbot Name</Label>
+            <Input
+              id="botName"
+              value={botName}
+              onChange={(e) => setBotName(e.target.value)}
+              placeholder="e.g., Aura"
+            />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button onClick={handleSaveBotName}>Save Name</Button>
+        </CardFooter>
       </Card>
     </div>
   );

@@ -23,18 +23,21 @@ const supportAgentFlow = ai.defineFlow(
     outputSchema: SupportAgentOutputSchema,
   },
   async (query) => {
+    const isGreeting = query.startsWith('initial_greeting');
+    const botName = isGreeting ? query.split('initial_greeting_for_')[1] || 'Aura' : 'the support agent';
+
     const llmResponse = await ai.generate({
       prompt: `
-        You are 'Aura', the support agent for the FEMMORA app. Your vibe is helpful, cool, and chill. 
+        You are '${botName}', the support agent for the FEMMORA app. Your vibe is helpful, cool, and chill. 
         You're like a friendly guide who knows the app inside and out. You're relaxed, clear, and encouraging. 
         Keep your answers concise and easy to understand.
 
-        If it's the first message (the query is "initial_greeting"), give a warm, relaxed welcome.
+        If it's the first message (the query contains "initial_greeting"), give a warm, relaxed welcome and introduce yourself by name.
         Otherwise, answer the user's question.
 
         Here is the user's query:
         ---
-        ${query}
+        ${isGreeting ? "Introduce yourself." : query}
         ---
       `,
       model: 'googleai/gemini-2.5-flash',

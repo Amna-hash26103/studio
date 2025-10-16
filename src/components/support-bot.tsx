@@ -28,15 +28,33 @@ export function SupportBot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [botName, setBotName] = useState('Aura');
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
   const auraAvatar = PlaceHolderImages.find((img) => img.id === 'logo');
 
   useEffect(() => {
+    const fetchBotName = () => {
+      const storedName = localStorage.getItem('chatbotName');
+      setBotName(storedName || 'Aura');
+    };
+
+    fetchBotName();
+
+    // Listen for changes from the settings page
+    window.addEventListener('storage', fetchBotName);
+    return () => {
+      window.removeEventListener('storage', fetchBotName);
+    };
+  }, []);
+
+
+  useEffect(() => {
     if (isOpen && messages.length === 0) {
       setIsLoading(true);
-      supportAgent('initial_greeting').then((response) => {
+      const greetingQuery = `initial_greeting_for_${botName}`;
+      supportAgent(greetingQuery).then((response) => {
         setMessages([{ role: 'assistant', content: response }]);
         setIsLoading(false);
       }).catch(err => {
@@ -45,7 +63,7 @@ export function SupportBot() {
         setIsLoading(false);
       });
     }
-  }, [isOpen, messages.length]);
+  }, [isOpen, messages.length, botName]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -99,7 +117,7 @@ export function SupportBot() {
                 <AvatarFallback>A</AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span>Aura</span>
+                <span>{botName}</span>
                 <span className="text-xs font-normal text-muted-foreground">Your support guide</span>
               </div>
             </DialogTitle>
@@ -158,7 +176,7 @@ export function SupportBot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Aura anything..."
+                placeholder={`Ask ${botName} anything...`}
                 disabled={isLoading}
                 autoComplete="off"
               />
