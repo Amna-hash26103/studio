@@ -1,6 +1,8 @@
+
 'use client';
 
 import { ChatInterface } from '@/components/chat-interface';
+import { emotionCareAgent } from '@/ai/flows/emotion-care-agent-flow';
 
 export default function EmotionalHealthPage() {
   return (
@@ -11,7 +13,11 @@ export default function EmotionalHealthPage() {
           A safe space to explore your feelings and find a path forward.
         </p>
       </div>
-      <ChatInterface topic="emotionalWellbeing" />
+      <ChatInterface 
+        topic="emotionalWellbeing" 
+        agent={emotionCareAgent} 
+        initialMessage="Hello. It's okay to not be okay. If you feel like talking, I'm here to listen."
+      />
     </div>
   );
 }
