@@ -12,7 +12,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   Form,
   FormControl,
@@ -171,31 +170,22 @@ export function EditProfileDialog({
                 </div>
               </div>
             
-            <div className="flex flex-col items-center gap-4">
-               <Avatar className="h-24 w-24 border-2 border-primary">
-                  <AvatarImage src={selectedAvatarUrl} />
-                  <AvatarFallback>
-                    <UserIcon size={40} />
-                  </AvatarFallback>
-                </Avatar>
-              
-              <div className="w-full">
-                <FormLabel>Change Picture</FormLabel>
-                <div className="mt-2 grid grid-cols-5 gap-2 sm:grid-cols-6">
-                    {avatarOptions.map(avatar => (
-                        <button
-                            type="button"
-                            key={avatar.id}
-                            onClick={() => setSelectedAvatarUrl(avatar.imageUrl)}
-                            className={cn(
-                                "relative aspect-square w-full overflow-hidden rounded-full ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring",
-                                selectedAvatarUrl === avatar.imageUrl && "ring-2 ring-primary"
-                            )}
-                        >
-                            <Image src={avatar.imageUrl} alt={avatar.description} fill className="object-cover" />
-                        </button>
-                    ))}
-                </div>
+            <div className="space-y-4">
+              <FormLabel>Change Picture</FormLabel>
+              <div className="grid grid-cols-5 gap-2 sm:grid-cols-6">
+                  {avatarOptions.map(avatar => (
+                      <button
+                          type="button"
+                          key={avatar.id}
+                          onClick={() => setSelectedAvatarUrl(avatar.imageUrl)}
+                          className={cn(
+                              "relative aspect-square w-full overflow-hidden rounded-full ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring",
+                              selectedAvatarUrl === avatar.imageUrl && "ring-2 ring-primary"
+                          )}
+                      >
+                          <Image src={avatar.imageUrl} alt={avatar.description} fill className="object-cover" />
+                      </button>
+                  ))}
               </div>
             </div>
 

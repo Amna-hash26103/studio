@@ -105,7 +105,7 @@
     {
       "id": "user-profile-cover",
       "description": "A cover image for a user profile page, showing a serene landscape.",
-      "imageUrl": "https://images.unsplash.com/photo-1639757528415-3f912b6cc0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzU5NTYzMjcxfDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
       "imageHint": "serene landscape"
     },
     {
@@ -131,6 +131,30 @@
       "description": "A sunlit forest path.",
       "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
       "imageHint": "forest path"
+    },
+    {
+      "id": "user-cover-5",
+      "description": "A misty mountain range at sunrise.",
+      "imageUrl": "https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=800&q=80",
+      "imageHint": "misty mountains"
+    },
+    {
+      "id": "user-cover-6",
+      "description": "Ocean waves crashing on a sandy beach.",
+      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723a996f329?w=800&q=80",
+      "imageHint": "ocean waves"
+    },
+    {
+      "id": "user-cover-7",
+      "description": "A vibrant cityscape at dusk.",
+      "imageUrl": "https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=800&q=80",
+      "imageHint": "cityscape dusk"
+    },
+    {
+      "id": "user-cover-8",
+      "description": "A cozy library with bookshelves.",
+      "imageUrl": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80",
+      "imageHint": "cozy library"
     }
   ]
 }
