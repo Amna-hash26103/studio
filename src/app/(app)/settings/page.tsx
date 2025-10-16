@@ -22,22 +22,19 @@ import {
 } from '@/components/ui/select';
 import Link from 'next/link';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, useLanguage } from '@/providers/translation-provider';
 
 export default function SettingsPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { language, changeLanguage } = useLanguage();
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
-
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
-  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('title')}</h1>
-        <p className="text-muted-foreground">{t('description')}</p>
+        <h1 className="font-headline text-3xl font-bold">{t('settings.title')}</h1>
+        <p className="text-muted-foreground">{t('settings.description')}</p>
       </div>
 
       <Card>
@@ -108,8 +105,8 @@ export default function SettingsPage() {
               {t('appearance.language.description')}
             </p>
             <Select
-              defaultValue={i18n.language}
-              onValueChange={handleLanguageChange}
+              value={language}
+              onValueChange={changeLanguage}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={t('appearance.language.selectPlaceholder')} />
