@@ -66,6 +66,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   
   const accountNavItems = [
+    { href: `/profile`, icon: <User />, label: "Profile" },
     { href: `/settings`, icon: <Settings />, label: "Settings" },
   ];
 
@@ -89,6 +90,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const getActivePath = (href: string) => {
+    // Special handling for profile page, since it can have dynamic routes
+    if (href === '/profile') {
+        return pathname.startsWith('/profile');
+    }
     return pathname === href;
   }
 
@@ -223,8 +228,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const mobileNavItems = [
     { href: `/feed`, icon: <LayoutDashboard />, label: "Feed" },
     { href: `/period-tracker`, icon: <Droplets />, label: "Period Tracker" },
+    { href: `/profile`, icon: <User />, label: "Profile" },
     { href: `/emotional-health`, icon: <Smile />, label: "Emotional Health" },
-    { href: `/diet`, icon: <Salad />, label: "Diet" },
     { href: `/settings`, icon: <Settings />, label: "Settings" },
   ]
 
@@ -265,5 +270,3 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
-
-    
