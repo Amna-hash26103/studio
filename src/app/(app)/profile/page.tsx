@@ -28,7 +28,7 @@ export default function ProfilePage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const userProfileRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
+    if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
 
@@ -163,4 +163,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
