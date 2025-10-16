@@ -11,6 +11,7 @@ import '@/ai/flows/support-agent-flow.ts';
 import '@/ai/flows/text-to-speech-flow.ts';
 import '@/ai/flows/healthcare-agent-flow.ts';
 import '@/ai/flows/emotion-care-agent-flow.ts';
+import '@/ai/flows/diet-wellness-agent-flow.ts';
 
     
     
