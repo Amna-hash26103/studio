@@ -151,14 +151,17 @@ function PeriodTrackerPage() {
       const activeCycleStart = startOfDay(activeCycle.startDate);
       
       if (isBefore(dayStart, activeCycleStart)) {
-        setDialogState({ showStart: true, date: dayStart });
+        toast({
+            variant: 'destructive',
+            title: 'Invalid Date',
+            description: "You can't select a date before your current cycle started.",
+        })
       } 
+      else if (isSameDay(dayStart, activeCycleStart) || isBefore(dayStart, new Date())) {
+        setDialogState({ showEnd: true, date: dayStart });
+      }
       else {
-        if (isSameDay(dayStart, activeCycleStart) || isBefore(new Date(), dayStart)) {
-          setDialogState({ showLog: true, date: dayStart });
-        } else {
-          setDialogState({ showEnd: true, date: dayStart });
-        }
+        setDialogState({ showLog: true, date: dayStart });
       }
     } else {
       setDialogState({ showStart: true, date: dayStart });
@@ -229,8 +232,7 @@ function PeriodTrackerPage() {
   
   const handleOpenLogDialog = () => {
     const date = dialogState.date;
-    const isLoggable = isSameDay(date!, activeCycle!.startDate) || isBefore(new Date(), date!);
-    if (!isLoggable) return setDialogState({ showLog: true, date: date });
+    if (!date) return;
 
     setDialogState({}); // Close the end dialog
     setTimeout(() => setDialogState({ showLog: true, date: date }), 100); // Open log dialog
@@ -368,12 +370,12 @@ function PeriodTrackerPage() {
             </DialogContent>
         </Dialog>
         
-        {dialogState.date && activeCycle && (
+        {dialogState.date && (
             <LogFlowDialog
                 open={!!dialogState.showLog}
                 onOpenChange={(isOpen) => !isOpen && setDialogState({})}
                 date={dialogState.date}
-                dailyLog={activeCycleLogs?.find(log => isSameDay(log.date, dialogState.date!)) || dailyLogs.find(log => isSameDay(log.date, dialogState.date!))}
+                dailyLog={(activeCycle && activeCycleLogs?.find(log => isSameDay(log.date, dialogState.date!))) || dailyLogs.find(log => isSameDay(log.date, dialogState.date!))}
                 onSave={handleSaveLog}
             />
         )}
