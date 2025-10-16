@@ -3,8 +3,9 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
-import { ReactNode } from 'react';
+import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
+import './../lib/i18n';
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",
@@ -39,17 +40,19 @@ export default function RootLayout({
         />
       </head>
       <body className={cn('font-body antialiased h-screen flex flex-col')}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <FirebaseClientProvider>
-            {children}
-            <Toaster />
-          </FirebaseClientProvider>
-        </ThemeProvider>
+        <Suspense fallback={<div>Loading...</div>}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <FirebaseClientProvider>
+              {children}
+              <Toaster />
+            </FirebaseClientProvider>
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );
