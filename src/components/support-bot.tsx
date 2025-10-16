@@ -31,13 +31,17 @@ export function SupportBot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
-  const femmyAvatar = PlaceHolderImages.find((img) => img.id === 'logo');
+  const auraAvatar = PlaceHolderImages.find((img) => img.id === 'logo');
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setIsLoading(true);
       supportAgent('initial_greeting').then((response) => {
         setMessages([{ role: 'assistant', content: response }]);
+        setIsLoading(false);
+      }).catch(err => {
+        console.error("Support agent initial greeting failed:", err);
+        setMessages([{ role: 'assistant', content: "Hey! Having some trouble getting started, but I'm here. What's up?" }]);
         setIsLoading(false);
       });
     }
@@ -65,7 +69,7 @@ export function SupportBot() {
     } catch (error) {
       const errorMessage: Message = {
         role: 'assistant',
-        content: "Yikes, my circuits are fried. Try again in a bit?",
+        content: "Oops, seems like I'm having a moment. Could you try that again?",
       };
       setMessages((prev) => [...prev, errorMessage]);
       console.error('Error calling support agent:', error);
@@ -89,12 +93,15 @@ export function SupportBot() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-md flex flex-col h-[70vh] p-0">
           <DialogHeader className="p-4 border-b">
-            <DialogTitle className="flex items-center gap-2">
-              <Avatar className='h-8 w-8'>
-                <AvatarImage src={femmyAvatar?.imageUrl} />
+            <DialogTitle className="flex items-center gap-3">
+              <Avatar className='h-10 w-10'>
+                <AvatarImage src={auraAvatar?.imageUrl} />
                 <AvatarFallback>A</AvatarFallback>
               </Avatar>
-              Aura Support
+              <div className="flex flex-col">
+                <span>Aura</span>
+                <span className="text-xs font-normal text-muted-foreground">Your support guide</span>
+              </div>
             </DialogTitle>
           </DialogHeader>
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -108,7 +115,7 @@ export function SupportBot() {
               >
                 {message.role === 'assistant' && (
                   <Avatar className="h-8 w-8 border">
-                    <AvatarImage src={femmyAvatar?.imageUrl} />
+                    <AvatarImage src={auraAvatar?.imageUrl} />
                     <AvatarFallback>
                       <Bot />
                     </AvatarFallback>
@@ -135,7 +142,7 @@ export function SupportBot() {
             {isLoading && (
               <div className="flex items-start gap-3 justify-start">
                 <Avatar className="h-8 w-8 border">
-                   <AvatarImage src={femmyAvatar?.imageUrl} />
+                   <AvatarImage src={auraAvatar?.imageUrl} />
                   <AvatarFallback>
                     <Bot />
                   </AvatarFallback>
