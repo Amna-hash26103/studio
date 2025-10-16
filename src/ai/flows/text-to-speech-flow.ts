@@ -66,8 +66,8 @@ const textToSpeechFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            // Using 'Capella' which is a female voice
-            prebuiltVoiceConfig: { voiceName: 'Capella' },
+            // Using 'erinome' which is a supported female voice
+            prebuiltVoiceConfig: { voiceName: 'erinome' },
           },
         },
       },
