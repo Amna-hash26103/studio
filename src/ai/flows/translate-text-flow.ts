@@ -9,6 +9,12 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import handlebars from 'handlebars';
+
+// Manually register the 'eq' helper for the template at the module level
+handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
 
 const TranslateTextInputSchema = z.object({
   text: z.string().describe('The text to translate.'),
@@ -64,12 +70,6 @@ const translateTextFlow = ai.defineFlow(
     outputSchema: TranslateTextOutputSchema,
   },
   async input => {
-    // Manually register the 'eq' helper for the template
-    const handlebars = await import('handlebars');
-    handlebars.registerHelper('eq', function (a, b) {
-      return a === b;
-    });
-    
     const { output } = await translationPrompt(input);
     return output!;
   }
