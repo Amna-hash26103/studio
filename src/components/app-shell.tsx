@@ -46,6 +46,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { ReadAloudButton } from './read-aloud-button';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -100,7 +101,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <AvatarFallback>{user?.displayName?.slice(0,1) || 'U'}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold truncate">Welcome back,</span>
+            <div className='flex items-center'>
+                <span className="text-sm font-semibold truncate">Welcome back,</span>
+                 <ReadAloudButton textToRead={`Welcome back, ${user?.displayName?.split(' ')[0]}`} />
+            </div>
             <span className="text-lg font-bold truncate">{user?.displayName?.split(' ')[0]}</span>
           </div>
         </div>

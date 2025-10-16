@@ -4,89 +4,21 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { HeartHandshake, Users, Globe, Volume2, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
+import { HeartHandshake, Users, Globe, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useState, useRef, useEffect } from 'react';
+import { ReadAloudButton } from '@/components/read-aloud-button';
 
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
-  const [isPlaying, setIsPlaying] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<string | null>(null);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-
-
-  useEffect(() => {
-    const loadVoices = () => {
-      setVoices(window.speechSynthesis.getVoices());
-    };
-    // Voices are loaded asynchronously
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-    loadVoices();
-
-    // Cleanup speechSynthesis on component unmount
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-      if (window.speechSynthesis.speaking) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
   const audioContent = {
-    hero: `Empower Your Journey. Together. FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.`,
-    thrive: `A Space to Thrive. At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.`,
-    features: `Features Designed for You. Everything you need to support your personal and professional growth, all in one place.`,
-  };
-
-  const handlePlayPause = (section: keyof typeof audioContent) => {
-    if (isPlaying === section) {
-      window.speechSynthesis.cancel();
-      setIsPlaying(null);
-      return;
-    }
-
-    if (isLoading) {
-      window.speechSynthesis.cancel();
-      setIsLoading(null);
-      setIsPlaying(null);
-    }
-    
-    setIsLoading(section);
-    
-    const textToSpeak = audioContent[section];
-    const newUtterance = new SpeechSynthesisUtterance(textToSpeak);
-    
-    const femaleVoice = voices.find(
-      (voice) => voice.lang.startsWith('en') && (voice.name.includes('Female') || voice.name.includes('Woman') || voice.name.includes('Zira') || voice.gender === 'female')
-    ) || voices.find(v => v.lang.startsWith('en'));
-    
-    if (femaleVoice) {
-      newUtterance.voice = femaleVoice;
-    }
-
-    newUtterance.lang = 'en-US';
-
-    newUtterance.onstart = () => {
-        setIsLoading(null);
-        setIsPlaying(section);
-    };
-
-    newUtterance.onend = () => {
-      setIsPlaying(null);
-      utteranceRef.current = null;
-    };
-    
-    newUtterance.onerror = (event) => {
-      console.error('SpeechSynthesis Error:', event.error);
-      setIsLoading(null);
-      setIsPlaying(null);
-    };
-
-    utteranceRef.current = newUtterance;
-    window.speechSynthesis.speak(newUtterance);
+    hero: `Empower Your Journey. Together.`,
+    heroSubtitle: `FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.`,
+    thrive: `A Space to Thrive.`,
+    thriveSubtitle: `At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.`,
+    features: `Features Designed for You.`,
+    featuresSubtitle: `Everything you need to support your personal and professional growth, all in one place.`,
   };
 
   const features = [
@@ -122,23 +54,6 @@ export default function LandingPage() {
     },
   ];
 
-  const renderSpeakerButton = (section: keyof typeof audioContent) => {
-    const Icon = Volume2;
-    const isSpinning = isLoading === section || isPlaying === section;
-    
-    return (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => handlePlayPause(section)}
-        className="ml-2"
-        aria-label={`Read ${section.replace('-', ' ')} aloud`}
-      >
-        <Icon className={`h-6 w-6 ${isSpinning ? 'animate-pulse' : ''}`} />
-      </Button>
-    );
-  }
-
   return (
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
@@ -161,13 +76,16 @@ export default function LandingPage() {
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                  Empower Your Journey. Together.
+                  {audioContent.hero}
                 </h1>
-                {renderSpeakerButton('hero')}
+                <ReadAloudButton textToRead={audioContent.hero} />
             </div>
-            <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
-              FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.
-            </p>
+            <div className='flex items-center justify-center'>
+                 <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
+                    {audioContent.heroSubtitle}
+                </p>
+                <ReadAloudButton textToRead={audioContent.heroSubtitle} />
+            </div>
             <div className="mt-8 flex justify-center">
               <Button size="lg" asChild>
                 <Link href="/signup">Join the Community</Link>
@@ -193,13 +111,16 @@ export default function LandingPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                      A Space to Thrive
+                      {audioContent.thrive}
                     </h2>
-                    {renderSpeakerButton('thrive')}
+                    <ReadAloudButton textToRead={audioContent.thrive} />
                 </div>
-                <p className="text-muted-foreground md:text-lg">
-                  At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.
-                </p>
+                <div className='flex items-center'>
+                    <p className="text-muted-foreground md:text-lg">
+                      {audioContent.thriveSubtitle}
+                    </p>
+                    <ReadAloudButton textToRead={audioContent.thriveSubtitle} />
+                </div>
               </div>
             </div>
           </div>
@@ -209,13 +130,16 @@ export default function LandingPage() {
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                  Features Designed for You
+                  {audioContent.features}
                 </h2>
-                {renderSpeakerButton('features')}
+                <ReadAloudButton textToRead={audioContent.features} />
             </div>
-            <p className="mt-4 text-muted-foreground md:text-lg">
-              Everything you need to support your personal and professional growth, all in one place.
-            </p>
+            <div className='flex items-center justify-center'>
+                <p className="mt-4 text-muted-foreground md:text-lg">
+                    {audioContent.featuresSubtitle}
+                </p>
+                <ReadAloudButton textToRead={audioContent.featuresSubtitle} />
+            </div>
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (

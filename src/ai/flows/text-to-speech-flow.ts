@@ -66,7 +66,8 @@ const textToSpeechFlow = ai.defineFlow(
         responseModalities: ['AUDIO'],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Algenib' },
+            // Using 'Capella' which is a female voice
+            prebuiltVoiceConfig: { voiceName: 'Capella' },
           },
         },
       },
