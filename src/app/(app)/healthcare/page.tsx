@@ -1,7 +1,9 @@
+
 'use client';
 
 import { ChatInterface } from '@/components/chat-interface';
 import { ReadAloudButton } from '@/components/read-aloud-button';
+import { healthcareAgent } from '@/ai/flows/healthcare-agent-flow';
 
 export default function HealthcarePage() {
   const headingText = "Healthcare AI";
@@ -21,7 +23,11 @@ export default function HealthcarePage() {
           <ReadAloudButton textToRead={descriptionText} />
         </div>
       </div>
-      <ChatInterface topic="health" />
+      <ChatInterface 
+        topic="health" 
+        agent={healthcareAgent}
+        initialMessage="Hello! I'm your Femmora Health Companion. You can ask me about female hygiene, menstrual health, pregnancy, and other wellness topics. How can I help you today?"
+      />
     </div>
   );
 }

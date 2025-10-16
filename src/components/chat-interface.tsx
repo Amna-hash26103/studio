@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -14,7 +15,6 @@ import { cn } from '@/lib/utils';
 import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
-import { dietAgent } from '@/ai/flows/diet-agent-flow';
 import { ReadAloudButton } from './read-aloud-button';
 
 const healthAvatar = PlaceHolderImages.find(
@@ -35,7 +35,13 @@ interface Message {
   content: string;
 }
 
-export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, useDietAgent?: boolean }) {
+interface ChatInterfaceProps {
+    topic: Topic;
+    agent?: (query: string) => Promise<string>;
+    initialMessage?: string;
+}
+
+export function ChatInterface({ topic, agent, initialMessage }: ChatInterfaceProps) {
   
   const avatars: Record<Topic, typeof healthAvatar> = {
     health: healthAvatar,
@@ -44,12 +50,12 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
   };
   
   const placeholders: Record<Topic, string> = {
-    health: "e.g., How can I start a simple home workout routine?",
+    health: "e.g., How can I do a breast self-exam?",
     emotionalWellbeing: "e.g., I've been feeling down lately...",
     nutrition: "e.g., What are some healthy snack ideas?",
   };
   
-  const initialMessages: Record<Topic, Message> = {
+  const defaultInitialMessages: Record<Topic, Message> = {
       health: {
           role: 'assistant',
           content: "Hi! I'm your Healthcare assistant. How can I help you today?",
@@ -71,8 +77,8 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
 
 
   useEffect(() => {
-    setMessages([initialMessages[topic]]);
-  }, [topic]);
+    setMessages([ initialMessage ? { role: 'assistant', content: initialMessage } : defaultInitialMessages[topic] ]);
+  }, [topic, initialMessage]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -91,20 +97,22 @@ export function ChatInterface({ topic, useDietAgent = false }: { topic: Topic, u
     setIsLoading(true);
 
     try {
-        let response;
-        if (useDietAgent) {
-            response = { advice: await dietAgent(input) };
+        let responseText;
+        if (agent) {
+            responseText = await agent(input);
         } else {
+            // Fallback to the generic wellness bot if no specific agent is provided
             const aiInput: WellnessChatbotPersonalizedAdviceInput = {
                 topic: topic,
                 query: input,
             };
-            response = await wellnessChatbotPersonalizedAdvice(aiInput);
+            const response = await wellnessChatbotPersonalizedAdvice(aiInput);
+            responseText = response.advice;
         }
 
       const assistantMessage: Message = {
         role: 'assistant',
-        content: response.advice,
+        content: responseText,
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
