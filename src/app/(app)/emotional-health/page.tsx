@@ -8,9 +8,9 @@ export default function EmotionalHealthPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-12">
       <div className="mb-6">
-        <h1 className="font-headline text-3xl font-bold">Navigating Sadness</h1>
+        <h1 className="font-headline text-3xl font-bold">Emotional Support</h1>
         <p className="text-muted-foreground">
-          A safe space to explore your feelings and find a path forward.
+          A safe space to explore your feelings and find support.
         </p>
       </div>
       <ChatInterface 
