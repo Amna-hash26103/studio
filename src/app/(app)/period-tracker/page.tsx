@@ -452,7 +452,7 @@ function CycleStats({ periods }: { periods: Period[] }) {
             };
         }
 
-        const cycleLengths = [];
+        const cycleLengths: number[] = [];
         for (let i = 1; i < completedCycles.length; i++) {
             const currentCycleStart = startOfDay(completedCycles[i].startDate);
             const prevCycleStart = startOfDay(completedCycles[i - 1].startDate);
@@ -803,5 +803,6 @@ function PastCycleCard({ period, index, userId, firestore }: { period: Period, i
 }
 
 export default PeriodTrackerPage;
+
 
     
