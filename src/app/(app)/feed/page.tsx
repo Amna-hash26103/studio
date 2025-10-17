@@ -106,8 +106,14 @@ export default function FeedPage() {
   useEffect(() => {
     if (firestorePosts) {
       const combined = [...DUMMY_POSTS, ...firestorePosts].sort((a, b) => {
+        // Handle cases where createdAt might be null or not yet a Timestamp
         const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : a.createdAt;
         const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : b.createdAt;
+
+        // If a date is invalid or null, treat it as newer for sorting purposes
+        if (!dateA) return -1;
+        if (!dateB) return 1;
+
         return dateB.getTime() - dateA.getTime();
       });
       const uniquePosts = Array.from(new Set(combined.map(p => p.id))).map(id => combined.find(p => p.id === id)!);
@@ -370,3 +376,5 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
+
+    
