@@ -52,17 +52,6 @@ const dietAgentFlow = ai.defineFlow(
         // If the model calls a tool but doesn't return text, explain what it did.
         const toolRequests = llmResponse.toolRequests;
         if (toolRequests && toolRequests.length > 0) {
-            const toolResponses = llmResponse.toolResponses;
-            const toolResponse = toolResponses?.[0];
-            if(toolResponse?.name === 'analyzeMealNutrition' && toolResponse.output){
-                const nutrition = toolResponse.output;
-                return `I've analyzed that for you! It has approximately ${nutrition.calories} calories, ${nutrition.protein}g of protein, ${nutrition.carbs}g of carbs, ${nutrition.fat}g of fat, and ${nutrition.fiber}g of fiber.
-
-\'\'\'json
-${JSON.stringify(nutrition, null, 2)}
-\'\'\'
-`;
-            }
             return `I'm using a tool to look that up for you.`;
         }
         return "I'm not sure how to answer that. Could you try rephrasing?";
