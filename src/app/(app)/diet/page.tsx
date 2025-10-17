@@ -25,7 +25,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { scheduleReminder } from '@/lib/reminders';
 import { dietWellnessAgent } from '@/ai/flows/diet-wellness-agent-flow';
-import type { DietWellnessAgentInput } from '@/ai/flows/diet-wellness-agent-flow';
 
 type MealLog = {
   id: string;
@@ -159,14 +158,6 @@ export default function DietPage() {
     })
   };
   
-  const wellnessAgentWithContext = async (query: string) => {
-    const input: DietWellnessAgentInput = {
-      query,
-      waterIntake,
-      bowelMovements: poopLogs.map(p => ({ type: p.type, createdAt: p.createdAt })),
-    };
-    return await dietWellnessAgent(input);
-  }
 
   const bristolScale = [
     { value: '1', label: 'Type 1: Separate hard lumps' },
@@ -230,7 +221,7 @@ export default function DietPage() {
         <h2 className="font-headline text-2xl font-bold">Ask Your Diet Guide</h2>
         <p className="text-muted-foreground">Have questions about nutrition? Ask your AI assistant below.</p>
         <div className="mt-4">
-          <ChatInterface topic="nutrition" agent={wellnessAgentWithContext} />
+          <ChatInterface topic="nutrition" agent={dietWellnessAgent} />
         </div>
       </div>
     </div>
@@ -400,5 +391,3 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
-
-    
