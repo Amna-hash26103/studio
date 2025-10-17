@@ -108,7 +108,7 @@ export function SupportBot() {
           {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
         </Button>
       </div>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={setIsOpen} modal={true}>
         <DialogContent className="sm:max-w-md flex flex-col h-[70vh] p-0">
           <DialogHeader className="p-4 border-b">
             <DialogTitle className="flex items-center gap-3">
