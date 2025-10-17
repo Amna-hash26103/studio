@@ -8,50 +8,42 @@ import { FemmoraLogo } from '@/components/icons';
 import { HeartHandshake, Users, Globe, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ReadAloudButton } from '@/components/read-aloud-button';
-import { useTranslation, languages } from '@/lib/i18n';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
-  const { t, setLanguage, lang } = useTranslation();
 
   const features = [
     {
       icon: <Smile className="h-8 w-8 text-primary" />,
-      title: t('landing.features.soulspace.title'),
-      description: t('landing.features.soulspace.description'),
+      title: "SoulSpace: Emotional Wellness Companion",
+      description: "A safe digital haven where emotions are met with empathy. Whether you’re overwhelmed, reflective, or healing, SoulSpace listens — offering guided reflections, gentle prompts, and supportive AI companions who speak your heart’s language.",
     },
     {
       icon: <HeartHandshake className="h-8 w-8 text-primary" />,
-      title: t('landing.features.herhealth.title'),
-      description: t('landing.features.herhealth.description'),
+      title: "HerHealth: Smart Health Insights",
+      description: "Track your cycles, sleep, and stress in one serene space. HerHealth uses adaptive AI to understand you — recommending lifestyle tweaks, reminders, and supportive routines that honor your body’s rhythm.",
     },
     {
       icon: <UtensilsCrossed className="h-8 w-8 text-primary" />,
-      title: t('landing.features.nourish.title'),
-      description: t('landing.features.nourish.description'),
+      title: "Nourish: Personalized Diet & Nutrition Guide",
+      description: "Built for every woman’s journey — from strength to self-care. Nourish curates meal suggestions that match your mood, health goals, and culture. Each recommendation comes from a place of love, not restriction.",
     },
     {
       icon: <Activity className="h-8 w-8 text-primary" />,
-      title: t('landing.features.evolve.title'),
-      description: t('landing.features.evolve.description'),
+      title: "Evolve: Gentle Fitness & Energy Flow",
+      description: "Move at your pace — yoga, mindful movement, and women-focused workouts guided by your energy levels and emotional state. Every motion in Evolve celebrates what your body can do, not what it must.",
     },
     {
       icon: <Users className="h-8 w-8 text-primary" />,
-      title: t('landing.features.circle.title'),
-      description: t('landing.features.circle.description'),
+      title: "Circle: The FEMMORA Community",
+      description: "A beautifully moderated space for women to connect, share stories, and lift one another. From daily check-ins to creative challenges, Circle celebrates unity without comparison — a digital sisterhood of strength.",
     },
     {
       icon: <BrainCircuit className="h-8 w-8 text-primary" />,
-      title: t('landing.features.femmind.title'),
-      description: t('landing.features.femmind.description'),
+      title: "FEMMind: Your AI-Guided Growth Partner",
+      description: "Three fine-tuned, empathetic LLMs — customized to support Health, Emotional Wellness, and Life Guidance. They don’t just respond — they understand, blending science with empathy to offer advice that uplifts, not instructs.",
     },
   ];
 
@@ -63,26 +55,11 @@ export default function LandingPage() {
           <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5" />
-                <span className="sr-only">Select language</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {languages.map(({code, name}) => (
-                <DropdownMenuItem key={code} onSelect={() => setLanguage(code)}>
-                  {name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
           <Button variant="ghost" asChild>
-            <Link href="/login">{t('landing.login')}</Link>
+            <Link href="/login">Log In</Link>
           </Button>
           <Button asChild>
-            <Link href="/signup">{t('landing.signup')}</Link>
+            <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>
       </header>
@@ -92,19 +69,19 @@ export default function LandingPage() {
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-                  {t('landing.hero.title')}
+                  Empower Your Journey. Together.
                 </h1>
-                <ReadAloudButton textToRead={t('landing.hero.title')} lang={lang} />
+                <ReadAloudButton textToRead='Empower Your Journey. Together.' />
             </div>
             <div className='flex items-center justify-center'>
                  <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
-                    {t('landing.hero.subtitle')}
+                    FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.
                 </p>
-                <ReadAloudButton textToRead={t('landing.hero.subtitle')} lang={lang} />
+                <ReadAloudButton textToRead="FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you." />
             </div>
             <div className="mt-8 flex justify-center">
               <Button size="lg" asChild>
-                <Link href="/signup">{t('landing.hero.cta')}</Link>
+                <Link href="/signup">Join the Community</Link>
               </Button>
             </div>
           </div>
@@ -127,15 +104,15 @@ export default function LandingPage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                      {t('landing.thrive.title')}
+                      A Space to Thrive.
                     </h2>
-                    <ReadAloudButton textToRead={t('landing.thrive.title')} lang={lang} />
+                    <ReadAloudButton textToRead='A Space to Thrive.' />
                 </div>
                 <div className='flex items-center'>
                     <p className="text-muted-foreground md:text-lg">
-                      {t('landing.thrive.subtitle')}
+                      At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.
                     </p>
-                    <ReadAloudButton textToRead={t('landing.thrive.subtitle')} lang={lang} />
+                    <ReadAloudButton textToRead="At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success." />
                 </div>
               </div>
             </div>
@@ -146,15 +123,15 @@ export default function LandingPage() {
           <div className="container mx-auto mb-12 max-w-2xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                  {t('landing.features.title')}
+                  Features Designed for You.
                 </h2>
-                <ReadAloudButton textToRead={t('landing.features.title')} lang={lang} />
+                <ReadAloudButton textToRead='Features Designed for You.' />
             </div>
             <div className='flex items-center justify-center'>
                 <p className="mt-4 text-muted-foreground md:text-lg">
-                    {t('landing.features.subtitle')}
+                    Everything you need to support your personal and professional growth, all in one place.
                 </p>
-                <ReadAloudButton textToRead={t('landing.features.subtitle')} lang={lang} />
+                <ReadAloudButton textToRead='Everything you need to support your personal and professional growth, all in one place.' />
             </div>
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -178,7 +155,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} FEMMORA. {t('landing.footer.rights')}
+              © {new Date().getFullYear()} FEMMORA. All rights reserved.
             </span>
           </div>
           <nav className="flex gap-4">
@@ -186,19 +163,19 @@ export default function LandingPage() {
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              {t('landing.footer.privacy')}
+              Privacy
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              {t('landing.footer.terms')}
+              Terms
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              {t('landing.footer.contact')}
+              Contact
             </Link>
           </nav>
         </div>

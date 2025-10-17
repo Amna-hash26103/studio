@@ -25,7 +25,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { scheduleReminder } from '@/lib/reminders';
 import { dietWellnessAgent } from '@/ai/flows/diet-wellness-agent-flow';
-import { useTranslation } from '@/lib/i18n';
 
 type MealLog = {
   id: string;
@@ -85,7 +84,6 @@ const initialMealLogs: MealLog[] = [
 
 export default function DietPage() {
   const { toast } = useToast();
-  const { t } = useTranslation();
   const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false); 
 
@@ -132,16 +130,16 @@ export default function DietPage() {
       setMealLogs(prev => [newLog, ...prev].sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
 
       toast({
-        title: t('diet.mealLoggedTitle'),
-        description: t('diet.mealLoggedDescription'),
+        title: 'Meal Logged!',
+        description: 'Your meal and its nutritional info have been saved locally.',
       });
       form.reset();
     } catch (error) {
       console.error('Error logging meal:', error);
       toast({
         variant: 'destructive',
-        title: t('diet.analysisFailedTitle'),
-        description: t('diet.analysisFailedDescription'),
+        title: 'Analysis Failed',
+        description: "We couldn't analyze your meal right now. Please try again.",
       });
     }
   };
@@ -155,27 +153,37 @@ export default function DietPage() {
     };
     setPoopLogs(prev => [...prev, newLog].sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
     toast({
-        title: t('diet.bowelMovementLoggedTitle'),
-        description: t('diet.bowelMovementLoggedDescription', { type: type }),
+        title: 'Bowel Movement Logged',
+        description: `You've logged a Type ${type} movement.`,
     })
   };
+
+  const bristolScale = [
+    { value: '1', label: 'Type 1: Separate hard lumps' },
+    { value: '2', label: 'Type 2: Lumpy and sausage-like' },
+    { value: '3', label: 'Type 3: Sausage shape with cracks' },
+    { value: '4', label: 'Type 4: Smooth, soft sausage' },
+    { value: '5', label: 'Type 5: Soft blobs with clear edges' },
+    { value: '6', label: 'Type 6: Mushy, ragged edges' },
+    { value: '7', label: 'Type 7: Liquid consistency' },
+];
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
-        <h1 className="font-headline text-3xl font-bold">{t('diet.title')}</h1>
-        <p className="text-muted-foreground">{t('diet.subtitle')}</p>
+        <h1 className="font-headline text-3xl font-bold">Diet & Digestion</h1>
+        <p className="text-muted-foreground">Track your meals, hydration, and digestive health.</p>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <WaterTracker waterIntake={waterIntake} setWaterIntake={setWaterIntake} />
-        <PoopTracker logs={poopLogs} onLog={handleLogPoop} />
+        <PoopTracker logs={poopLogs} onLog={handleLogPoop} bristolScale={bristolScale} />
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('diet.logMealTitle')}</CardTitle>
-          <CardDescription>{t('diet.logMealDescription')}</CardDescription>
+          <CardTitle>Log a Meal</CardTitle>
+          <CardDescription>Describe what you ate, and our AI will estimate the nutritional content.</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -185,10 +193,10 @@ export default function DietPage() {
                 name="mealDescription"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('diet.mealDescriptionLabel')}</FormLabel>
+                    <FormLabel>Meal Description</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder={t('diet.mealDescriptionPlaceholder')}
+                        placeholder='e.g., A bowl of oatmeal with blueberries and almonds'
                         {...field}
                         disabled={form.formState.isSubmitting}
                       />
@@ -199,7 +207,7 @@ export default function DietPage() {
               />
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {form.formState.isSubmitting ? t('diet.analyzingButton') : t('diet.analyzeAndLogButton')}
+                {form.formState.isSubmitting ? 'Analyzing...' : 'Analyze & Log Meal'}
               </Button>
             </form>
           </Form>
@@ -209,8 +217,8 @@ export default function DietPage() {
       <MealHistory logs={mealLogs} isLoading={isLoadingLogs} />
       
       <div className="mt-8">
-        <h2 className="font-headline text-2xl font-bold">{t('diet.askDietGuideTitle')}</h2>
-        <p className="text-muted-foreground">{t('diet.askDietGuideDescription')}</p>
+        <h2 className="font-headline text-2xl font-bold">Ask Your Diet Guide</h2>
+        <p className="text-muted-foreground">Have questions about nutrition? Ask your AI assistant below.</p>
         <div className="mt-4">
           <ChatInterface topic="nutrition" agent={dietWellnessAgent} />
         </div>
@@ -220,21 +228,20 @@ export default function DietPage() {
 }
 
 function WaterTracker({ waterIntake, setWaterIntake }: { waterIntake: number, setWaterIntake: (fn: (prev: number) => number) => void }) {
-    const { t } = useTranslation();
     const glasses = Array.from({ length: 8 });
 
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <GlassWater /> {t('diet.waterTrackerTitle')}
+                    <GlassWater /> Water Intake
                 </CardTitle>
-                <CardDescription>{t('diet.waterTrackerDescription')}</CardDescription>
+                <CardDescription>Log your daily water intake. Aim for 8 glasses a day!</CardDescription>
             </CardHeader>
             <CardContent className="flex items-center justify-center gap-4">
                 <div className="flex flex-col items-center gap-2">
                     <div className="text-5xl font-bold text-primary">{waterIntake}</div>
-                    <div className="text-muted-foreground">{t('diet.glasses')}</div>
+                    <div className="text-muted-foreground">glasses</div>
                 </div>
                  <div className="grid grid-cols-4 gap-2">
                     {glasses.map((_, i) => (
@@ -259,31 +266,20 @@ function WaterTracker({ waterIntake, setWaterIntake }: { waterIntake: number, se
     );
 }
 
-function PoopTracker({ logs, onLog }: { logs: PoopLog[], onLog: (type: string) => void }) {
-    const { t } = useTranslation();
-    const bristolScale = [
-        { value: '1', label: t('diet.bristolScale.type1') },
-        { value: '2', label: t('diet.bristolScale.type2') },
-        { value: '3', label: t('diet.bristolScale.type3') },
-        { value: '4', label: t('diet.bristolScale.type4') },
-        { value: '5', label: t('diet.bristolScale.type5') },
-        { value: '6', label: t('diet.bristolScale.type6') },
-        { value: '7', label: t('diet.bristolScale.type7') },
-    ];
-    
+function PoopTracker({ logs, onLog, bristolScale }: { logs: PoopLog[], onLog: (type: string) => void, bristolScale: {value: string, label: string}[] }) {
     return (
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Bean /> {t('diet.poopTrackerTitle')}
+                    <Bean /> Bowel Movement Tracker
                 </CardTitle>
-                <CardDescription>{t('diet.poopTrackerDescription')}</CardDescription>
+                <CardDescription>Log your movements using the Bristol Stool Chart.</CardDescription>
             </CardHeader>
             <CardContent>
                  <div className="space-y-4">
                     <Select onValueChange={(value) => onLog(value)}>
                         <SelectTrigger>
-                            <SelectValue placeholder={t('diet.poopTrackerPlaceholder')} />
+                            <SelectValue placeholder="Log a new movement..." />
                         </SelectTrigger>
                         <SelectContent>
                             {bristolScale.map(item => (
@@ -294,18 +290,18 @@ function PoopTracker({ logs, onLog }: { logs: PoopLog[], onLog: (type: string) =
                         </SelectContent>
                     </Select>
                      <div className="space-y-2">
-                        <h4 className="font-medium text-sm">{t('diet.todaysLogs')}</h4>
+                        <h4 className="font-medium text-sm">Today's Logs</h4>
                         {logs.length > 0 ? (
                             <div className="space-y-2 rounded-lg border p-3">
                                 {logs.map(log => (
                                     <div key={log.id} className="flex justify-between items-center text-sm">
-                                        <span>{t('diet.logType', { type: log.type })}</span>
+                                        <span>Type {log.type}</span>
                                         <span className="text-muted-foreground">{format(log.createdAt, 'h:mm a')}</span>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-muted-foreground text-center py-4">{t('diet.noMovementsLogged')}</p>
+                            <p className="text-sm text-muted-foreground text-center py-4">No movements logged today.</p>
                         )}
                     </div>
                 </div>
@@ -315,12 +311,11 @@ function PoopTracker({ logs, onLog }: { logs: PoopLog[], onLog: (type: string) =
 }
 
 function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
-  const { t } = useTranslation();
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('diet.mealHistoryTitle')}</CardTitle>
+          <CardTitle>Meal History</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {[...Array(3)].map((_, i) => (
@@ -338,10 +333,10 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('diet.mealHistoryTitle')}</CardTitle>
+          <CardTitle>Meal History</CardTitle>
         </CardHeader>
         <CardContent className="text-center text-muted-foreground py-10">
-          <p>{t('diet.noMealsLogged')}</p>
+          <p>You haven't logged any meals yet. Add one above to get started!</p>
         </CardContent>
       </Card>
     );
@@ -350,7 +345,7 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t('diet.mealHistoryTitle')}</CardTitle>
+        <CardTitle>Meal History</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {logs.map((log) => (
@@ -362,13 +357,12 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
 }
 
 function MealLogCard({ log }: { log: MealLog }) {
-  const { t } = useTranslation();
   const nutritionInfo = [
-    { label: t('diet.nutrition.calories'), value: (log.calories || 0).toFixed(0), unit: '' },
-    { label: t('diet.nutrition.protein'), value: (log.protein || 0).toFixed(1), unit: 'g' },
-    { label: t('diet.nutrition.carbs'), value: (log.carbs || 0).toFixed(1), unit: 'g' },
-    { label: t('diet.nutrition.fat'), value: (log.fat || 0).toFixed(1), unit: 'g' },
-    { label: t('diet.nutrition.fiber'), value: (log.fiber || 0).toFixed(1), unit: 'g' },
+    { label: 'Calories', value: (log.calories || 0).toFixed(0), unit: '' },
+    { label: 'Protein', value: (log.protein || 0).toFixed(1), unit: 'g' },
+    { label: 'Carbs', value: (log.carbs || 0).toFixed(1), unit: 'g' },
+    { label: 'Fat', value: (log.fat || 0).toFixed(1), unit: 'g' },
+    { label: 'Fiber', value: (log.fiber || 0).toFixed(1), unit: 'g' },
   ];
 
   return (
@@ -378,7 +372,7 @@ function MealLogCard({ log }: { log: MealLog }) {
             <div>
               <p className="font-semibold">{log.description}</p>
               <p className="text-sm text-muted-foreground">
-                {log.createdAt ? format(log.createdAt, 'MMMM d, yyyy, h:mm a') : t('diet.justNow')}
+                {log.createdAt ? format(log.createdAt, 'MMMM d, yyyy, h:mm a') : 'Just now'}
               </p>
             </div>
           </div>

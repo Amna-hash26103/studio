@@ -29,7 +29,6 @@ import {
   Smile,
   User,
   Droplets,
-  Globe,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -49,7 +48,6 @@ import {
 } from './ui/dropdown-menu';
 import { ReadAloudButton } from './read-aloud-button';
 import { Loader2 } from 'lucide-react';
-import { useTranslation, languages } from '@/lib/i18n';
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -58,18 +56,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const pathname = usePathname();
   const { toast } = useToast();
-  const { t, lang, setLanguage } = useTranslation();
 
   const mainNavItems = [
-    { href: `/feed`, icon: <LayoutDashboard />, label: t('sidebar.feed') },
-    { href: `/healthcare`, icon: <HeartPulse />, label: t('sidebar.healthcare') },
-    { href: `/emotional-health`, icon: <Smile />, label: t('sidebar.emotionalHealth') },
-    { href: `/diet`, icon: <Salad />, label: t('sidebar.diet') },
-    { href: `/period-tracker`, icon: <Droplets />, label: t('sidebar.periodTracker') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: 'Feed' },
+    { href: `/healthcare`, icon: <HeartPulse />, label: 'Healthcare' },
+    { href: `/emotional-health`, icon: <Smile />, label: 'Emotional Health' },
+    { href: `/diet`, icon: <Salad />, label: 'Diet' },
+    { href: `/period-tracker`, icon: <Droplets />, label: 'Period Tracker' },
   ];
   
   const accountNavItems = [
-    { href: `/settings`, icon: <Settings />, label: t('sidebar.settings') },
+    { href: `/settings`, icon: <Settings />, label: 'Settings' },
   ];
 
 
@@ -77,16 +74,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     try {
       await signOut(auth);
       toast({
-        title: t('appShell.logoutSuccessTitle'),
-        description: t('appShell.logoutSuccessDescription'),
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
       });
       router.push(`/login`);
     } catch (error: any) {
       console.error('Error signing out:', error);
       toast({
         variant: 'destructive',
-        title: t('common.error'),
-        description: t('appShell.logoutError'),
+        title: 'Error',
+        description: 'Could not log you out. Please try again.',
       });
     }
   };
@@ -95,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return pathname === href;
   }
   
-  const welcomeText = t('sidebar.welcome', { name: user?.displayName?.split(' ')[0] });
+  const welcomeText = `Welcome back, ${user?.displayName?.split(' ')[0]}`;
 
   const sidebarContent = (
     <>
@@ -108,7 +105,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col">
             <div className='flex items-center'>
                 <span className="text-sm font-semibold truncate">{welcomeText}</span>
-                 <ReadAloudButton textToRead={welcomeText} lang={lang} />
+                 <ReadAloudButton textToRead={welcomeText} />
             </div>
             <span className="text-lg font-bold truncate">{user?.displayName?.split(' ')[0]}</span>
           </div>
@@ -122,7 +119,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarGroup>
-            <SidebarGroupLabel>{t('sidebar.main')}</SidebarGroupLabel>
+            <SidebarGroupLabel>MAIN</SidebarGroupLabel>
             <SidebarMenu>
             {mainNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -142,7 +139,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </SidebarGroup>
         <SidebarSeparator />
         <SidebarGroup>
-            <SidebarGroupLabel>{t('sidebar.account')}</SidebarGroupLabel>
+            <SidebarGroupLabel>ACCOUNT</SidebarGroupLabel>
              <SidebarMenu>
             {accountNavItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
@@ -165,9 +162,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <SidebarSeparator />
          <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout} tooltip={{ children: t('sidebar.logout') }}>
+                <SidebarMenuButton onClick={handleLogout} tooltip={{ children: 'Log Out' }}>
                 <LogOut />
-                <span>{t('sidebar.logout')}</span>
+                <span>Log Out</span>
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
@@ -189,50 +186,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
       <div className="w-full flex-1">
       </div>
-       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Globe className="h-5 w-5" />
-            <span className="sr-only">{t('appShell.selectLanguage')}</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {languages.map(({code, name}) => (
-            <DropdownMenuItem key={code} onSelect={() => setLanguage(code)}>
-              {name}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="rounded-full relative">
             <Bell className="h-5 w-5" />
             <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary" />
-            <span className="sr-only">{t('appShell.notifications')}</span>
+            <span className="sr-only">Notifications</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>{t('appShell.notifications')}</DropdownMenuLabel>
+          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="flex-col items-start gap-1">
-            <p className="font-medium">{t('appShell.notification1.title')}</p>
+            <p className="font-medium">New post from Chloe! ✨</p>
             <p className="text-xs text-muted-foreground">
-              {t('appShell.notification1.description')}
+              "Cycle syncing my workouts has been a game-changer!..."
             </p>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="flex-col items-start gap-1">
-            <p className="font-medium">{t('appShell.notification2.title')}</p>
+            <p className="font-medium">Hydration Reminder 💧</p>
             <p className="text-xs text-muted-foreground">
-              {t('appShell.notification2.description')}
+              Don't forget to drink some water.
             </p>
           </DropdownMenuItem>
            <DropdownMenuSeparator />
            <DropdownMenuItem className="flex-col items-start gap-1">
-            <p className="font-medium">{t('appShell.notification3.title')}</p>
+            <p className="font-medium">New post from Elena!</p>
             <p className="text-xs text-muted-foreground">
-              {t('appShell.notification3.description')}
+              "Just finished a 7-day mindfulness challenge..."
             </p>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -241,10 +223,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
   
   const mobileNavItems = [
-    { href: `/feed`, icon: <LayoutDashboard />, label: t('sidebar.feed') },
-    { href: `/period-tracker`, icon: <Droplets />, label: t('sidebar.periodTracker') },
-    { href: `/emotional-health`, icon: <Smile />, label: t('sidebar.health') },
-    { href: `/settings`, icon: <Settings />, label: t('sidebar.settings') },
+    { href: `/feed`, icon: <LayoutDashboard />, label: 'Feed' },
+    { href: `/period-tracker`, icon: <Droplets />, label: 'Period Tracker' },
+    { href: `/emotional-health`, icon: <Smile />, label: 'Health' },
+    { href: `/settings`, icon: <Settings />, label: 'Settings' },
   ]
 
   const mobileNav = (
