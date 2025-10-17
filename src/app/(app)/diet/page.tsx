@@ -163,7 +163,7 @@ export default function DietPage() {
     const input: DietWellnessAgentInput = {
       query,
       waterIntake,
-      bowelMovements: poopLogs,
+      bowelMovements: poopLogs.map(p => ({ type: p.type, createdAt: p.createdAt })),
     };
     return await dietWellnessAgent(input);
   }
@@ -400,3 +400,5 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
+
+    
