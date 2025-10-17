@@ -95,7 +95,6 @@ function PeriodTrackerPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [dialogState, setDialogState] = useState<{
     showStart?: boolean;
-    showEnd?: boolean;
     showLog?: boolean;
     date?: Date;
   }>({});
@@ -161,43 +160,57 @@ function PeriodTrackerPage() {
     const dayStart = startOfDay(day);
     setSelectedDate(dayStart);
 
-    if (activeCycle) {
-      const activeCycleStart = startOfDay(activeCycle.startDate);
-      
-      if (isBefore(dayStart, activeCycleStart)) {
-        toast({
-            variant: 'destructive',
-            title: 'Invalid Date',
-            description: "You can't select a date before your current cycle started.",
-        })
-      } 
-      else if (isBefore(dayStart, new Date()) || isSameDay(dayStart, new Date())) {
-         if (isSameDay(dayStart, activeCycleStart)) {
-             setDialogState({ showLog: true, date: dayStart });
-         } else {
-            setDialogState({ showEnd: true, date: dayStart });
-         }
-      }
-      else {
-        // Future date in active cycle - maybe log symptoms? For now, do nothing.
-         toast({ title: 'Future Date', description: 'You can log your flow for today or past days.' });
+    if (isBefore(dayStart, startOfDay(new Date()))) {
+      // Past date clicked
+      if (activeCycle) {
+        const activeCycleStart = startOfDay(activeCycle.startDate);
+        if (isBefore(dayStart, activeCycleStart)) {
+          // Date is before the current active cycle, so it must be a new cycle start
+          setDialogState({ showStart: true, date: dayStart });
+        } else {
+          // Date is within the current active cycle
+          setDialogState({ showLog: true, date: dayStart });
+        }
+      } else {
+        // No active cycle, so this must be a new cycle start
+        setDialogState({ showStart: true, date: dayStart });
       }
     } else {
-      setDialogState({ showStart: true, date: dayStart });
+      // Today or future date clicked
+      if (activeCycle) {
+        setDialogState({ showLog: true, date: dayStart });
+      } else {
+        setDialogState({ showStart: true, date: dayStart });
+      }
     }
   };
 
-  const handleStartPeriod = async () => {
-    if (!dialogState.date || !user || !firestore) return;
+
+  const handleStartPeriod = async (startDate: Date) => {
+    if (!user || !firestore) return;
     setIsProcessing(true);
 
-    const startDate = startOfDay(dialogState.date);
+    const newStartDate = startOfDay(startDate);
     
     const batch = writeBatch(firestore);
 
+    // If there's an active cycle, we need to end it the day before the new one starts.
     if (activeCycle) {
       const oldPeriodRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
-      const endDate = subDays(startDate, 1);
+      const endDate = subDays(newStartDate, 1);
+      
+      // Ensure the old cycle doesn't end before it started
+      if (isBefore(endDate, activeCycle.startDate)) {
+          toast({
+              variant: 'destructive',
+              title: 'Invalid Date',
+              description: "Cannot start a new period before the current one has even started.",
+          });
+          setIsProcessing(false);
+          setDialogState({});
+          return;
+      }
+
       batch.update(oldPeriodRef, { 
         endDate: endDate, 
         duration: differenceInDays(endDate, activeCycle.startDate) + 1 
@@ -207,7 +220,7 @@ function PeriodTrackerPage() {
     const newPeriodRef = doc(collection(firestore, 'users', user.uid, 'periods'));
     const newPeriodData = {
         userId: user.uid,
-        startDate: startDate,
+        startDate: newStartDate,
         createdAt: serverTimestamp()
     };
     batch.set(newPeriodRef, newPeriodData);
@@ -219,26 +232,26 @@ function PeriodTrackerPage() {
           description: 'Your new cycle has been successfully recorded.',
         });
 
-        setSelectedDate(startDate);
-        // Open log dialog for the new start date
-        setTimeout(() => setDialogState({ showLog: true, date: startDate }), 100);
+        setSelectedDate(newStartDate);
+        // We just started a cycle, so immediately ask to log the flow for the start date.
+        setDialogState({ showLog: true, date: newStartDate });
     } catch (error) {
         console.error("Error starting period:", error);
         toast({ variant: 'destructive', title: 'Error', description: 'Could not start new cycle.' });
+        setDialogState({});
     }
 
     setIsProcessing(false);
-    // Don't close dialog here, wait for log dialog to open
   };
 
-  const handleEndPeriod = async () => {
-      if (!dialogState.date || !activeCycle || !user || !firestore) return;
+  const handleEndPeriod = async (endDate: Date) => {
+      if (!activeCycle || !user || !firestore) return;
       setIsProcessing(true);
 
-      const endDate = startOfDay(dialogState.date);
+      const periodEndDate = startOfDay(endDate);
       const startDate = startOfDay(activeCycle.startDate);
       
-      if (isBefore(endDate, startDate)) {
+      if (isBefore(periodEndDate, startDate)) {
           toast({
               variant: 'destructive',
               title: 'End Date Error',
@@ -248,47 +261,56 @@ function PeriodTrackerPage() {
           return;
       }
       
-      const duration = differenceInDays(endDate, startDate) + 1;
+      const duration = differenceInDays(periodEndDate, startDate) + 1;
       const periodRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id);
 
       try {
-          await updateDoc(periodRef, { endDate, duration });
+          await updateDoc(periodRef, { endDate: periodEndDate, duration });
           toast({
             title: 'Period Ended',
-            description: 'Your cycle has been successfully ended.',
+            description: `Your cycle has been successfully ended.`,
           });
+          setDialogState({});
       } catch(error) {
           console.error("Error ending period:", error);
           toast({ variant: 'destructive', title: 'Error', description: 'Could not end cycle.' });
       }
 
       setIsProcessing(false);
-      setDialogState({});
-  };
-  
-  const handleOpenLogDialog = () => {
-    const date = dialogState.date;
-    if (!date) return;
-
-    setDialogState({}); // Close the end dialog
-    setTimeout(() => setDialogState({ showLog: true, date: date }), 100); // Open log dialog
   };
   
   const handleSaveLog = async (logData: Omit<DailyLog, 'id' | 'periodId' | 'userId'> & {date: Date}) => {
-    if (!activeCycle || !user || !firestore) return;
+    // This could be a log for an existing active cycle OR the first log of a brand new cycle.
+    if (!user || !firestore) return;
+    
+    let currentActiveCycle = activeCycle;
+
+    // If there's no active cycle, it means we just started one. We need to find it.
+    // The most recently created period will be the one.
+    if (!currentActiveCycle) {
+      const recentPeriods = periods.sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime());
+      if (recentPeriods[0] && !recentPeriods[0].endDate) {
+        currentActiveCycle = recentPeriods[0];
+      }
+    }
+
+    if (!currentActiveCycle) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Could not find an active cycle to save this log to.' });
+        return;
+    }
 
     const logDate = logData.date;
     const existingLog = dailyLogs?.find(log => isSameDay(log.date, logDate));
 
     try {
       if (existingLog) {
-          const logRef = doc(firestore, 'users', user.uid, 'periods', activeCycle.id, 'dailyLogs', existingLog.id);
+          const logRef = doc(firestore, 'users', user.uid, 'periods', currentActiveCycle.id, 'dailyLogs', existingLog.id);
           await updateDoc(logRef, { ...logData });
       } else {
-          const logRef = collection(firestore, 'users', user.uid, 'periods', activeCycle.id, 'dailyLogs');
+          const logRef = collection(firestore, 'users', user.uid, 'periods', currentActiveCycle.id, 'dailyLogs');
           await addDoc(logRef, {
             userId: user.uid,
-            periodId: activeCycle.id,
+            periodId: currentActiveCycle.id,
             ...logData
           });
       }
@@ -346,7 +368,7 @@ function PeriodTrackerPage() {
         <Card>
           <CardHeader>
             <CardTitle>Log Your Period</CardTitle>
-             <CardDescription>Select a day to start, end, or log your flow.</CardDescription>
+             <CardDescription>Select a day to start or log your flow.</CardDescription>
           </CardHeader>
           <CardContent className="p-2 md:p-6 flex justify-center">
             {isLoadingPeriods ? (
@@ -389,7 +411,7 @@ function PeriodTrackerPage() {
                 </DialogHeader>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>Cancel</Button>
-                    <Button onClick={handleStartPeriod} disabled={isProcessing}>
+                    <Button onClick={() => handleStartPeriod(dialogState.date!)} disabled={isProcessing}>
                         {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Start Cycle
                     </Button>
@@ -397,27 +419,6 @@ function PeriodTrackerPage() {
             </DialogContent>
         </Dialog>
 
-        <Dialog open={dialogState.showEnd} onOpenChange={(isOpen) => !isOpen && setDialogState({})}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>End Current Cycle?</DialogTitle>
-                    <DialogDescription>
-                        Do you want to end your current cycle on {dialogState.date ? format(dialogState.date, 'MMMM d, yyyy') : ''}? You can also log your flow for this day.
-                    </DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="sm:justify-between">
-                    <Button variant="secondary" onClick={handleOpenLogDialog} disabled={isProcessing}>Log Flow</Button>
-                    <div className="flex gap-2 justify-end">
-                      <Button variant="outline" onClick={() => setDialogState({})} disabled={isProcessing}>Cancel</Button>
-                      <Button onClick={handleEndPeriod} disabled={isProcessing}>
-                          {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          End Cycle
-                      </Button>
-                    </div>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-        
         {dialogState.date && (
             <LogFlowDialog
                 open={!!dialogState.showLog}
@@ -425,6 +426,8 @@ function PeriodTrackerPage() {
                 date={dialogState.date}
                 dailyLog={dailyLogs?.find(log => isSameDay(log.date, dialogState.date!))}
                 onSave={handleSaveLog}
+                onEndCycle={handleEndPeriod}
+                showEndCycleButton={!!activeCycle && !isSameDay(dialogState.date, activeCycle.startDate)}
             />
         )}
     </>
@@ -591,7 +594,7 @@ function CycleStats({ periods }: { periods: Period[] }) {
 }
 
 
-function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, dailyLog?: DailyLog, onSave: (log: Omit<DailyLog, 'id'|'periodId'|'userId'> & {date: Date}) => void }) {
+function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog, onEndCycle, showEndCycleButton }: { open: boolean, onOpenChange: (open: boolean) => void, date: Date, dailyLog?: DailyLog, onSave: (log: Omit<DailyLog, 'id'|'periodId'|'userId'> & {date: Date}) => Promise<void>, onEndCycle: (date: Date) => Promise<void>, showEndCycleButton: boolean }) {
     const [flow, setFlow] = useState<'spotting' | 'light' | 'medium' | 'heavy'>('light');
     const [notes, setNotes] = useState('');
     const [isSaving, setIsSaving] = useState(false);
@@ -612,11 +615,23 @@ function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: b
                 notes: notes,
             };
             await onSave(logData);
+            onOpenChange(false);
         } catch (error) {
             console.error("Error from onSave in dialog:", error);
         } finally {
             setIsSaving(false);
+        }
+    }
+    
+    const handleEndCycle = async () => {
+        setIsSaving(true);
+        try {
+            await onEndCycle(date);
             onOpenChange(false);
+        } catch (error) {
+            console.error("Error ending cycle from dialog:", error)
+        } finally {
+            setIsSaving(false);
         }
     }
 
@@ -654,12 +669,20 @@ function LogFlowDialog({ open, onOpenChange, date, onSave, dailyLog }: { open: b
                     </div>
                 </div>
 
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>Cancel</Button>
-                    <Button onClick={handleSave} disabled={isSaving}>
-                        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save
-                    </Button>
+                <DialogFooter className="sm:justify-between">
+                    {showEndCycleButton ? (
+                        <Button variant="destructive" onClick={handleEndCycle} disabled={isSaving}>
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            End Period on This Day
+                        </Button>
+                    ) : <div></div>}
+                    <div className="flex gap-2 justify-end">
+                      <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>Cancel</Button>
+                      <Button onClick={handleSave} disabled={isSaving}>
+                          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Save Log
+                      </Button>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -780,3 +803,5 @@ function PastCycleCard({ period, index, userId, firestore }: { period: Period, i
 }
 
 export default PeriodTrackerPage;
+
+    
