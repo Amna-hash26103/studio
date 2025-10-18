@@ -73,7 +73,10 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        const path = 'path' in memoizedTargetRefOrQuery ? memoizedTargetRefOrQuery.path : 'unknown';
+        // Correctly determine the path from either a CollectionReference or a Query
+        const path = 'path' in memoizedTargetRefOrQuery 
+            ? memoizedTargetRefOrQuery.path 
+            : 'converter' in memoizedTargetRefOrQuery ? (memoizedTargetRefOrQuery as any)._query.path.toString() : 'unknown';
         
         const contextualError = new FirestorePermissionError({
           operation: 'list',
