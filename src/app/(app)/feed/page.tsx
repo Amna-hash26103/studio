@@ -1,4 +1,3 @@
-
 'use client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -100,7 +99,7 @@ export default function FeedPage() {
         
         const postRef = doc(firestore, 'posts', postId);
 
-        runTransaction(firestore, async (transaction) => {
+        await runTransaction(firestore, async (transaction) => {
             const postDoc = await transaction.get(postRef);
             if (!postDoc.exists()) {
                 throw "Document does not exist!";
@@ -111,20 +110,10 @@ export default function FeedPage() {
             
             let updatedLikes;
             if (likes.includes(user.uid)) {
-                updatedLikes = arrayRemove(user.uid);
+                transaction.update(postRef, { likes: arrayRemove(user.uid) });
             } else {
-                updatedLikes = arrayUnion(user.uid);
+                transaction.update(postRef, { likes: arrayUnion(user.uid) });
             }
-            transaction.update(postRef, { likes: updatedLikes });
-            return updatedLikes;
-        }).catch((error) => {
-            // This is the new error handling block
-            const permissionError = new FirestorePermissionError({
-                path: postRef.path,
-                operation: 'update',
-                requestResourceData: { 'likes': `(operation depends on current state)` },
-            });
-            errorEmitter.emit('permission-error', permissionError);
         });
     }
     
@@ -297,5 +286,3 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
-
-    
