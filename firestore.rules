@@ -1,186 +1,202 @@
 /**
- * @fileoverview Firestore Security Rules for Femmora App
+ * @file Firestore Security Rules
+ * @description This ruleset defines access control for the Femmora app's Firestore database.
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model for personal data while allowing public read access to community posts.
+ * The ruleset employs a combination of user-based ownership and public read access for community posts.
+ * User profiles and associated data (periods, daily logs, stats, meal logs) are strictly limited to the owning user.
+ * Community posts and comments are readable by all authenticated users, while creation, updates, and deletions are restricted to the owner.
  *
  * Data Structure:
- * - User profiles and associated data (periods, daily logs, stats, meal logs) are nested under `/users/{userId}` and are only accessible to the owning user.
- * - Community posts are stored in the top-level `/posts/{postId}` collection and are publicly readable.
- * - Comments on posts are stored in the `/posts/{postId}/comments/{commentId}` subcollection and are also publicly readable, but can only be created by signed-in users.
+ * - /users/{userId}: User profile information, accessible only to the user.
+ * - /posts/{postId}: Community posts, publicly readable but owner-writeable.
+ * - /posts/{postId}/comments/{commentId}: Comments on community posts, readable by all authenticated users, owner-writeable.
+ * - /users/{userId}/periods/{periodId}: Menstrual cycle data, accessible only to the user.
+ * - /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}: Daily log entries, accessible only to the user.
+ * - /users/{userId}/stats/{statId}: User statistics, accessible only to the user.
+ * - /users/{userId}/mealLogs/{mealLogId}: Meal log entries, accessible only to the user.
  *
  * Key Security Decisions:
- * - Users can only create, read, update, and delete their own profiles.
- * - Community posts are publicly readable, but only signed-in users can create them.
- * - Comments are publicly readable but can only be created by signed-in users.
- * - User stats are treated as private and are only accessible to the owning user. It's expected that only one stat document exists per user (e.g., `/users/{userId}/stats/summary`).
- * - User listing is disallowed for privacy.
+ * - User profiles are private and only accessible to the owning user.
+ * - Community posts are publicly readable to allow discovery and engagement.
+ * - Data validation is relaxed to allow rapid prototyping, with a focus on ownership and relationship integrity.
+ * - User listing is disabled.
  *
  * Denormalization for Authorization:
- * - Community Posts: The `userId` field within each post document is used to enforce ownership for updates and deletes.
- * - Periods, DailyLogs, MealLogs and UserStats: The `userId` field within each document is used in conjunction with the path to enforce user ownership.
+ * - Community posts are required to have a `userId` field indicating the author. This is enforced on creation and used for write access control.
  */
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants access control to user profiles. Only the user can read, update, or delete their own profile. Allows self-creation.
+     * @description Checks if the user is signed in.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the resource.
+     * @param {string} userId - The user ID to compare against the authenticated user's ID.
+     * @returns {boolean} - True if the user is the owner, false otherwise.
+     * @example isOwner('someUserId') will return true if request.auth.uid == 'someUserId'.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the resource and the resource exists.
+     * @param {string} userId - The user ID to compare against the authenticated user's ID.
+     * @returns {boolean} - True if the user is the owner and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Defines access control for user profiles.
      * @path /users/{userId}
-     * @allow (create) User with UID 'user123' creates their profile at /users/user123 with matching userId.
-     * @allow (get) User with UID 'user123' reads their profile at /users/user123.
-     * @allow (update) User with UID 'user123' updates their profile at /users/user123.
-     * @allow (delete) User with UID 'user123' deletes their profile at /users/user123.
-     * @deny (create) User with UID 'user456' attempts to create a profile at /users/user123.
-     * @deny (get) User with UID 'user456' attempts to read profile at /users/user123.
-     * @deny (update) User with UID 'user456' attempts to update profile at /users/user123.
-     * @deny (delete) User with UID 'user456' attempts to delete profile at /users/user123.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user123' can create their profile document at /users/user123.
+     * @deny (create) User with UID 'user123' cannot create a profile document at /users/user456.
+     * @allow (get) User with UID 'user123' can read their profile document at /users/user123.
+     * @deny (get) User with UID 'user123' cannot read profile document at /users/user456.
+     * @allow (update) User with UID 'user123' can update their profile document at /users/user123.
+     * @deny (update) User with UID 'user123' cannot update profile document at /users/user456.
+     * @allow (delete) User with UID 'user123' can delete their profile document at /users/user123.
+     * @deny (delete) User with UID 'user123' cannot delete profile document at /users/user456.
+     * @principle Enforces document ownership for writes.
      */
     match /users/{userId} {
       allow get: if isOwner(userId);
-      allow list: if false; // User listing is not permitted
-
-      allow create: if isOwner(userId) && request.resource.data.email is string && request.auth.token.email == request.resource.data.email;
-      allow update: if isExistingOwner(userId) && request.resource.data.email == resource.data.email;
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants public read access to community posts, but restricts creation, updates, and deletion to authenticated users who are the owners.
+     * @description Defines access control for community posts.
      * @path /posts/{postId}
-     * @allow (get) Any user can read a post at /posts/post123.
-     * @allow (list) Any user can list posts in /posts.
-     * @allow (create) User with UID 'user123' creates a post at /posts/post456 with userId 'user123'.
-     * @allow (update) User with UID 'user123' updates their post at /posts/post456 with userId 'user123'.
-     * @allow (delete) User with UID 'user123' deletes their post at /posts/post456 with userId 'user123'.
-     * @deny (create) Anonymous user attempts to create a post.
-     * @deny (update) User with UID 'user456' attempts to update post at /posts/post456 with userId 'user123'.
-     * @deny (delete) User with UID 'user456' attempts to delete post at /posts/post456 with userId 'user123'.
-     * @principle Public read, owner-only writes.
+     * @allow (create) User with UID 'user123' can create a post with userId: 'user123'.
+     * @deny (create) User with UID 'user123' cannot create a post with userId: 'user456'.
+     * @allow (get) Any signed-in user can read a post.
+     * @allow (list) Any signed-in user can list posts.
+     * @allow (update) User with UID 'user123' can update their own post.
+     * @deny (update) User with UID 'user123' cannot update a post they don't own.
+     * @allow (delete) User with UID 'user123' can delete their own post.
+     * @deny (delete) User with UID 'user123' cannot delete a post they don't own.
+     * @principle Allows public read access while enforcing ownership for writes.
      */
     match /posts/{postId} {
-      allow get, list: if true;
-
+      allow get, list: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && isExistingOwner(resource.data.userId);
-      allow delete: if isSignedIn() && isExistingOwner(resource.data.userId);
+      allow update: if isExistingOwner(resource.data.userId);
+      allow delete: if isExistingOwner(resource.data.userId);
     }
 
     /**
-     * @description Grants public read access to comments, but restricts creation to authenticated users. Updates and deletes are disallowed.
+     * @description Defines access control for comments on community posts.
      * @path /posts/{postId}/comments/{commentId}
-     * @allow (get) Any user can read a comment at /posts/post123/comments/comment456.
-     * @allow (list) Any user can list comments in /posts/post123/comments.
-     * @allow (create) User with UID 'user123' creates a comment at /posts/post123/comments/comment789.
-     * @deny (create) Anonymous user attempts to create a comment.
-     * @deny (update) Any user attempts to update a comment.
-     * @deny (delete) Any user attempts to delete a comment.
-     * @principle Public read, authenticated creation only.
+     * @allow (create) User with UID 'user123' can create a comment on a post.
+     * @allow (get) Any signed-in user can read a comment.
+     * @allow (list) Any signed-in user can list comments.
+     * @allow (update) User with UID 'user123' can update their own comment.
+     * @deny (update) User with UID 'user123' cannot update a comment they don't own.
+     * @allow (delete) User with UID 'user123' can delete their own comment.
+     * @deny (delete) User with UID 'user123' cannot delete a comment they don't own.
+     * @principle Allows public read access while enforcing ownership for writes.
      */
     match /posts/{postId}/comments/{commentId} {
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if false;
-      allow delete: if false;
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.userId);
+      allow delete: if isExistingOwner(resource.data.userId);
     }
 
     /**
-     * @description Grants access control to user's period entries. Only the user can read, create, update, or delete their own period entries.
+     * @description Defines access control for user period data.
      * @path /users/{userId}/periods/{periodId}
-     * @allow (create) User with UID 'user123' creates a period entry at /users/user123/periods/period456 with matching userId.
-     * @allow (get) User with UID 'user123' reads their period entry at /users/user123/periods/period456.
-     * @allow (update) User with UID 'user123' updates their period entry at /users/user123/periods/period456.
-     * @allow (delete) User with UID 'user123' deletes their period entry at /users/user123/periods/period456.
-     * @deny (create) User with UID 'user456' attempts to create a period entry at /users/user123/periods/period456.
-     * @deny (get) User with UID 'user456' attempts to read period entry at /users/user123/periods/period456.
-     * @deny (update) User with UID 'user456' attempts to update period entry at /users/user123/periods/period456.
-     * @deny (delete) User with UID 'user456' attempts to delete period entry at /users/user123/periods/period456.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user123' can create period data at /users/user123/periods/period1.
+     * @deny (create) User with UID 'user123' cannot create period data at /users/user456/periods/period1.
+     * @allow (get) User with UID 'user123' can read period data at /users/user123/periods/period1.
+     * @deny (get) User with UID 'user123' cannot read period data at /users/user456/periods/period1.
+     * @allow (update) User with UID 'user123' can update period data at /users/user123/periods/period1.
+     * @deny (update) User with UID 'user123' cannot update period data at /users/user456/periods/period1.
+     * @allow (delete) User with UID 'user123' can delete period data at /users/user123/periods/period1.
+     * @deny (delete) User with UID 'user123' cannot delete period data at /users/user456/periods/period1.
+     * @principle Restricts access to a user's own data tree.
      */
     match /users/{userId}/periods/{periodId} {
-      allow get, list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == userId;
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access control to user's daily log entries. Only the user can read, create, update, or delete their own daily log entries.
+     * @description Defines access control for daily logs within a user's period.
      * @path /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}
-     * @allow (create) User with UID 'user123' creates a daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @allow (get) User with UID 'user123' reads their daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @allow (update) User with UID 'user123' updates their daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @allow (delete) User with UID 'user123' deletes their daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @deny (create) User with UID 'user456' attempts to create a daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @deny (get) User with UID 'user456' attempts to read daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @deny (update) User with UID 'user456' attempts to update daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @deny (delete) User with UID 'user456' attempts to delete daily log entry at /users/user123/periods/period456/dailyLogs/dailyLog789.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user123' can create a daily log at /users/user123/periods/period1/dailyLogs/log1.
+     * @deny (create) User with UID 'user123' cannot create a daily log at /users/user456/periods/period1/dailyLogs/log1.
+     * @allow (get) User with UID 'user123' can read a daily log at /users/user123/periods/period1/dailyLogs/log1.
+     * @deny (get) User with UID 'user123' cannot read a daily log at /users/user456/periods/period1/dailyLogs/log1.
+     * @allow (update) User with UID 'user123' can update a daily log at /users/user123/periods/period1/dailyLogs/log1.
+     * @deny (update) User with UID 'user123' cannot update a daily log at /users/user456/periods/period1/dailyLogs/log1.
+     * @allow (delete) User with UID 'user123' can delete a daily log at /users/user123/periods/period1/dailyLogs/log1.
+     * @deny (delete) User with UID 'user123' cannot delete a daily log at /users/user456/periods/period1/dailyLogs/log1.
+     * @principle Restricts access to a user's own data tree.
      */
     match /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId} {
-      allow get, list: if isOwner(userId);
-
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access control to user's stats. Only the user can read, create, update, or delete their own stats.
+     * @description Defines access control for user statistics.
      * @path /users/{userId}/stats/{statId}
-     * @allow (create) User with UID 'user123' creates a stats document at /users/user123/stats/summary with matching userId.
-     * @allow (get) User with UID 'user123' reads their stats document at /users/user123/stats/summary.
-     * @allow (update) User with UID 'user123' updates their stats document at /users/user123/stats/summary.
-     * @allow (delete) User with UID 'user123' deletes their stats document at /users/user123/stats/summary.
-     * @deny (create) User with UID 'user456' attempts to create a stats document at /users/user123/stats/summary.
-     * @deny (get) User with UID 'user456' attempts to read stats document at /users/user123/stats/summary.
-     * @deny (update) User with UID 'user456' attempts to update stats document at /users/user123/stats/summary.
-     * @deny (delete) User with UID 'user456' attempts to delete stats document at /users/user123/stats/summary.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user123' can create stats at /users/user123/stats/summary.
+     * @deny (create) User with UID 'user123' cannot create stats at /users/user456/stats/summary.
+     * @allow (get) User with UID 'user123' can read stats at /users/user123/stats/summary.
+     * @deny (get) User with UID 'user123' cannot read stats at /users/user456/stats/summary.
+     * @allow (update) User with UID 'user123' can update stats at /users/user123/stats/summary.
+     * @deny (update) User with UID 'user123' cannot update stats at /users/user456/stats/summary.
+     * @allow (delete) User with UID 'user123' can delete stats at /users/user123/stats/summary.
+     * @deny (delete) User with UID 'user123' cannot delete stats at /users/user456/stats/summary.
+     * @principle Restricts access to a user's own data tree.
      */
     match /users/{userId}/stats/{statId} {
-      allow get, list: if isOwner(userId);
-
+      allow get: if isOwner(userId);
+      allow list: if false;
       allow create: if isOwner(userId);
       allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Grants access control to user's meal log entries. Only the user can read, create, update, or delete their own meal log entries.
+     * @description Defines access control for user meal logs.
      * @path /users/{userId}/mealLogs/{mealLogId}
-     * @allow (create) User with UID 'user123' creates a meal log entry at /users/user123/mealLogs/mealLog456 with matching userId.
-     * @allow (get) User with UID 'user123' reads their meal log entry at /users/user123/mealLogs/mealLog456.
-     * @allow (update) User with UID 'user123' updates their meal log entry at /users/user123/mealLogs/mealLog456.
-     * @allow (delete) User with UID 'user123' deletes their meal log entry at /users/user123/mealLogs/mealLog456.
-     * @deny (create) User with UID 'user456' attempts to create a meal log entry at /users/user123/mealLogs/mealLog456.
-     * @deny (get) User with UID 'user456' attempts to read meal log entry at /users/user123/mealLogs/mealLog456.
-     * @deny (update) User with UID 'user456' attempts to update meal log entry at /users/user123/mealLogs/mealLog456.
-     * @deny (delete) User with UID 'user456' attempts to delete meal log entry at /users/user123/mealLogs/mealLog456.
-     * @principle Enforces document ownership for all operations.
+     * @allow (create) User with UID 'user123' can create a meal log at /users/user123/mealLogs/meal1.
+     * @deny (create) User with UID 'user123' cannot create a meal log at /users/user456/mealLogs/meal1.
+     * @allow (get) User with UID 'user123' can read a meal log at /users/user123/mealLogs/meal1.
+     * @deny (get) User with UID 'user123' cannot read a meal log at /users/user456/mealLogs/meal1.
+     * @allow (update) User with UID 'user123' can update a meal log at /users/user123/mealLogs/meal1.
+     * @deny (update) User with UID 'user123' cannot update a meal log at /users/user456/mealLogs/meal1.
+     * @allow (delete) User with UID 'user123' can delete a meal log at /users/user123/mealLogs/meal1.
+     * @deny (delete) User with UID 'user123' cannot delete a meal log at /users/user456/mealLogs/meal1.
+     * @principle Restricts access to a user's own data tree.
      */
     match /users/{userId}/mealLogs/{mealLogId} {
-      allow get, list: if isOwner(userId);
-
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isExistingOwner(userId) && request.resource.data.userId == userId;
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
       allow delete: if isExistingOwner(userId);
     }
-  }
-
-  // Helper functions
-  function isSignedIn() {
-    return request.auth != null;
-  }
-
-  function isOwner(userId) {
-    return request.auth.uid == userId;
-  }
-
-    function isExistingOwner(userId) {
-    return isOwner(userId) && resource != null;
   }
 }
