@@ -1,192 +1,152 @@
 /**
- * @fileoverview Firestore Security Rules for the Femmora app.
+ * @fileoverview Firestore Security Rules for Femmora app.
  *
  * Core Philosophy:
- * This ruleset prioritizes user data privacy and control. Users can only read and write their own profile data,
- * period data, and meal logs. Community posts are publicly readable, but only the author can modify or delete them.
+ * This ruleset prioritizes user privacy and data ownership. Users can only
+ * read and write their own data, with the exception of community posts, which
+ * are publicly readable but owner-writable. Data validation is relaxed to
+ * allow for rapid prototyping.
  *
  * Data Structure:
- * - /users/{userId}: Stores user profiles, accessible only by the owner.
- * - /posts/{postId}: Stores community posts, publicly readable but owner-writable.
- * - /posts/{postId}/comments/{commentId}: Stores comments on posts, publicly readable, owner writable
- * - /users/{userId}/periods/{periodId}: Stores period data, accessible only by the owner.
- * - /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}: Stores daily logs, accessible only by the owner.
- * - /users/{userId}/stats/{statId}: Stores user statistics, accessible only by the owner. Intended as a singleton document.
- * - /users/{userId}/mealLogs/{mealLogId}: Stores meal logs, accessible only by the owner.
+ * - /users/{userId}: User profiles, periods, daily logs, meal logs, and stats
+ *   are stored under a user-specific path. This ensures that only the user
+ *   can access their data.
+ * - /posts/{postId}: Community posts are stored at the top level.
  *
  * Key Security Decisions:
- * - Users cannot list all users (no `list` on `/users`).
- * - Community posts are publicly readable to encourage engagement.
- * - Strict ownership is enforced for all user-related data.
+ * - User profiles are only readable and writable by the authenticated user.
+ * - Community posts are publicly readable, but only the author can modify or delete them.
+ * - Users can only manage their own periods, daily logs, meal logs, and stats.
+ * - Listing user's documents is allowed for owner.
+ * - No data type validation is performed in this prototyping phase.
  *
  * Denormalization for Authorization:
- * - CommunityPost documents require a `userId` field to enforce ownership for updates and deletes.
+ *  - Community Posts: The `CommunityPost` entity includes a `userId` field. This field is automatically populated by the client, and is required to match the authenticated user's UID when the post is created. The `userId` field is used to enforce owner-only writes on posts.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
     /**
-     * @description Controls access to user profile documents.
+     * @description Controls access to user profile information.
      * @path /users/{userId}
-     * @allow (create) - User with UID 'user_abc' can create their profile if request.auth.uid == 'user_abc'.
-     * @allow (get, update, delete) - User with UID 'user_abc' can read/write their profile.
-     * @deny (create) - User with UID 'user_xyz' cannot create a profile for 'user_abc'.
-     * @deny (update, delete) - User with UID 'user_xyz' cannot modify/delete 'user_abc' profile.
-     * @principle Enforces document ownership; users can only manage their own profiles.
+     * @allow (create) User with UID 'user_abc' can create their own profile document with id = 'user_abc'.
+     * @allow (get, update, delete) User with UID 'user_abc' can get, update, and delete their profile document with id = 'user_abc'.
+     * @deny (create, get, update, delete) User with UID 'user_xyz' cannot create, get, update, or delete profile document with id = 'user_abc'.
+     * @principle Enforces document ownership for user profiles.
      */
     match /users/{userId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       allow get: if isOwner(userId);
-      allow list: if false; // Prevents listing all users.
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isOwner(userId);
-      allow delete: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.email is string;
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
      * @description Controls access to community posts.
      * @path /posts/{postId}
-     * @allow (get, list) - Any signed-in user can read all posts.
-     * @allow (create) - Any signed-in user can create a post with their UID as the author.
-     * @allow (update, delete) - Only the author of the post can modify or delete it.
-     * @deny (update, delete) - A user cannot modify/delete a post they didn't create.
-     * @principle Public read access with owner-only writes.
+     * @allow (get, list) All authenticated users can read all community posts.
+     * @allow (create) User with UID 'user_abc' can create a community post with userId = 'user_abc'.
+     * @allow (update, delete) User with UID 'user_abc' can update and delete their own community post with userId = 'user_abc'.
+     * @deny (create) User with UID 'user_xyz' cannot create a community post with userId = 'user_abc'.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete a community post with userId = 'user_abc'.
+     * @principle Allows public read access to community posts, but enforces owner-only writes.
      */
     match /posts/{postId} {
-      function isOwner(resourceUserId) {
-        return request.auth != null && request.auth.uid == resourceUserId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && isOwner(resource.data.userId);
-      allow delete: if isSignedIn() && isOwner(resource.data.userId);
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.content is string;
+      allow update: if isExistingOwner(resource.data.userId);
+      allow delete: if isExistingOwner(resource.data.userId);
     }
-
-     /**
-      * @description Controls access to comments on community posts.
-      * @path /posts/{postId}/comments/{commentId}
-      * @allow (get, list) - Any signed-in user can read all comments.
-      * @allow (create) - Any signed-in user can create a comment with their UID as the author.
-      * @allow (update, delete) - Only the author of the comment can modify or delete it.
-      * @deny (update, delete) - A user cannot modify/delete a comment they didn't create.
-      * @principle Public read access with owner-only writes.
-      */
-    match /posts/{postId}/comments/{commentId} {
-      function isOwner(resourceUserId) {
-        return request.auth != null && request.auth.uid == resourceUserId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && isOwner(resource.data.userId);
-      allow delete: if isSignedIn() && isOwner(resource.data.userId);
-    }
-
 
     /**
-     * @description Controls access to a user's period data.
+     * @description Controls access to comments on community posts.
+     * @path /posts/{postId}/comments/{commentId}
+     * @allow (get, list) All authenticated users can read comments on a post.
+     * @allow (create) User with UID 'user_abc' can create a comment with userId = 'user_abc'.
+     * @allow (update, delete) User with UID 'user_abc' can update and delete their own comment with userId = 'user_abc'.
+     * @deny (create) User with UID 'user_xyz' cannot create a comment with userId = 'user_abc'.
+     * @deny (update, delete) User with UID 'user_xyz' cannot update or delete a comment with userId = 'user_abc'.
+     * @principle Allows public read access to comments, but enforces owner-only writes.
+     */
+    match /posts/{postId}/comments/{commentId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.text is string;
+      allow update: if isExistingOwner(resource.data.userId);
+      allow delete: if isExistingOwner(resource.data.userId);
+    }
+
+    /**
+     * @description Controls access to a user's period entries.
      * @path /users/{userId}/periods/{periodId}
-     * @allow (create, get, list, update, delete) - Only the owner can manage their period data.
-     * @deny (create) - User 'user_xyz' cannot create period data for user 'user_abc'.
-     * @principle Enforces document ownership.
+     * @allow (create, get, list, update, delete) User with UID 'user_abc' can manage their own period entries.
+     * @deny (create, get, list, update, delete) User with UID 'user_xyz' cannot manage period entries for user 'user_abc'.
+     * @principle Restricts access to a user's own period data.
      */
     match /users/{userId}/periods/{periodId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId && request.resource.data.id == periodId;
+      allow update: if isExistingOwner(userId) && resource.data.userId == userId && resource.data.id == periodId;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to daily logs within a period.
+     * @description Controls access to daily logs for a specific period.
      * @path /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}
-     * @allow (create, get, list, update, delete) - Only the owner can manage their daily logs.
-     * @deny (create) - User 'user_xyz' cannot create a daily log for user 'user_abc'.
-     * @principle Enforces document ownership.
+     * @allow (create, get, list, update, delete) User with UID 'user_abc' can manage daily logs for their own periods.
+     * @deny (create, get, list, update, delete) User with UID 'user_xyz' cannot manage daily logs for user 'user_abc'.
+     * @principle Restricts access to a user's own daily log data.
      */
     match /users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.id == dailyLogId;
+      allow update: if isExistingOwner(userId) && resource.data.id == dailyLogId;
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
      * @description Controls access to user statistics.
      * @path /users/{userId}/stats/{statId}
-     * @allow (create, get, list, update, delete) - Only the owner can manage their stats.
-     * @deny (create) - User 'user_xyz' cannot create stats for user 'user_abc'.
-     * @principle Enforces document ownership.
+     * @allow (create, get, update, delete) User with UID 'user_abc' can manage their own statistics.
+     * @deny (create, get, update, delete) User with UID 'user_xyz' cannot manage statistics for user 'user_abc'.
+     * @principle Restricts access to a user's own statistics.
      */
     match /users/{userId}/stats/{statId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
       allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if isExistingOwner(userId);
+      allow delete: if isExistingOwner(userId);
     }
 
     /**
-     * @description Controls access to a user's meal logs.
+     * @description Controls access to a user's meal log entries.
      * @path /users/{userId}/mealLogs/{mealLogId}
-     * @allow (create, get, list, update, delete) - Only the owner can manage their meal logs.
-     * @deny (create) - User 'user_xyz' cannot create a meal log for user 'user_abc'.
-     * @principle Enforces document ownership.
+     * @allow (create, get, list, update, delete) User with UID 'user_abc' can manage their own meal log entries.
+     * @deny (create, get, list, update, delete) User with UID 'user_xyz' cannot manage meal log entries for user 'user_abc'.
+     * @principle Restricts access to a user's own meal log data.
      */
     match /users/{userId}/mealLogs/{mealLogId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-
-      function isSignedIn() {
-        return request.auth != null;
-      }
-
-      allow get, list: if isOwner(userId);
-      allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && isOwner(userId);
-      allow delete: if isSignedIn() && isOwner(userId);
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId && request.resource.data.id == mealLogId;
+      allow update: if isExistingOwner(userId) && resource.data.userId == userId && resource.data.id == mealLogId;
+      allow delete: if isExistingOwner(userId);
     }
   }
 }
