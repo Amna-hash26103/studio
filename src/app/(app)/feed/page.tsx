@@ -358,7 +358,7 @@ function PostCard({
               src={post.imageUrl}
               alt="Post image"
               fill
-              className="object-cover"
+              className="object-cover rounded-md"
             />
           </div>
         )}
