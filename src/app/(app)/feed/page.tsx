@@ -353,12 +353,12 @@ function PostCard({
       <CardContent>
         <p className="whitespace-pre-wrap">{post.content}</p>
         {post.imageUrl && (
-          <div className="mt-4 relative aspect-video w-full overflow-hidden rounded-lg">
+          <div className="mt-4 relative aspect-video w-full overflow-hidden rounded-xl">
             <Image
               src={post.imageUrl}
               alt="Post image"
               fill
-              className="object-cover rounded-lg"
+              className="object-cover rounded-xl"
             />
           </div>
         )}
