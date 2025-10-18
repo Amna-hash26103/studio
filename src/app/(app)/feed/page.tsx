@@ -8,18 +8,11 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 import { collection, query, orderBy, serverTimestamp, addDoc, updateDoc, doc, arrayUnion, arrayRemove, runTransaction, setDoc } from 'firebase/firestore';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
 
 const user1 = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
@@ -107,25 +100,32 @@ export default function FeedPage() {
         
         const postRef = doc(firestore, 'posts', postId);
 
-        try {
-            await runTransaction(firestore, async (transaction) => {
-                const postDoc = await transaction.get(postRef);
-                if (!postDoc.exists()) {
-                    throw "Document does not exist!";
-                }
+        runTransaction(firestore, async (transaction) => {
+            const postDoc = await transaction.get(postRef);
+            if (!postDoc.exists()) {
+                throw "Document does not exist!";
+            }
 
-                const postData = postDoc.data() as Post;
-                const likes = postData.likes || [];
-                
-                if (likes.includes(user.uid)) {
-                    transaction.update(postRef, { likes: arrayRemove(user.uid) });
-                } else {
-                    transaction.update(postRef, { likes: arrayUnion(user.uid) });
-                }
+            const postData = postDoc.data() as Post;
+            const likes = postData.likes || [];
+            
+            let updatedLikes;
+            if (likes.includes(user.uid)) {
+                updatedLikes = arrayRemove(user.uid);
+            } else {
+                updatedLikes = arrayUnion(user.uid);
+            }
+            transaction.update(postRef, { likes: updatedLikes });
+            return updatedLikes;
+        }).catch((error) => {
+            // This is the new error handling block
+            const permissionError = new FirestorePermissionError({
+                path: postRef.path,
+                operation: 'update',
+                requestResourceData: { 'likes': `(operation depends on current state)` },
             });
-        } catch (e) {
-            console.error("Like transaction failed: ", e);
-        }
+            errorEmitter.emit('permission-error', permissionError);
+        });
     }
     
     const handleSavePost = async (postId: string) => {
