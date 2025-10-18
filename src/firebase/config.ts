@@ -1,5 +1,4 @@
 
-
 // This configuration is used for local development and as a fallback.
 // For production deployments on Vercel, these values should be set as environment variables.
 export const firebaseConfig = {
