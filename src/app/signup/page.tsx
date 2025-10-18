@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -62,6 +61,14 @@ export default function SignupPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth || !firestore) {
+         toast({
+            variant: 'destructive',
+            title: "Signup Failed",
+            description: "Authentication service is not available. Please try again later.",
+        });
+        return;
+    }
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
@@ -70,7 +77,7 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
-      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-default');
+      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
       const defaultAvatarUrl = defaultAvatar?.imageUrl || 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
       
       const defaultCover = PlaceHolderImages.find(p => p.id === 'user-profile-cover');
@@ -127,7 +134,7 @@ export default function SignupPage() {
            <Link href="/" className="mb-2 flex items-center justify-center">
             <FemmoraLogo className="h-24 w-24 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-3xl font-bold" style={{color: 'hsl(var(--foreground))'}}>
+          <CardTitle className="font-headline text-3xl font-bold text-foreground">
             Join FEMMORA
           </CardTitle>
           <CardDescription className="text-center text-muted-foreground">
@@ -145,7 +152,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Display Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Name" {...field} className="bg-primary/20 border-border" />
+                      <Input placeholder="Your Name" {...field} className="bg-secondary/20 border-border" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -162,7 +169,7 @@ export default function SignupPage() {
                       <Input
                         type="email"
                         placeholder="you@example.com"
-                        className="bg-primary/20 border-border"
+                        className="bg-secondary/20 border-border"
                         {...field}
                       />
                     </FormControl>
@@ -178,7 +185,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="bg-primary/20 border-border"/>
+                      <Input type="password" placeholder="••••••••" {...field} className="bg-secondary/20 border-border"/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,7 +194,7 @@ export default function SignupPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-[#b83a49] hover:bg-[#b83a49]/90 text-white font-bold"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? "Processing..." : "Create Account"}
@@ -206,4 +213,3 @@ export default function SignupPage() {
     </div>
   );
 }
-    

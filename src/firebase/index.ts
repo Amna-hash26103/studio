@@ -2,63 +2,61 @@
 
 import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore'
+import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
+
+// This is a placeholder for the Firebase config. The actual values will be
+// populated by a script that runs when the application starts, reading from
+// environment variables. This setup is crucial for Vercel deployments where
+// client-side code cannot directly access `process.env` at runtime.
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+};
+
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  // Check if we are in a browser environment where 'window' is available
-  const isBrowser = typeof window !== 'undefined';
-
   if (!getApps().length) {
-    if (isBrowser) {
-      // CLIENT-SIDE: Use the config from the script loaded in the browser
-      const firebaseConfig = (window as any).firebaseConfig;
-
-      if (!firebaseConfig || !firebaseConfig.apiKey) {
-        console.error("Firebase config not found. Make sure /public/firebase-config.js is loaded.");
-        // We can't proceed without config on the client
-        throw new Error("Firebase configuration is missing on the client.");
-      }
-      const firebaseApp = initializeApp(firebaseConfig);
-      return getSdks(firebaseApp);
-
-    } else {
-      // SERVER-SIDE (build time): Use automatic initialization for hosting environments
-      // This will succeed in environments like Firebase App Hosting.
-      // For Vercel build, it will gracefully fail but allow the build to pass.
-      try {
-        const app = initializeApp();
-        return getSdks(app);
-      } catch (e) {
-         console.warn("Server-side Firebase initialization failed during build. This is expected on Vercel and can be ignored.");
-         // Return a dummy object to prevent further errors during build
-         return getDummySdks();
-      }
+    if (!firebaseConfig.apiKey) {
+      console.error("Firebase config not found or incomplete. Check your .env.local file or Vercel environment variables.");
+      // Return a dummy object to prevent crashing the app, but functionality will be broken.
+      return getDummySdks();
     }
+    const firebaseApp = initializeApp(firebaseConfig);
+    return getSdks(firebaseApp);
   }
-
   // If already initialized, return the SDKs with the already initialized App
   return getSdks(getApp());
 }
 
 export function getSdks(firebaseApp: FirebaseApp) {
-  return {
-    firebaseApp,
-    auth: getAuth(firebaseApp),
-    firestore: getFirestore(firebaseApp),
-    storage: getStorage(firebaseApp),
-  };
+  try {
+    return {
+      firebaseApp,
+      auth: getAuth(firebaseApp),
+      firestore: getFirestore(firebaseApp),
+      storage: getStorage(firebaseApp),
+    };
+  } catch (e) {
+    console.error("Error getting Firebase SDKs. This might happen if config is invalid.", e);
+    return getDummySdks();
+  }
 }
 
-// Helper function to return dummy SDKs during server-side build on Vercel
+// Helper function to return dummy SDKs to prevent app crashes when config is missing
 function getDummySdks() {
     const dummyApp = { name: 'dummy', options: {}, automaticDataCollectionEnabled: false };
     return {
         firebaseApp: dummyApp as FirebaseApp,
-        auth: {} as Auth,
-        firestore: {} as Firestore,
-        storage: {} as FirebaseStorage,
+        auth: null as unknown as Auth,
+        firestore: null as unknown as Firestore,
+        storage: null as unknown as FirebaseStorage,
     };
 }
 

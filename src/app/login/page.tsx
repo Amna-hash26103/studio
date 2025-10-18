@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -50,6 +49,14 @@ export default function LoginPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) {
+        toast({
+            variant: 'destructive',
+            title: "Login Failed",
+            description: "Authentication service is not available. Please try again later.",
+        });
+        return;
+    }
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       toast({
@@ -60,8 +67,8 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error('Error signing in:', error);
       let description = "An unexpected error occurred. Please try again.";
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
-        description = "Invalid email or password. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-api-key') {
+        description = "Invalid email or password. Please check your credentials and try again.";
       }
       
       toast({
@@ -79,7 +86,7 @@ export default function LoginPage() {
           <Link href="/" className="mb-2 flex items-center justify-center">
             <FemmoraLogo className="h-24 w-24 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-3xl font-bold" style={{color: 'hsl(var(--foreground))'}}>
+          <CardTitle className="font-headline text-3xl font-bold text-foreground">
             Welcome Back
           </CardTitle>
           <CardDescription className="text-muted-foreground">
@@ -99,7 +106,7 @@ export default function LoginPage() {
                       <Input
                         type="email"
                         placeholder="you@example.com"
-                        className="bg-primary/20 border-border"
+                        className="bg-secondary/20 border-border"
                         {...field}
                       />
                     </FormControl>
@@ -125,7 +132,7 @@ export default function LoginPage() {
                       <Input 
                         type="password" 
                         placeholder="••••••••" 
-                        className="bg-primary/20 border-border"
+                        className="bg-secondary/20 border-border"
                         {...field} />
                     </FormControl>
                     <FormMessage />
@@ -134,7 +141,7 @@ export default function LoginPage() {
               />
               <Button 
                 type="submit" 
-                className="w-full bg-[#b83a49] hover:bg-[#b83a49]/90 text-white font-bold" 
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold" 
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? "Logging In..." : "Log In"}
@@ -153,4 +160,3 @@ export default function LoginPage() {
     </div>
   );
 }
-    
