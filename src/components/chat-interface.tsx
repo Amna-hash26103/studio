@@ -12,12 +12,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
-import { Bot, Loader2, Send, Mic } from 'lucide-react';
+import { Bot, Loader2, Send } from 'lucide-react';
 import { wellnessChatbotPersonalizedAdvice } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import type { WellnessChatbotPersonalizedAdviceInput } from '@/ai/flows/wellness-chatbot-personalized-advice';
 import { ReadAloudButton } from './read-aloud-button';
 import { useToast } from '@/hooks/use-toast';
-import { speechToText } from '@/ai/flows/speech-to-text-flow';
 
 const healthAvatar = PlaceHolderImages.find(
   (img) => img.id === 'health-avatar'
@@ -75,10 +74,7 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -132,70 +128,6 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
     }
   };
 
-  const startRecording = async () => {
-    if (isLoading) return;
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = recorder;
-      audioChunksRef.current = [];
-
-      recorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const reader = new FileReader();
-        reader.readAsDataURL(audioBlob);
-        reader.onloadend = async () => {
-          const base64Audio = reader.result as string;
-          try {
-            const { text } = await speechToText({ audioDataUri: base64Audio });
-            setInput(text);
-          } catch (error) {
-            console.error('Speech to text failed:', error);
-            toast({
-              variant: 'destructive',
-              title: 'Transcription Failed',
-              description: 'Could not transcribe the audio. Please try again.',
-            });
-          } finally {
-            setIsLoading(false);
-          }
-        };
-        stream.getTracks().forEach(track => track.stop()); // Stop microphone access
-      };
-
-      recorder.start();
-      setIsListening(true);
-      setIsLoading(true);
-    } catch (err) {
-      console.error('Error accessing microphone:', err);
-      toast({
-        variant: 'destructive',
-        title: 'Microphone Access Denied',
-        description: 'Please allow microphone access in your browser settings to use voice input.',
-      });
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isListening) {
-      mediaRecorderRef.current.stop();
-      setIsListening(false);
-      // setIsLoading(false) is handled in onstop
-    }
-  };
-
-  const handleVoiceButtonClick = () => {
-    if (isListening) {
-      stopRecording();
-    } else {
-      startRecording();
-    }
-  };
-
   return (
     <Card>
       <CardContent ref={scrollRef} className="h-[60vh] overflow-y-auto p-4">
@@ -235,7 +167,7 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
               )}
             </div>
           ))}
-          {isLoading && !isListening && (
+          {isLoading && (
               <div className="flex items-start gap-3 justify-start">
                 <Avatar className="h-8 w-8 border">
                   <AvatarImage src={avatars[topic]?.imageUrl} />
@@ -256,24 +188,10 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? 'Listening...' : placeholders[topic]}
+              placeholder={placeholders[topic]}
               disabled={isLoading}
               className="pr-10"
             />
-            <Button 
-                type="button" 
-                size="icon" 
-                variant="ghost"
-                onClick={handleVoiceButtonClick} 
-                disabled={isLoading && !isListening}
-                className={cn(
-                    "absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8",
-                    isListening && "text-primary animate-pulse"
-                )}
-            >
-                <Mic className="h-4 w-4" />
-                <span className="sr-only">Use voice input</span>
-            </Button>
           </div>
           <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
             <Send className="h-4 w-4" />
