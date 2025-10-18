@@ -108,7 +108,6 @@ export default function FeedPage() {
             const postData = postDoc.data() as Post;
             const likes = postData.likes || [];
             
-            let updatedLikes;
             if (likes.includes(user.uid)) {
                 transaction.update(postRef, { likes: arrayRemove(user.uid) });
             } else {
