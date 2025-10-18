@@ -73,24 +73,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="flex flex-col items-center justify-center space-y-2 pt-2 pb-2">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4 font-body">
+      <Card className="w-full max-w-md border-0 shadow-lg bg-card">
+        <CardHeader className="flex flex-col items-center justify-center space-y-4 pt-8 pb-4">
           <Link href="/" className="mb-2 flex items-center justify-center">
-            <div className="flex items-center justify-center">
-              <FemmoraLogo className="h-70 w-70 text-primary" />
-            </div>
+            <FemmoraLogo className="h-24 w-24 text-primary" />
           </Link>
-          <CardTitle className="font-headline text-2xl">
+          <CardTitle className="font-headline text-3xl font-bold" style={{color: 'hsl(var(--foreground))'}}>
             Welcome Back
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Log in to continue your journey with FEMMORA.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 pb-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="email"
@@ -101,6 +99,7 @@ export default function LoginPage() {
                       <Input
                         type="email"
                         placeholder="you@example.com"
+                        className="bg-primary/20 border-border"
                         {...field}
                       />
                     </FormControl>
@@ -117,27 +116,35 @@ export default function LoginPage() {
                         <FormLabel>Password</FormLabel>
                         <Link
                         href="#"
-                        className="text-sm text-muted-foreground hover:text-primary"
+                        className="text-sm text-muted-foreground hover:text-accent-foreground"
                         >
                         Forgot password?
                         </Link>
                     </div>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input 
+                        type="password" 
+                        placeholder="••••••••" 
+                        className="bg-primary/20 border-border"
+                        {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              <Button 
+                type="submit" 
+                className="w-full bg-[#b83a49] hover:bg-[#b83a49]/90 text-white font-bold" 
+                disabled={form.formState.isSubmitting}
+              >
                 {form.formState.isSubmitting ? "Logging In..." : "Log In"}
               </Button>
             </form>
           </Form>
 
-          <div className="mt-6 text-center text-sm">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <Link href="/signup" className="font-semibold text-primary">
+            <Link href="/signup" className="font-semibold text-accent-foreground underline">
               Sign Up
             </Link>
           </div>
