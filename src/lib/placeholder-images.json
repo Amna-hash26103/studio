@@ -57,74 +57,14 @@
     {
       "id": "project-image-2",
       "description": "An artist painting in her studio.",
-      "imageUrl": "https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnRpc3QlMjBzdHVkaW98ZW58MHx8fHwxNzU5NTQ2MTEwfDA&ixlib-rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1501084817091-a4f3d1d19e07?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnRpc3QlMjBzdHVkaW98ZW58MHx8fHwxNzU5NTQ2MTEwfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "artist studio"
     },
     {
       "id": "user-avatar-1",
       "description": "Profile picture of a user.",
-      "imageUrl": "https://i.postimg.cc/hGZkzdyj/cute-cartoon-kid-posing-portrait-1.jpg",
+      "imageUrl": "https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg",
       "imageHint": "cartoon person"
-    },
-    {
-      "id": "user-avatar-2",
-      "description": "Profile picture of a user.",
-      "imageUrl": "https://i.postimg.cc/6QQsp004/cute-cartoon-kid-posing-portrait-2.jpg",
-      "imageHint": "cartoon person"
-    },
-    {
-      "id": "user-avatar-3",
-      "description": "Profile picture of a user.",
-      "imageUrl": "https://i.postimg.cc/mrrxgwwZ/cute-cartoon-kid-posing-portrait-3.jpg",
-      "imageHint": "cartoon person"
-    },
-    {
-      "id": "user-avatar-4",
-      "description": "Profile picture of a user.",
-      "imageUrl": "https://i.postimg.cc/XvvMY88M/cute-cartoon-kid-posing-portrait-4.jpg",
-      "imageHint": "cartoon person"
-    },
-    {
-      "id": "user-avatar-5",
-      "description": "Profile picture of a user.",
-      "imageUrl": "https://i.postimg.cc/XvvMY8gR/cute-cartoon-kid-posing-portrait-5.jpg",
-      "imageHint": "cartoon person"
-    },
-    {
-      "id": "user-avatar-6",
-      "description": "Profile picture of a user.",
-      "imageUrl": "https://i.postimg.cc/hGGFtrrK/cute-cartoon-kid-posing-portrait-6.jpg",
-      "imageHint": "cartoon person"
-    },
-    {
-      "id": "user-profile-cover",
-      "description": "A cover image for a user profile page, showing a serene landscape.",
-      "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
-      "imageHint": "serene landscape"
-    },
-    {
-      "id": "user-cover-4",
-      "description": "A sunlit forest path.",
-      "imageUrl": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&q=80",
-      "imageHint": "forest path"
-    },
-    {
-      "id": "user-cover-5",
-      "description": "A misty mountain range at sunrise.",
-      "imageUrl": "https://images.unsplash.com/photo-1433838552652-f9a46b332c40?w=800&q=80",
-      "imageHint": "misty mountains"
-    },
-    {
-      "id": "user-cover-7",
-      "description": "A vibrant cityscape at dusk.",
-      "imageUrl": "https://images.unsplash.com/photo-1536599018102-9f803c140fc1?w=800&q=80",
-      "imageHint": "cityscape dusk"
-    },
-    {
-      "id": "user-cover-8",
-      "description": "A cozy library with bookshelves.",
-      "imageUrl": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&q=80",
-      "imageHint": "cozy library"
     }
   ]
 }

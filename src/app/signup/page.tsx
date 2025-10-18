@@ -23,15 +23,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { sendWelcomeEmail } from '@/ai/flows/send-welcome-email';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const formSchema = z.object({
   displayName: z.string().min(2, {
@@ -47,7 +45,6 @@ const formSchema = z.object({
 
 export default function SignupPage() {
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -61,7 +58,7 @@ export default function SignupPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!auth || !firestore) {
+    if (!auth) {
          toast({
             variant: 'destructive',
             title: "Signup Failed",
@@ -77,30 +74,9 @@ export default function SignupPage() {
       );
       const user = userCredential.user;
 
-      const defaultAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
-      const defaultAvatarUrl = defaultAvatar?.imageUrl || 'https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg';
-      
-      const defaultCover = PlaceHolderImages.find(p => p.id === 'user-profile-cover');
-      const defaultCoverUrl = defaultCover?.imageUrl;
-
       await updateProfile(user, {
         displayName: values.displayName,
-        photoURL: defaultAvatarUrl,
       });
-
-      const userProfile = {
-        id: user.uid,
-        displayName: values.displayName,
-        email: values.email,
-        bio: '',
-        interests: [],
-        location: '',
-        profilePhotoURL: defaultAvatarUrl,
-        coverPhotoURL: defaultCoverUrl,
-        projectIds: []
-      };
-
-      await setDoc(doc(firestore, 'users', user.uid), userProfile);
 
       sendWelcomeEmail({ name: values.displayName, email: values.email });
 

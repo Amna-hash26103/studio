@@ -22,16 +22,34 @@ const firebaseConfig = {
 
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
-  if (!getApps().length) {
-    if (!firebaseConfig.apiKey) {
-      console.error("Firebase config not found or incomplete. Check your .env.local file or Vercel environment variables.");
-      // Return a dummy object to prevent crashing the app, but functionality will be broken.
+  if (typeof window !== 'undefined') {
+    // We are in the browser
+    if (!window.firebaseConfig) {
+      console.error("Firebase config not found. Make sure /public/firebase-config.js is loaded.");
       return getDummySdks();
     }
-    const firebaseApp = initializeApp(firebaseConfig);
-    return getSdks(firebaseApp);
+    if (!getApps().length) {
+      const firebaseApp = initializeApp(window.firebaseConfig);
+      return getSdks(firebaseApp);
+    }
+    return getSdks(getApp());
+  } 
+  
+  // We are on the server, try to initialize for App Hosting
+  if (!getApps().length) {
+    try {
+      const firebaseApp = initializeApp({});
+      return getSdks(firebaseApp);
+    } catch(e) {
+      console.warn("Automatic initialization failed. Falling back to firebase config object.", e);
+      if (!firebaseConfig.apiKey) {
+        console.error("Firebase config is not set. Firebase will not be initialized on the server.");
+        return getDummySdks();
+      }
+      const serverApp = initializeApp(firebaseConfig);
+      return getSdks(serverApp);
+    }
   }
-  // If already initialized, return the SDKs with the already initialized App
   return getSdks(getApp());
 }
 
@@ -54,9 +72,9 @@ function getDummySdks() {
     const dummyApp = { name: 'dummy', options: {}, automaticDataCollectionEnabled: false };
     return {
         firebaseApp: dummyApp as FirebaseApp,
-        auth: null as unknown as Auth,
-        firestore: null as unknown as Firestore,
-        storage: null as unknown as FirebaseStorage,
+        auth: {} as Auth,
+        firestore: {} as Firestore,
+        storage: {} as FirebaseStorage,
     };
 }
 
