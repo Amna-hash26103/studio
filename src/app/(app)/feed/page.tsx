@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Heart, MessageCircle, MoreHorizontal, Send, Share2, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Send, Bookmark } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -224,9 +224,6 @@ function PostCard({ post, onAddComment, onLike, onSave }: { post: Post, onAddCom
                     <Button variant="ghost" size="icon" onClick={() => onSave(post.id)}>
                         <Bookmark className="h-5 w-5" />
                     </Button>
-                    <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-5 w-5" />
-                    </Button>
                 </div>
               </div>
             </CardHeader>
@@ -246,9 +243,6 @@ function PostCard({ post, onAddComment, onLike, onSave }: { post: Post, onAddCom
                     </Button>
                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
                         <MessageCircle className="h-4 w-4" /> {allComments?.length || 0}
-                    </Button>
-                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                        <Share2 className="h-4 w-4" /> Share
                     </Button>
                 </div>
               </div>
@@ -303,3 +297,5 @@ function CommentSection({ comments, onAddComment, userAvatar, userInitial }: { c
         </div>
     );
 }
+
+    
