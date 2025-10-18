@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -52,22 +53,22 @@ import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Types
-type UserProfile = {
-  id: string;
+type UserProfileInfo = {
   displayName: string;
   photoURL: string;
 };
+
 type CommentType = {
   id: string;
   userId: string;
   text: string;
   createdAt: Timestamp;
-  userProfile?: UserProfile;
+  userProfile: UserProfileInfo;
 };
+
 type PostType = {
   id: string;
   userId: string;
@@ -76,7 +77,7 @@ type PostType = {
   createdAt: Timestamp;
   likes: string[];
   comments: CommentType[];
-  userProfile?: UserProfile;
+  userProfile: UserProfileInfo;
 };
 
 // --- Main Feed Page ---
@@ -89,39 +90,7 @@ export default function FeedPage() {
     if (!firestore) return null;
     return query(collection(firestore, 'posts'), orderBy('createdAt', 'desc'));
   }, [firestore]);
-  const { data: posts, isLoading: isLoadingPosts } = useCollection<
-    Omit<PostType, 'id' | 'comments' | 'userProfile'>
-  >(postsQuery);
-
-  // Fetch all user profiles to map to posts
-  const usersQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'users');
-  }, [firestore]);
-  const { data: userProfiles } = useCollection<
-    Omit<UserProfile, 'id'> & { displayName: string; photoURL: string }
-  >(usersQuery);
-
-  const postsWithUserData = useMemo(() => {
-    if (!posts || !userProfiles) return [];
-    return posts.map((post) => {
-      const userProfile = userProfiles.find((p) => p.id === post.userId);
-      return {
-        ...post,
-        userProfile: userProfile
-          ? {
-              id: userProfile.id,
-              displayName: userProfile.displayName,
-              photoURL: userProfile.photoURL,
-            }
-          : {
-              id: 'unknown',
-              displayName: 'Unknown User',
-              photoURL: '',
-            },
-      };
-    });
-  }, [posts, userProfiles]);
+  const { data: posts, isLoading: isLoadingPosts } = useCollection<PostType>(postsQuery);
 
   if (isLoadingPosts) {
     return (
@@ -138,10 +107,10 @@ export default function FeedPage() {
         <CreatePostCard user={user} firestore={firestore} />
       )}
       <div className="space-y-4">
-        {postsWithUserData.map((post) => (
+        {posts?.map((post) => (
           <PostCard
             key={post.id}
-            post={post as PostType}
+            post={post}
             currentUser={user}
           />
         ))}
@@ -170,12 +139,24 @@ function CreatePostCard({
 
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
     form.clearErrors();
+    if (!user.displayName) {
+        toast({
+            variant: 'destructive',
+            title: 'Profile Incomplete',
+            description: 'Please set a display name before posting.',
+        });
+        return;
+    }
     try {
       await addDoc(collection(firestore, 'posts'), {
         userId: user.uid,
         content: values.content,
         createdAt: serverTimestamp(),
         likes: [],
+        userProfile: {
+            displayName: user.displayName,
+            photoURL: user.photoURL || '',
+        }
       });
       form.reset();
       toast({ title: 'Post created!' });
@@ -366,49 +347,32 @@ function CommentSection({
       orderBy('createdAt', 'asc')
     );
   }, [firestore, post.id]);
-  const { data: comments, isLoading: isLoadingComments } = useCollection<
-    Omit<CommentType, 'id'>
-  >(commentsQuery);
-
-  const usersQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'users');
-  }, [firestore]);
-  const { data: userProfiles } = useCollection<UserProfile>(usersQuery);
-
-  const commentsWithUserData = useMemo(() => {
-    if (!comments || !userProfiles) return [];
-    return comments.map((comment) => {
-      const userProfile = userProfiles.find((p) => p.id === comment.userId);
-      return {
-        ...comment,
-        userProfile: userProfile
-          ? {
-              id: userProfile.id,
-              displayName: userProfile.displayName,
-              photoURL: userProfile.photoURL,
-            }
-          : {
-              id: 'unknown',
-              displayName: 'Unknown User',
-              photoURL: '',
-            },
-      };
-    });
-  }, [comments, userProfiles]);
-
+  const { data: comments, isLoading: isLoadingComments } = useCollection<CommentType>(commentsQuery);
+  
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!commentText.trim() || !currentUser || !firestore) return;
+    if (!currentUser.displayName) {
+        toast({
+            variant: 'destructive',
+            title: 'Profile Incomplete',
+            description: 'Please set a display name before commenting.',
+        });
+        return;
+    }
     setIsSubmitting(true);
     try {
       await addDoc(collection(firestore, 'posts', post.id, 'comments'), {
         userId: currentUser.uid,
         text: commentText,
         createdAt: serverTimestamp(),
+        userProfile: {
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL || '',
+        }
       });
       setCommentText('');
     } catch (error) {
@@ -427,12 +391,12 @@ function CommentSection({
     <div className="border-t p-6">
       <div className="space-y-4">
         {isLoadingComments && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
-        {!isLoadingComments && commentsWithUserData.length === 0 && (
+        {!isLoadingComments && comments?.length === 0 && (
           <p className="text-center text-sm text-muted-foreground">
             No comments yet.
           </p>
         )}
-        {commentsWithUserData.map((comment) => (
+        {comments?.map((comment) => (
           <div key={comment.id} className="flex items-start gap-3">
             <Avatar className="h-8 w-8">
               <AvatarImage src={comment.userProfile?.photoURL} />
@@ -505,3 +469,5 @@ function PostSkeleton() {
     </Card>
   );
 }
+
+    

@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Period": {
@@ -199,12 +200,27 @@
             "type": "string"
           },
           "description": "Array of user IDs who liked the post."
+        },
+        "userProfile": {
+            "type": "object",
+            "description": "A denormalized copy of the author's profile information.",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "photoURL": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "required": ["displayName"]
         }
       },
       "required": [
         "userId",
         "content",
-        "createdAt"
+        "createdAt",
+        "userProfile"
       ]
     },
     "Comment": {
@@ -221,12 +237,27 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+         "userProfile": {
+            "type": "object",
+            "description": "A denormalized copy of the commenter's profile information.",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "photoURL": {
+                    "type": "string",
+                    "format": "uri"
+                }
+            },
+            "required": ["displayName"]
         }
       },
       "required": [
         "userId",
         "text",
-        "createdAt"
+        "createdAt",
+        "userProfile"
       ]
     }
   },
@@ -311,3 +342,5 @@
     ]
   }
 }
+
+    
