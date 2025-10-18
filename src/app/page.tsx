@@ -91,14 +91,14 @@ export default function LandingPage() {
         <section className="bg-secondary py-8">
           <div className="container mx-auto px-4 md:px-6">
             <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
-              <div className="relative h-64 w-full overflow-hidden rounded-md shadow-xl md:h-96">
+              <div className="relative h-64 w-full overflow-hidden rounded-lg shadow-xl md:h-96">
                 {heroImage && (
                   <Image
                     src={heroImage.imageUrl}
                     alt={heroImage.description}
                     data-ai-hint={heroImage.imageHint}
                     fill
-                    className="object-cover rounded-md"
+                    className="object-cover rounded-lg"
                   />
                 )}
               </div>
