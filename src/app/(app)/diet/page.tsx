@@ -1,6 +1,6 @@
 'use client';
 
-import React, 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -354,5 +354,3 @@ function MealLogCard({ log }: { log: any }) {
     </Card>
   );
 }
-
-    
