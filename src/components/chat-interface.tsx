@@ -81,7 +81,7 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
 
   useEffect(() => {
     // Setup Speech Recognition API
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
