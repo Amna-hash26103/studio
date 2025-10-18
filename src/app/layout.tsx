@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",
@@ -37,6 +38,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap"
           rel="stylesheet"
         />
+        <Script src="/firebase-config.js" strategy="beforeInteractive" />
       </head>
       <body className={cn('font-body antialiased h-screen flex flex-col')}>
         <Suspense fallback={<div>Loading...</div>}>
