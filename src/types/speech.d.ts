@@ -1,4 +1,14 @@
+
 // /src/types/speech.d.ts
+
+// This declaration extends the global Window interface to include
+// the browser-specific SpeechRecognition APIs, resolving TypeScript build errors.
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 interface SpeechRecognitionEvent extends Event {
   readonly resultIndex: number;
@@ -48,13 +58,6 @@ interface SpeechRecognition extends EventTarget {
 
 interface SpeechRecognitionStatic {
   new (): SpeechRecognition;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition: SpeechRecognitionStatic;
-    webkitSpeechRecognition: SpeechRecognitionStatic;
-  }
 }
 
 export {};

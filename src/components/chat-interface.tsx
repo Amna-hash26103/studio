@@ -80,8 +80,11 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
   const { toast } = useToast();
 
   useEffect(() => {
+    // SSR safety check
+    if (typeof window === 'undefined') return;
+
     // Setup Speech Recognition API
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
