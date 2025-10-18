@@ -29,6 +29,7 @@ import {
   Smile,
   User,
   Droplets,
+  Users,
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -58,6 +59,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   const mainNavItems = [
+    { href: `/feed`, icon: <Users />, label: 'Community' },
     { href: `/period-tracker`, icon: <Droplets />, label: 'Period Tracker' },
     { href: `/diet`, icon: <Salad />, label: 'Diet' },
     { href: `/emotional-health`, icon: <Smile />, label: 'Emotional Health' },
@@ -223,6 +225,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
   
   const mobileNavItems = [
+    { href: `/feed`, icon: <Users />, label: 'Feed' },
     { href: `/period-tracker`, icon: <Droplets />, label: 'Tracker' },
     { href: `/diet`, icon: <Salad />, label: 'Diet' },
     { href: `/emotional-health`, icon: <Smile />, label: 'Wellness' },
@@ -231,7 +234,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   const mobileNav = (
     <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-background md:hidden">
-      <div className="grid h-16 grid-cols-4 items-center">
+      <div className="grid h-16 grid-cols-5 items-center">
         {mobileNavItems.map((item) => (
           <Link
             key={item.href}
@@ -242,7 +245,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 : 'text-muted-foreground'
             }`}
           >
-            {item.icon}
+            {React.cloneElement(item.icon, { size: 20 })}
             <span className="truncate">{item.label}</span>
           </Link>
         ))}

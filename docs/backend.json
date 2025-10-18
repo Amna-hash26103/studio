@@ -149,6 +149,85 @@
         "description",
         "createdAt"
       ]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public-facing user profile information.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string"
+        },
+        "bio": {
+          "type": "string"
+        },
+        "photoURL": {
+          "type": "string",
+          "format": "uri"
+        },
+        "postCount": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "displayName",
+        "photoURL"
+      ]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "A single post in the community feed.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "likes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of user IDs who liked the post."
+        }
+      },
+      "required": [
+        "userId",
+        "content",
+        "createdAt"
+      ]
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "A comment on a post.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "text",
+        "createdAt"
+      ]
     }
   },
   "auth": {
@@ -197,6 +276,36 @@
             "$ref": "#/entities/MealLog"
           },
           "description": "Stores a user's meal log entries."
+        }
+      },
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "UserProfile",
+          "schema": {
+            "$ref": "#/entities/UserProfile"
+          },
+          "description": "Stores public user profile information."
+        }
+      },
+      {
+        "path": "/posts/{postId}",
+        "definition": {
+          "entityName": "Post",
+          "schema": {
+            "$ref": "#/entities/Post"
+          },
+          "description": "Stores all posts for the community feed."
+        }
+      },
+      {
+        "path": "/posts/{postId}/comments/{commentId}",
+        "definition": {
+          "entityName": "Comment",
+          "schema": {
+            "$ref": "#/entities/Comment"
+          },
+          "description": "Stores comments for a specific post."
         }
       }
     ]
