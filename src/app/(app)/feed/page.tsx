@@ -54,6 +54,7 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 // Types
 type UserProfileInfo = {
@@ -74,11 +75,53 @@ type PostType = {
   userId: string;
   content: string;
   imageUrl?: string;
-  createdAt: Timestamp;
+  createdAt: Timestamp | Date; // Allow Date for dummy data
   likes: string[];
-  comments: CommentType[];
   userProfile: UserProfileInfo;
 };
+
+const userAvatar1 = PlaceHolderImages.find(p => p.id === 'user-avatar-1');
+const feedPost1 = PlaceHolderImages.find(p => p.id === 'feed-post-1');
+const feedPost2 = PlaceHolderImages.find(p => p.id === 'feed-post-2');
+
+const dummyPosts: PostType[] = [
+  {
+    id: 'dummy-1',
+    userId: 'dummy-user-1',
+    content: "Just finished a great workout! Feeling energized and ready to take on the day. What's your favorite way to stay active?",
+    imageUrl: feedPost1?.imageUrl,
+    createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+    likes: ['user1', 'user2', 'user3'],
+    userProfile: {
+      displayName: 'Chloe',
+      photoURL: userAvatar1?.imageUrl || '',
+    },
+  },
+  {
+    id: 'dummy-2',
+    userId: 'dummy-user-2',
+    content: "Shared a beautiful moment with a friend over coffee today. It's the small connections that make life rich. ☕️",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    likes: ['user1', 'user4'],
+    userProfile: {
+      displayName: 'Elena',
+      photoURL: userAvatar1?.imageUrl || '',
+    },
+  },
+    {
+    id: 'dummy-3',
+    userId: 'dummy-user-3',
+    content: "Experimenting with a new healthy recipe tonight! It's a quinoa salad with roasted vegetables and a lemon-tahini dressing. So delicious and nutritious! 🥗",
+    imageUrl: feedPost2?.imageUrl,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5), // 5 hours ago
+    likes: ['user1', 'user2', 'user3', 'user4', 'user5'],
+    userProfile: {
+      displayName: 'Sofia',
+      photoURL: userAvatar1?.imageUrl || '',
+    },
+  },
+];
+
 
 // --- Main Feed Page ---
 export default function FeedPage() {
@@ -91,6 +134,8 @@ export default function FeedPage() {
     return query(collection(firestore, 'posts'), orderBy('createdAt', 'desc'));
   }, [firestore]);
   const { data: posts, isLoading: isLoadingPosts } = useCollection<PostType>(postsQuery);
+
+  const displayPosts = !isLoadingPosts && posts && posts.length > 0 ? posts : dummyPosts;
 
   if (isLoadingPosts) {
     return (
@@ -107,11 +152,20 @@ export default function FeedPage() {
         <CreatePostCard user={user} firestore={firestore} />
       )}
       <div className="space-y-4">
-        {posts?.map((post) => (
+        {(!posts || posts.length === 0) && (
+            <Card>
+                <CardContent className="p-6 text-center text-muted-foreground">
+                    <p>No posts yet! Be the first to share something with the community.</p>
+                    <p className="text-xs mt-2">(Showing sample posts below)</p>
+                </CardContent>
+            </Card>
+        )}
+        {displayPosts.map((post) => (
           <PostCard
             key={post.id}
             post={post}
             currentUser={user}
+            isDummy={!post.createdAt || !('seconds' in post.createdAt)}
           />
         ))}
       </div>
@@ -234,21 +288,23 @@ function CreatePostCard({
 function PostCard({
   post,
   currentUser,
+  isDummy,
 }: {
   post: PostType;
   currentUser: any;
+  isDummy?: boolean;
 }) {
   const [showComments, setShowComments] = useState(false);
   const firestore = useFirestore();
   const { toast } = useToast();
 
   const isLiked = useMemo(
-    () => currentUser && post.likes.includes(currentUser.uid),
-    [post.likes, currentUser]
+    () => !isDummy && currentUser && post.likes.includes(currentUser.uid),
+    [post.likes, currentUser, isDummy]
   );
 
   const handleLike = async () => {
-    if (!currentUser || !firestore) return;
+    if (isDummy || !currentUser || !firestore) return;
     const postRef = doc(firestore, 'posts', post.id);
     try {
       await writeBatch(firestore)
@@ -268,6 +324,14 @@ function PostCard({
     }
   };
 
+  const getTimeAgo = () => {
+    if (!post.createdAt) return 'just now';
+    if (post.createdAt instanceof Date) { // For dummy data
+        return formatDistanceToNow(post.createdAt, { addSuffix: true });
+    }
+    return formatDistanceToNow(post.createdAt.toDate(), { addSuffix: true }); // For Firestore timestamps
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -281,11 +345,7 @@ function PostCard({
           <div>
             <p className="font-semibold">{post.userProfile?.displayName}</p>
             <p className="text-xs text-muted-foreground">
-              {post.createdAt
-                ? formatDistanceToNow(post.createdAt.toDate(), {
-                    addSuffix: true,
-                  })
-                : 'just now'}
+              {getTimeAgo()}
             </p>
           </div>
         </div>
@@ -305,7 +365,7 @@ function PostCard({
       </CardContent>
       <CardFooter className="flex justify-between border-t px-6 pt-4">
         <div className="flex gap-4">
-          <Button variant="ghost" size="sm" onClick={handleLike}>
+          <Button variant="ghost" size="sm" onClick={handleLike} disabled={isDummy}>
             <Heart
               className={cn('mr-2 h-5 w-5', isLiked && 'fill-red-500 text-red-500')}
             />
@@ -315,16 +375,17 @@ function PostCard({
             variant="ghost"
             size="sm"
             onClick={() => setShowComments(!showComments)}
+            disabled={isDummy}
           >
             <MessageCircle className="mr-2 h-5 w-5" />
-            <CommentsCount postId={post.id} />
+            {isDummy ? '0' : <CommentsCount postId={post.id} />}
           </Button>
         </div>
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" disabled={isDummy}>
           <Bookmark className="mr-2 h-5 w-5" />
         </Button>
       </CardFooter>
-      {showComments && <CommentSection post={post} currentUser={currentUser} />}
+      {showComments && !isDummy && <CommentSection post={post} currentUser={currentUser} />}
     </Card>
   );
 }

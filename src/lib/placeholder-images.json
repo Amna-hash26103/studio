@@ -32,21 +32,15 @@
     },
     {
       "id": "feed-post-1",
-      "description": "A woman working on her laptop in a cozy cafe.",
-      "imageUrl": "https://images.unsplash.com/photo-1647154936646-2ada256c1a48?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjB3b3JraW5nJTIwbGFwdG9wfGVufDB8fHx8MTc1OTYwMTY5MXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman working laptop"
+      "description": "A woman doing yoga in a bright, airy room.",
+      "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=2120&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "woman doing yoga"
     },
     {
       "id": "feed-post-2",
-      "description": "Two friends having a conversation over coffee.",
-      "imageUrl": "https://images.unsplash.com/photo-1753351055728-23df89f9d273?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmcmllbmRzJTIwdGFsa2luZyUyMGNhZmV8ZW58MHx8fHwxNzU5NjAxNjkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "friends talking cafe"
-    },
-    {
-      "id": "feed-post-3",
-      "description": "A woman practicing yoga at sunrise.",
-      "imageUrl": "https://images.unsplash.com/photo-1653393342554-b48f44935014?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx5b2dhJTIwc3VucmlzZXxlbnwwfHx8fDE3NTk1OTUyMzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "yoga sunrise"
+      "description": "A flat lay of a healthy salad bowl with fresh ingredients.",
+      "imageUrl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "healthy salad bowl"
     },
     {
       "id": "project-image-1",
