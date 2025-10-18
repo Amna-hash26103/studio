@@ -53,6 +53,7 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Types
 type UserProfile = {
