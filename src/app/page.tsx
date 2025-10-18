@@ -8,6 +8,7 @@ import { FemmoraLogo } from '@/components/icons';
 import { HeartHandshake, Users, Globe, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ReadAloudButton } from '@/components/read-aloud-button';
+import { firebaseConfig } from '@/firebase/config';
 
 
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
@@ -65,6 +66,32 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
+        
+        {/* Vercel Configuration Display Section */}
+        <section className="bg-yellow-100 dark:bg-yellow-900 border-y-4 border-yellow-500 my-8">
+            <div className="container mx-auto px-4 md:px-6 py-8">
+                <h2 className="font-headline text-3xl font-bold text-yellow-800 dark:text-yellow-200">Vercel Environment Variables</h2>
+                <p className="mt-2 text-yellow-700 dark:text-yellow-300">Copy the values below into your Vercel project's Environment Variables settings. Make sure the Key matches exactly.</p>
+                <div className="mt-4 p-4 bg-gray-900 text-white rounded-md font-mono text-sm overflow-x-auto">
+                    <pre>
+                        <code>
+                            NEXT_PUBLIC_FIREBASE_API_KEY={process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'Value not found'}<br/>
+                            NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN={process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'Value not found'}<br/>
+                            NEXT_PUBLIC_FIREBASE_PROJECT_ID={process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'Value not found'}<br/>
+                            NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET={process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'Value not found'}<br/>
+                            NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID={process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || 'Value not found'}<br/>
+                            NEXT_PUBLIC_FIREBASE_APP_ID={process.env.NEXT_PUBLIC_FIREBASE_APP_ID || 'Value not found'}<br/>
+                            NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID={process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID || 'Value not found'}
+                        </code>
+                    </pre>
+                </div>
+                 <p className="mt-4 text-yellow-700 dark:text-yellow-300">
+                    If you see "Value not found", you need to find the correct value in your Firebase project settings under Project Settings &gt; General &gt; Your apps &gt; Firebase SDK snippet &gt; Config.
+                </p>
+            </div>
+        </section>
+
+
         <section className="relative px-4 pt-12 pb-12 text-center md:px-6">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
