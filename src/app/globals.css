@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    --background: 19 100% 98%;
+    --background: 19 100% 97%;
     --foreground: 345 42% 18%;
-    --card: 19 100% 98%;
+    --card: 19 100% 97%;
     --card-foreground: 345 42% 18%;
-    --popover: 19 100% 98%;
+    --popover: 19 100% 97%;
     --popover-foreground: 345 42% 18%;
     --primary: 354 52% 46%;
     --primary-foreground: 351 100% 99%;
-    --secondary: 19 100% 98%;
+    --secondary: 19 100% 97%;
     --secondary-foreground: 343 50% 47%;
     --muted: 348 16% 85%;
     --muted-foreground: 345 19% 30%;
@@ -28,7 +28,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --sidebar-background: 19 100% 98%;
+    --sidebar-background: 19 100% 97%;
     --sidebar-foreground: 345 42% 18%;
     --sidebar-primary: 343 50% 47%;
     --sidebar-primary-foreground: 351 100% 99%;
@@ -39,15 +39,15 @@
   }
 
   .dark {
-    --background: 19 20% 9%;
+    --background: 19 20% 8%;
     --foreground: 348 44% 92%;
-    --card: 19 20% 9%;
+    --card: 19 20% 8%;
     --card-foreground: 348 44% 92%;
-    --popover: 19 20% 9%;
+    --popover: 19 20% 8%;
     --popover-foreground: 348 44% 92%;
     --primary: 354 52% 55%;
     --primary-foreground: 348 44% 92%;
-    --secondary: 19 20% 9%;
+    --secondary: 19 20% 8%;
     --secondary-foreground: 348 44% 92%;
     --muted: 348 48% 25%;
     --muted-foreground: 348 44% 75%;
@@ -63,7 +63,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 19 20% 7%;
+    --sidebar-background: 19 20% 6%;
     --sidebar-foreground: 348 44% 92%;
     --sidebar-primary: 343 50% 55%;
     --sidebar-primary-foreground: 348 44% 92%;
