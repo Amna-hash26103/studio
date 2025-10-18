@@ -9,7 +9,8 @@ import {
   QuerySnapshot,
   CollectionReference,
 } from 'firebase/firestore';
-import { useToast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 /** Utility type to add an 'id' field to a given type T. */
 export type WithId<T> = T & { id: string };
@@ -21,7 +22,7 @@ export type WithId<T> = T & { id: string };
 export interface UseCollectionResult<T> {
   data: WithId<T>[] | null; // Document data with ID, or null.
   isLoading: boolean;       // True if loading.
-  error: FirestoreError | null; // Error object, or null.
+  error: FirestoreError | Error | null; // Error object, or null.
 }
 
 /**
@@ -46,8 +47,7 @@ export function useCollection<T = any>(
 
   const [data, setData] = useState<StateDataType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<FirestoreError | null>(null);
-  const { toast } = useToast();
+  const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
     if (!memoizedTargetRefOrQuery) {
@@ -73,20 +73,24 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        console.error("Firestore Error in useCollection:", error);
-        setError(error);
+        const path = 'path' in memoizedTargetRefOrQuery ? memoizedTargetRefOrQuery.path : 'unknown';
+        
+        const contextualError = new FirestorePermissionError({
+          operation: 'list',
+          path: path,
+        });
+
+        setError(contextualError);
         setData(null);
         setIsLoading(false);
-        toast({
-          variant: 'destructive',
-          title: 'Firestore Error',
-          description: error.message,
-        });
+
+        // trigger global error propagation
+        errorEmitter.emit('permission-error', contextualError);
       }
     );
 
     return () => unsubscribe();
-  }, [memoizedTargetRefOrQuery, toast]); // Re-run if the target query/reference changes.
+  }, [memoizedTargetRefOrQuery]);
   
   return { data, isLoading, error };
 }
