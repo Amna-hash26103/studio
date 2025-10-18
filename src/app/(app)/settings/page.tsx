@@ -14,7 +14,7 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { useTheme } from 'next-themes';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Bot, Monitor, Moon, Sun, User as UserIcon, Loader2 } from 'lucide-react';
+import { Bot, Monitor, Moon, Sun, User as UserIcon, Loader2, Database } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,7 +22,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { updateProfile } from 'firebase/auth';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
@@ -38,6 +38,54 @@ const formSchema = z.object({
 const avatarOptions = PlaceHolderImages.filter(p => p.id.startsWith('user-avatar'));
 const coverImageOptions = PlaceHolderImages.filter(p => p.id.startsWith('user-cover'));
 
+// --- DUMMY DATA ---
+const user2 = PlaceHolderImages.find((img) => img.id === 'user-avatar-2');
+const user3 = PlaceHolderImages.find((img) => img.id === 'user-avatar-3');
+const postImage3 = PlaceHolderImages.find(p => p.id === 'feed-post-3');
+const postImage2 = PlaceHolderImages.find(p => p.id === 'feed-post-2');
+
+const DUMMY_USERS = {
+    'dummy-user-chloe': {
+        displayName: 'Chloe',
+        email: 'chloe@example.com',
+        bio: 'Yoga enthusiast and wellness advocate. Exploring the connection between mind, body, and cycle. 🧘‍♀️',
+        profilePhotoURL: user2?.imageUrl,
+        coverPhotoURL: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
+        savedPosts: [],
+    },
+    'dummy-user-elena': {
+        displayName: 'Elena',
+        email: 'elena@example.com',
+        bio: 'Foodie and nutrition nerd. Passionate about hormonal health and healing through what we eat. 🥑',
+        profilePhotoURL: user3?.imageUrl,
+        coverPhotoURL: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=800&q=80',
+        savedPosts: [],
+    }
+}
+
+const DUMMY_POSTS_DATA = [
+    {
+        postId: 'dummy-post-1',
+        userId: 'dummy-user-chloe',
+        content: `Cycle syncing my workouts has been a total game-changer! 🚴‍♀️ I have so much more energy during my follicular phase and I've learned to take it easier with yoga during my luteal phase. Has anyone else tried this?`,
+        imageUrl: postImage3 ? postImage3.imageUrl : undefined,
+        imageHint: postImage3 ? postImage3.imageHint : undefined,
+        comments: [
+             { author: 'Jasmine', userId: 'dummy-user-jasmine', avatar: user3?.imageUrl || '', text: 'Yes! I started a few months ago and my body feels so much more in tune. It really helps with PMS too!', timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000) },
+        ]
+    },
+    {
+        postId: 'dummy-post-2',
+        userId: 'dummy-user-elena',
+        content: `I've been trying to balance my hormones with nutrition and started adding seed cycling to my diet. Flax and pumpkin seeds in the first half of my cycle, and sesame and sunflower in the second. Feeling cautiously optimistic! 🥑`,
+        imageUrl: postImage2 ? postImage2.imageUrl : undefined,
+        imageHint: postImage2 ? 'healthy food' : undefined,
+        comments: [],
+    },
+];
+// --- END DUMMY DATA ---
+
+
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -45,6 +93,7 @@ export default function SettingsPage() {
   const [botName, setBotName] = useState('Aura');
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
 
   const userProfileRef = useMemoFirebase(() => {
     if (!user) return null;
@@ -145,7 +194,72 @@ export default function SettingsPage() {
     }
   };
 
+  const handleSeedDatabase = async () => {
+        if (!firestore) return;
+        setIsSeeding(true);
+        toast({ title: 'Seeding Database...', description: 'Please wait while we add dummy content.' });
+
+        try {
+            const batch = writeBatch(firestore);
+
+            // 1. Seed Users
+            for (const [userId, userData] of Object.entries(DUMMY_USERS)) {
+                const userRef = doc(firestore, 'users', userId);
+                batch.set(userRef, userData);
+            }
+
+            // 2. Seed Posts and Comments
+            for (const postData of DUMMY_POSTS_DATA) {
+                const postRef = doc(firestore, 'posts', postData.postId);
+                const author = (DUMMY_USERS as any)[postData.userId];
+
+                batch.set(postRef, {
+                    userId: postData.userId,
+                    author: author.displayName,
+                    avatar: author.profilePhotoURL,
+                    content: postData.content,
+                    imageUrl: postData.imageUrl || null,
+                    imageHint: postData.imageHint || null,
+                    likes: [],
+                    timestamp: serverTimestamp(),
+                });
+
+                // 3. Seed Comments for each post
+                for (const commentData of postData.comments) {
+                    const commentRef = doc(firestore, 'posts', postData.postId, 'comments', `dummy-comment-${Math.random()}`);
+                    batch.set(commentRef, {
+                        userId: commentData.userId,
+                        author: commentData.author,
+                        avatar: commentData.avatar,
+                        text: commentData.text,
+                        timestamp: serverTimestamp(),
+                    });
+                }
+            }
+
+            await batch.commit();
+
+            toast({
+                title: 'Database Seeded!',
+                description: 'Dummy users and posts have been added successfully.',
+            });
+
+        } catch (error) {
+            console.error('Error seeding database:', error);
+            toast({
+                variant: 'destructive',
+                title: 'Seeding Failed',
+                description: 'Could not add dummy data. Check the console for errors.',
+            });
+        } finally {
+            setIsSeeding(false);
+        }
+    };
+
   const isLoading = isUserLoading || isProfileLoading;
+  
+  // IMPORTANT: Replace with your actual user ID to show the seed button
+  const canSeed = user?.email === 'amna26103@gmail.com';
 
   return (
     <div className="mx-auto max-w-2xl space-y-8">
@@ -338,6 +452,26 @@ export default function SettingsPage() {
           <Button onClick={handleSaveBotName}>Save Name</Button>
         </CardFooter>
       </Card>
+
+       {canSeed && (
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Database /> Developer</CardTitle>
+                <CardDescription>Actions for development and testing.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground">
+                    Populate the Firestore database with sample users and posts for demonstration purposes. This will create 2 new users and 2 new posts with comments.
+                </p>
+            </CardContent>
+            <CardFooter>
+                <Button variant="destructive" onClick={handleSeedDatabase} disabled={isSeeding}>
+                    {isSeeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+                    {isSeeding ? 'Seeding...' : 'Seed Database'}
+                </Button>
+            </CardFooter>
+        </Card>
+      )}
     </div>
   );
 }
