@@ -75,7 +75,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) { // If no Auth service instance, cannot determine user state
+    if (!auth?.onAuthStateChanged) { // If no Auth service instance, cannot determine user state
       setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
       return;
     }
@@ -130,8 +130,23 @@ export const useFirebase = (): FirebaseServicesAndUser => {
   }
 
   if (!context.areServicesAvailable || !context.firebaseApp || !context.firestore || !context.auth || !context.storage) {
-    throw new Error('Firebase core services not available. Check FirebaseProvider props.');
+    // Return a dummy object or throw an error to signal that Firebase is not ready
+    // This helps prevent crashes in components that rely on Firebase services
+    const error = new Error('Firebase core services not available. Check FirebaseProvider props or initialization.');
+    console.error(error.message); // Log error for debugging
+    // Fallback to a "dummy" state to prevent crashing the app
+    return {
+      firebaseApp: {} as FirebaseApp,
+      firestore: {} as Firestore,
+      auth: {} as Auth,
+      storage: {} as FirebaseStorage,
+      user: null,
+
+      isUserLoading: true, // Indicate loading as services aren't ready
+      userError: error,
+    };
   }
+
 
   return {
     firebaseApp: context.firebaseApp,
@@ -192,3 +207,5 @@ export const useUser = (): UserHookResult => {
   const { user, isUserLoading, userError } = context;
   return { user, isUserLoading, userError };
 };
+
+    

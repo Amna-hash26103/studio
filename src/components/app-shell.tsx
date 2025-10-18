@@ -58,11 +58,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   const mainNavItems = [
-    { href: `/feed`, icon: <LayoutDashboard />, label: 'Feed' },
-    { href: `/healthcare`, icon: <HeartPulse />, label: 'Healthcare' },
-    { href: `/emotional-health`, icon: <Smile />, label: 'Emotional Health' },
-    { href: `/diet`, icon: <Salad />, label: 'Diet' },
     { href: `/period-tracker`, icon: <Droplets />, label: 'Period Tracker' },
+    { href: `/diet`, icon: <Salad />, label: 'Diet' },
+    { href: `/emotional-health`, icon: <Smile />, label: 'Emotional Health' },
+    { href: `/healthcare`, icon: <HeartPulse />, label: 'Healthcare' },
   ];
   
   const accountNavItems = [
@@ -224,9 +223,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   );
   
   const mobileNavItems = [
-    { href: `/feed`, icon: <LayoutDashboard />, label: 'Feed' },
-    { href: `/period-tracker`, icon: <Droplets />, label: 'Period Tracker' },
-    { href: `/emotional-health`, icon: <Smile />, label: 'Health' },
+    { href: `/period-tracker`, icon: <Droplets />, label: 'Tracker' },
+    { href: `/diet`, icon: <Salad />, label: 'Diet' },
+    { href: `/emotional-health`, icon: <Smile />, label: 'Wellness' },
     { href: `/settings`, icon: <Settings />, label: 'Settings' },
   ]
 
@@ -267,3 +266,5 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    

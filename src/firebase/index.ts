@@ -1,14 +1,10 @@
 'use client';
 
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, type Firestore } from 'firebase/firestore';
+import { getStorage, type FirebaseStorage } from 'firebase/storage';
 
-// This is a placeholder for the Firebase config. The actual values will be
-// populated by a script that runs when the application starts, reading from
-// environment variables. This setup is crucial for Vercel deployments where
-// client-side code cannot directly access `process.env` at runtime.
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -19,17 +15,16 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-
 // IMPORTANT: DO NOT MODIFY THIS FUNCTION
 export function initializeFirebase() {
   if (typeof window !== 'undefined') {
     // We are in the browser
-    if (!window.firebaseConfig) {
-      console.error("Firebase config not found. Make sure /public/firebase-config.js is loaded.");
+    if (!firebaseConfig.apiKey) {
+      console.error("Firebase config not found. Make sure NEXT_PUBLIC_FIREBASE_... variables are set.");
       return getDummySdks();
     }
     if (!getApps().length) {
-      const firebaseApp = initializeApp(window.firebaseConfig);
+      const firebaseApp = initializeApp(firebaseConfig);
       return getSdks(firebaseApp);
     }
     return getSdks(getApp());
@@ -87,3 +82,5 @@ export * from './non-blocking-updates';
 export * from './non-blocking-login';
 export * from './errors';
 export * from './error-emitter';
+
+    

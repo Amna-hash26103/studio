@@ -63,7 +63,7 @@ export default function LoginPage() {
         title: "Logged In!",
         description: "Welcome back!",
       });
-      router.push('/feed');
+      router.push('/period-tracker');
     } catch (error: any) {
       console.error('Error signing in:', error);
       let description = "An unexpected error occurred. Please try again.";
@@ -160,3 +160,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,74 +24,37 @@ import { v4 as uuidv4 } from 'uuid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { scheduleReminder } from '@/lib/reminders';
 import { dietWellnessAgent } from '@/ai/flows/diet-wellness-agent-flow';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, addDoc, serverTimestamp, query, where, orderBy } from 'firebase/firestore';
 
-type MealLog = {
-  id: string;
-  description: string;
-  createdAt: Date;
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  fiber?: number;
-};
-
-const formSchema = z.object({
+const mealFormSchema = z.object({
   mealDescription: z.string().min(10, {
     message: 'Please describe your meal in at least 10 characters.',
   }),
 });
 
-type PoopLog = {
-    id: string;
-    type: string;
-    createdAt: Date;
-};
-
-const initialMealLogs: MealLog[] = [
-    {
-        id: uuidv4(),
-        description: 'Grilled chicken salad with avocado and vinaigrette',
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 1)),
-        calories: 450,
-        protein: 35,
-        carbs: 15,
-        fat: 25,
-        fiber: 8,
-    },
-    {
-        id: uuidv4(),
-        description: 'Oatmeal with berries, nuts, and a drizzle of honey',
-        createdAt: new Date(),
-        calories: 320,
-        protein: 10,
-        carbs: 55,
-        fat: 8,
-        fiber: 10,
-    },
-    {
-        id: uuidv4(),
-        description: 'Lentil soup with a side of whole wheat bread',
-        createdAt: new Date(new Date().setDate(new Date().getDate() - 2)),
-        calories: 380,
-        protein: 18,
-        carbs: 65,
-        fat: 5,
-        fiber: 15,
-    }
-]
 
 export default function DietPage() {
   const { toast } = useToast();
-  const [mealLogs, setMealLogs] = useState<MealLog[]>(initialMealLogs);
-  const [isLoadingLogs, setIsLoadingLogs] = useState(false); 
-
-  const [waterIntake, setWaterIntake] = useState(3); // in glasses
-  const [poopLogs, setPoopLogs] = useState<PoopLog[]>([
+  const { user } = useUser();
+  const firestore = useFirestore();
+  
+  const [waterIntake, setWaterIntake] = React.useState(3); // in glasses
+  const [poopLogs, setPoopLogs] = React.useState<{ id: string; type: string; createdAt: Date; }[]>([
     { id: uuidv4(), type: '4', createdAt: new Date(new Date().setHours(8, 15, 0)) }
   ]);
+  
+  const mealLogsQuery = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return query(
+        collection(firestore, 'users', user.uid, 'mealLogs'), 
+        orderBy('createdAt', 'desc')
+    );
+  }, [user, firestore]);
 
-  useEffect(() => {
+  const { data: mealLogs, isLoading: isLoadingLogs } = useCollection(mealLogsQuery);
+
+  React.useEffect(() => {
     const waterTimeout = scheduleReminder('water');
     const mealTimeout = scheduleReminder('meal');
 
@@ -102,14 +64,15 @@ export default function DietPage() {
     };
   }, []);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof mealFormSchema>>({
+    resolver: zodResolver(mealFormSchema),
     defaultValues: {
       mealDescription: '',
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof mealFormSchema>) => {
+    if (!user || !firestore) return;
     try {
       const response = await dietAgent(`Analyze this meal: ${values.mealDescription}`);
       
@@ -120,18 +83,18 @@ export default function DietPage() {
 
       const nutritionData = JSON.parse(jsonMatch[1]);
       
-      const newLog: MealLog = {
-        id: uuidv4(),
+      const newLog = {
+        userId: user.uid,
         description: values.mealDescription,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
         ...nutritionData,
       };
 
-      setMealLogs(prev => [newLog, ...prev].sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime()));
+      await addDoc(collection(firestore, 'users', user.uid, 'mealLogs'), newLog);
 
       toast({
         title: 'Meal Logged!',
-        description: 'Your meal and its nutritional info have been saved locally.',
+        description: 'Your meal and its nutritional info have been saved.',
       });
       form.reset();
     } catch (error) {
@@ -146,7 +109,7 @@ export default function DietPage() {
 
   const handleLogPoop = (type: string) => {
     if (!type) return;
-    const newLog: PoopLog = {
+    const newLog = {
         id: uuidv4(),
         type,
         createdAt: new Date(),
@@ -215,7 +178,7 @@ export default function DietPage() {
         </CardContent>
       </Card>
 
-      <MealHistory logs={mealLogs} isLoading={isLoadingLogs} />
+      <MealHistory logs={mealLogs?.map(log => ({ ...log, createdAt: log.createdAt?.toDate() })) || []} isLoading={isLoadingLogs} />
       
       <div className="mt-8">
         <h2 className="font-headline text-2xl font-bold">Ask Your Diet Guide</h2>
@@ -267,7 +230,7 @@ function WaterTracker({ waterIntake, setWaterIntake }: { waterIntake: number, se
     );
 }
 
-function PoopTracker({ logs, onLog, bristolScale }: { logs: PoopLog[], onLog: (type: string) => void, bristolScale: {value: string, label: string}[] }) {
+function PoopTracker({ logs, onLog, bristolScale }: { logs: { id: string, type: string, createdAt: Date }[], onLog: (type: string) => void, bristolScale: {value: string, label: string}[] }) {
     return (
         <Card>
             <CardHeader>
@@ -311,7 +274,7 @@ function PoopTracker({ logs, onLog, bristolScale }: { logs: PoopLog[], onLog: (t
     )
 }
 
-function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: boolean }) {
+function MealHistory({ logs, isLoading }: { logs: any[], isLoading: boolean }) {
   if (isLoading) {
     return (
       <Card>
@@ -357,7 +320,7 @@ function MealHistory({ logs, isLoading }: { logs: MealLog[] | null, isLoading: b
   );
 }
 
-function MealLogCard({ log }: { log: MealLog }) {
+function MealLogCard({ log }: { log: any }) {
   const nutritionInfo = [
     { label: 'Calories', value: (log.calories || 0).toFixed(0), unit: '' },
     { label: 'Protein', value: (log.protein || 0).toFixed(1), unit: 'g' },
@@ -391,3 +354,5 @@ function MealLogCard({ log }: { log: MealLog }) {
     </Card>
   );
 }
+
+    

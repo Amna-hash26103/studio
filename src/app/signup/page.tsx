@@ -85,7 +85,7 @@ export default function SignupPage() {
         description: "Welcome to FEMMORA! We’re so glad to have you here 💜",
       });
 
-      router.push('/feed');
+      router.push('/period-tracker');
     } catch (error: any) {
       console.error('Error signing up:', error);
       if (error.code === 'auth/email-already-in-use') {
@@ -189,3 +189,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    
