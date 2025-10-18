@@ -6,57 +6,36 @@
       "type": "object",
       "description": "Represents a user's profile in the Femmora app.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the user profile."
-        },
-        "displayName": {
+        "username": {
           "type": "string",
           "description": "The user's display name."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address.",
-          "format": "email"
-        },
-        "phoneNumber": {
-          "type": "string",
-          "description": "The user's phone number."
-        },
-        "profilePhotoURL": {
-          "type": "string",
-          "description": "URL of the user's profile photo.",
-          "format": "uri"
-        },
-        "coverPhotoURL": {
-          "type": "string",
-          "description": "URL of the user's cover photo.",
-          "format": "uri"
         },
         "bio": {
           "type": "string",
           "description": "A short biography or description of the user."
         },
-        "interests": {
-          "type": "array",
-          "description": "An array of the user's interests.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "location": {
+        "profilePic": {
           "type": "string",
-          "description": "The user's location (optional)."
+          "description": "URL of the user's profile photo.",
+          "format": "uri"
         },
-        "projectIds": {
+        "savedPosts": {
           "type": "array",
-          "description": "References to Projects created by the user. (Relationship: UserProfile 1:N Project)",
+          "description": "An array of postIds that the user has saved.",
           "items": {
             "type": "string"
           }
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
         }
       },
-      "required": ["id", "displayName", "email"]
+      "required": [
+        "username",
+        "email"
+      ]
     },
     "CommunityPost": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -64,109 +43,166 @@
       "type": "object",
       "description": "Represents a post in the community feed.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the post."
-        },
-        "authorId": {
+        "userId": {
           "type": "string",
           "description": "The ID of the user who created the post."
-        },
-        "author": {
-          "type": "string",
-          "description": "The display name of the post author."
-        },
-        "avatar": {
-          "type": "string",
-          "description": "URL of the author's avatar.",
-          "format": "uri"
-        },
-        "time": {
-          "type": "string",
-          "description": "Timestamp of when the post was created."
         },
         "content": {
           "type": "string",
           "description": "The main text content of the post."
         },
-        "originalContent": {
+        "imageUrl": {
           "type": "string",
-          "description": "The original, untranslated content of the post."
-        },
-        "image": {
-          "type": "object",
-          "properties": {
-            "imageUrl": { "type": "string", "format": "uri" },
-            "imageHint": { "type": "string" }
-          },
+          "format": "uri",
           "description": "Optional image attached to the post."
         },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the post was created."
+        },
         "likes": {
-          "type": "number",
-          "description": "The number of likes on the post."
-        },
-        "comments": {
-          "type": "number",
-          "description": "The number of comments on the post."
-        },
-        "lang": {
-          "type": "string",
-          "description": "The language code (e.g., 'en', 'ur') of the post's content."
-        },
-        "isTranslated": {
-          "type": "boolean",
-          "description": "Flag indicating if the content is currently a translated version."
-        },
-        "translation": {
-          "type": "string",
-          "description": "The translated content of the post, if available."
+          "type": "array",
+          "description": "An array of userIds who have liked the post.",
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "required": ["id", "authorId", "author", "time", "content", "lang"]
+      "required": [
+        "userId",
+        "content",
+        "timestamp"
+      ]
+    },
+    "Comment": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Comment",
+      "type": "object",
+      "description": "Represents a comment on a community post.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who created the comment."
+        },
+        "text": {
+          "type": "string",
+          "description": "The text content of the comment."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the comment was created."
+        }
+      },
+      "required": [
+        "userId",
+        "text",
+        "timestamp"
+      ]
     },
     "Period": {
       "title": "Period",
       "description": "Represents one complete menstrual cycle for a user.",
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "userId": { "type": "string" },
-        "startDate": { "type": "string", "format": "date-time" },
-        "endDate": { "type": "string", "format": "date-time" },
-        "duration": { "type": "number" },
-        "notes": { "type": "string" },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "duration": {
+          "type": "number"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
       },
-      "required": ["id", "userId", "startDate", "createdAt"]
+      "required": [
+        "id",
+        "userId",
+        "startDate",
+        "createdAt"
+      ]
     },
     "DailyLog": {
       "title": "DailyLog",
       "description": "Represents a daily log for a specific day within a period.",
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "date": { "type": "string", "format": "date-time" },
+        "id": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
         "flowLevel": {
           "type": "string",
-          "enum": ["spotting", "light", "medium", "heavy"]
+          "enum": [
+            "spotting",
+            "light",
+            "medium",
+            "heavy"
+          ]
         },
-        "painLevel": { "type": "number" },
-        "mood": { "type": "string" },
-        "symptoms": { "type": "array", "items": { "type": "string" } },
-        "notes": { "type": "string" }
+        "painLevel": {
+          "type": "number"
+        },
+        "mood": {
+          "type": "string"
+        },
+        "symptoms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
       },
-      "required": ["id", "date", "flowLevel"]
+      "required": [
+        "id",
+        "date",
+        "flowLevel"
+      ]
     },
     "UserStats": {
       "title": "UserStats",
       "description": "Stores computed summary statistics for a user's cycles.",
       "type": "object",
       "properties": {
-        "averageCycleLength": { "type": "number" },
-        "averagePeriodDuration": { "type": "number" },
-        "averageFlowIntensity": { "type": "string" },
-        "predictedNextStart": { "type": "string", "format": "date-time" },
-        "lastUpdated": { "type": "string", "format": "date-time" }
+        "averageCycleLength": {
+          "type": "number"
+        },
+        "averagePeriodDuration": {
+          "type": "number"
+        },
+        "averageFlowIntensity": {
+          "type": "string"
+        },
+        "predictedNextStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        }
       }
     },
     "MealLog": {
@@ -174,21 +210,53 @@
       "description": "Represents a single meal logged by the user.",
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "userId": { "type": "string" },
-        "description": { "type": "string", "description": "The user's description of the meal." },
-        "createdAt": { "type": "string", "format": "date-time" },
-        "calories": { "type": "number" },
-        "protein": { "type": "number", "description": "in grams" },
-        "carbs": { "type": "number", "description": "in grams" },
-        "fat": { "type": "number", "description": "in grams" },
-        "fiber": { "type": "number", "description": "in grams" }
+        "id": {
+          "type": "string"
+        },
+        "userId": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "description": "The user's description of the meal."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "calories": {
+          "type": "number"
+        },
+        "protein": {
+          "type": "number",
+          "description": "in grams"
+        },
+        "carbs": {
+          "type": "number",
+          "description": "in grams"
+        },
+        "fat": {
+          "type": "number",
+          "description": "in grams"
+        },
+        "fiber": {
+          "type": "number",
+          "description": "in grams"
+        }
       },
-      "required": ["id", "userId", "description", "createdAt"]
+      "required": [
+        "id",
+        "userId",
+        "description",
+        "createdAt"
+      ]
     }
   },
   "auth": {
-    "providers": ["password", "anonymous"]
+    "providers": [
+      "password",
+      "anonymous"
+    ]
   },
   "firestore": {
     "structure": [
@@ -196,15 +264,39 @@
         "path": "/users/{userId}",
         "definition": {
           "entityName": "UserProfile",
-          "schema": { "$ref": "#/entities/UserProfile" },
+          "schema": {
+            "$ref": "#/entities/UserProfile"
+          },
           "description": "Stores user profile information. The 'userId' parameter corresponds to the Firebase Authentication UID."
+        }
+      },
+      {
+        "path": "/posts/{postId}",
+        "definition": {
+          "entityName": "CommunityPost",
+          "schema": {
+            "$ref": "#/entities/CommunityPost"
+          },
+          "description": "Stores community posts accessible to all authenticated users."
+        }
+      },
+      {
+        "path": "/posts/{postId}/comments/{commentId}",
+        "definition": {
+          "entityName": "Comment",
+          "schema": {
+            "$ref": "#/entities/Comment"
+          },
+          "description": "Stores comments for a specific post."
         }
       },
       {
         "path": "/users/{userId}/periods/{periodId}",
         "definition": {
           "entityName": "Period",
-          "schema": { "$ref": "#/entities/Period" },
+          "schema": {
+            "$ref": "#/entities/Period"
+          },
           "description": "Stores a user's menstrual cycle entries."
         }
       },
@@ -212,7 +304,9 @@
         "path": "/users/{userId}/periods/{periodId}/dailyLogs/{dailyLogId}",
         "definition": {
           "entityName": "DailyLog",
-          "schema": { "$ref": "#/entities/DailyLog" },
+          "schema": {
+            "$ref": "#/entities/DailyLog"
+          },
           "description": "Stores daily logs for a specific menstrual cycle."
         }
       },
@@ -220,23 +314,19 @@
         "path": "/users/{userId}/stats/{statId}",
         "definition": {
           "entityName": "UserStats",
-          "schema": { "$ref": "#/entities/UserStats" },
+          "schema": {
+            "$ref": "#/entities/UserStats"
+          },
           "description": "Stores computed summary statistics for a user's cycles. Should be a singleton document, e.g., using a fixed statId like 'summary'."
-        }
-      },
-      {
-        "path": "/community_posts/{postId}",
-        "definition": {
-          "entityName": "CommunityPost",
-          "schema": { "$ref": "#/entities/CommunityPost" },
-          "description": "Stores community posts accessible based on privacy settings."
         }
       },
       {
         "path": "/users/{userId}/mealLogs/{mealLogId}",
         "definition": {
           "entityName": "MealLog",
-          "schema": { "$ref": "#/entities/MealLog" },
+          "schema": {
+            "$ref": "#/entities/MealLog"
+          },
           "description": "Stores a user's meal log entries."
         }
       }
