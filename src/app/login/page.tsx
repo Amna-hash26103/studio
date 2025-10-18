@@ -80,22 +80,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4 font-body">
-      <Card className="w-full max-w-md border-0 shadow-lg bg-card">
-        <CardHeader className="flex flex-col items-center justify-center space-y-4 pt-8 pb-4">
-          <Link href="/" className="mb-2 flex items-center justify-center">
-            <FemmoraLogo className="h-24 w-24 text-primary" />
+    <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4 font-body">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1 text-center">
+          <Link href="/" className="mb-4 flex items-center justify-center">
+            <FemmoraLogo className="h-16 w-16" />
           </Link>
-          <CardTitle className="font-headline text-3xl font-bold text-foreground">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Log in to continue your journey with FEMMORA.
+          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardDescription>
+            Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-8 pb-8">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <CardContent>
+           <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -105,8 +103,7 @@ export default function LoginPage() {
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="you@example.com"
-                        className="bg-secondary/20 border-border"
+                        placeholder="m@example.com"
                         {...field}
                       />
                     </FormControl>
@@ -119,21 +116,17 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link
+                    <div className="flex items-center">
+                      <FormLabel>Password</FormLabel>
+                      <Link
                         href="#"
-                        className="text-sm text-muted-foreground hover:text-accent-foreground"
-                        >
-                        Forgot password?
-                        </Link>
+                        className="ml-auto inline-block text-sm underline"
+                      >
+                        Forgot your password?
+                      </Link>
                     </div>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        placeholder="••••••••" 
-                        className="bg-secondary/20 border-border"
-                        {...field} />
+                      <Input type="password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,18 +134,17 @@ export default function LoginPage() {
               />
               <Button 
                 type="submit" 
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold" 
+                className="w-full"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? "Logging In..." : "Log In"}
               </Button>
             </form>
           </Form>
-
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
-            <Link href="/signup" className="font-semibold text-accent-foreground underline">
-              Sign Up
+          <div className="mt-4 text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="underline">
+              Sign up
             </Link>
           </div>
         </CardContent>
@@ -160,5 +152,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    

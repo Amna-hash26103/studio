@@ -104,23 +104,21 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4 font-body">
-      <Card className="w-full max-w-md border-0 shadow-lg bg-card">
-        <CardHeader className="flex flex-col items-center justify-center space-y-4 pt-8 pb-4">
-           <Link href="/" className="mb-2 flex items-center justify-center">
-            <FemmoraLogo className="h-24 w-24 text-primary" />
+    <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4 font-body">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+           <Link href="/" className="mb-4 flex items-center justify-center">
+            <FemmoraLogo className="h-16 w-16" />
           </Link>
-          <CardTitle className="font-headline text-3xl font-bold text-foreground">
-            Join FEMMORA
-          </CardTitle>
-          <CardDescription className="text-center text-muted-foreground">
-            Create your account and start your journey of empowerment.
+          <CardTitle className="text-2xl">Sign Up</CardTitle>
+          <CardDescription>
+            Enter your information to create an account
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="px-8 pb-8">
+        <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="displayName"
@@ -128,7 +126,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Display Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Your Name" {...field} className="bg-secondary/20 border-border" />
+                      <Input placeholder="Your Name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -145,7 +143,6 @@ export default function SignupPage() {
                       <Input
                         type="email"
                         placeholder="you@example.com"
-                        className="bg-secondary/20 border-border"
                         {...field}
                       />
                     </FormControl>
@@ -161,7 +158,7 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="bg-secondary/20 border-border"/>
+                      <Input type="password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -170,7 +167,7 @@ export default function SignupPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold"
+                className="w-full"
                 disabled={form.formState.isSubmitting}
               >
                 {form.formState.isSubmitting ? "Processing..." : "Create Account"}
@@ -178,10 +175,10 @@ export default function SignupPage() {
             </form>
           </Form>
 
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-accent-foreground underline">
-              Log In
+          <div className="mt-4 text-center text-sm">
+            Already have an account?{" "}
+            <Link href="/login" className="underline">
+              Log in
             </Link>
           </div>
         </CardContent>
@@ -189,5 +186,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
