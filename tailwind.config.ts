@@ -54,8 +54,8 @@ const config = {
         },
       },
       borderRadius: {
-        xl: "calc(var(--radius) + 4px)",
-        lg: "var(--radius)",
+        xl: "calc(var(--radius))",
+        lg: "calc(var(--radius))",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
@@ -83,5 +83,3 @@ const config = {
 } satisfies Config
 
 export default config
-
-    
