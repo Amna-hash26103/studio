@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -93,7 +94,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="px-10 pb-8">
            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="email"
@@ -132,18 +133,20 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button 
-                type="submit" 
-                className="w-full"
-                disabled={form.formState.isSubmitting}
-              >
-                {form.formState.isSubmitting ? "Logging In..." : "Log In"}
-              </Button>
+              <div className="flex justify-center">
+                <Button 
+                  type="submit" 
+                  className="w-1/2"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? "Logging In..." : "Welcome Back"}
+                </Button>
+              </div>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="underline">
+            <Link href="/signup" className="underline text-primary">
               Sign up
             </Link>
           </div>
