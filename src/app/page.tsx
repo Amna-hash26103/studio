@@ -44,7 +44,7 @@ const EvolveIcon = () => (
 const CircleIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="hsl(var(--primary))" strokeWidth="1_5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
@@ -60,33 +60,33 @@ const FEMMindIcon = () => (
 const features = [
   {
     icon: <SoulSpaceIcon />,
-    title: 'SoulSpace',
-    description: 'A safe digital haven where emotions are met with empathy. Guided reflections, meditations, and daily check-ins to help you build emotional resilience.',
+    title: 'SoulSpace: Emotional Wellness Companion',
+    description: 'This is your sanctuary—a safe, digital haven where every feeling is met with empathy. Gently explore your inner world with guided reflections, calming meditations, and daily check-ins that help you build emotional resilience and find peace, one breath at a time.',
   },
   {
     icon: <HerHealthIcon />,
-    title: 'HerHealth',
-    description: 'Track your cycle, sleep, and stress in one place. Get science-based insights and AI-driven reminders that understand your body’s rhythm.',
+    title: 'HerHealth: Smart Health Insights',
+    description: 'Move from confusion to clarity. Track your cycle, sleep, and stress in one intuitive space, and receive science-based insights that honor your body’s unique rhythm. Our AI-driven reminders help you connect with your patterns, empowering you to take charge of your health.',
   },
   {
     icon: <NourishIcon />,
-    title: 'Nourish',
-    description: 'Build a healthy routine—your own, not someone else’s. Daily meal plans, ingredient swaps, and nutrition tips tailored for your lifestyle.',
+    title: 'Nourish: Personalized Diet & Nutrition Guide',
+    description: 'Nourishing your body is an act of self-love. Let go of one-size-fits-all rules and embrace a routine that feels like your own. Discover daily meal plans, smart ingredient swaps, and gentle nutrition tips that celebrate your lifestyle and help you feel your best.',
   },
   {
     icon: <EvolveIcon />,
-    title: 'Evolve',
-    description: 'Move your way—yoga, mindful movement, or simple stretch routines. Energy-based fitness flows designed to make your body feel alive, not exhausted.',
+    title: 'Evolve: Gentle Fitness & Energy Flow',
+    description: 'Movement should be joyful, not a chore. Connect with your body’s strength through mindful yoga, gentle stretches, and energy-based flows. Our routines are designed to make you feel alive, energized, and gracefully in tune with yourself.',
   },
   {
     icon: <CircleIcon />,
-    title: 'Circle',
-    description: 'A heartfelt space for women to connect, share, and celebrate milestones. Engage in live sessions, discussions, and digital sisterhood.',
+    title: 'Circle: The FEMMORA Community',
+    description: 'You are not alone. Step into a heartfelt space where women lift each other up. Share your stories, celebrate milestones, and find sisterhood in live sessions and supportive discussions. Here, you are seen, heard, and valued for exactly who you are.',
   },
   {
     icon: <FEMMindIcon />,
-    title: 'FEMMind',
-    description: 'Personalized mindset reflections, tailored guidance, and emotional insights—your daily AI companion for inner clarity and growth.',
+    title: 'FEMMind: Your AI-Guided Growth Partner',
+    description: 'Your journey to inner clarity starts here. FEMMind is your personal AI companion, offering tailored mindset reflections and empathetic guidance to help you navigate challenges and unlock your potential. It’s a tool for growth, designed with your heart in mind.',
   },
 ];
 
@@ -97,11 +97,11 @@ export default function LandingPage() {
   const heroSubtext = "FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.";
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-24 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-3">
           <FemmoraLogo className="h-10 w-10 text-primary" />
-          <span className="text-2xl font-bold tracking-tight text-foreground">FEMMORA</span>
+          <span className="text-2xl font-bold tracking-tight">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-4">
           <Button variant="ghost" asChild>
@@ -118,7 +118,7 @@ export default function LandingPage() {
           <div className="container px-4 md:px-6">
             <div className="max-w-5xl mx-auto space-y-6">
                <div className="flex items-center justify-center gap-2">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-foreground">
+                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
                   {heroHeading}
                 </h1>
                 <ReadAloudButton textToRead={heroHeading} />
@@ -172,7 +172,7 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature) => (
-                        <div key={feature.title} className="flex flex-col items-center text-center p-8 rounded-xl border bg-secondary shadow-sm hover:shadow-md transition-shadow">
+                        <div key={feature.title} className="flex flex-col items-center text-center p-8 rounded-xl border bg-secondary shadow-sm hover:shadow-lg transition-shadow">
                             <div className="mb-4 text-primary">
                                 {feature.icon}
                             </div>
@@ -185,7 +185,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer>
+      <footer className="w-full">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
@@ -230,3 +230,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
