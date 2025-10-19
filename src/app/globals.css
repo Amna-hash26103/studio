@@ -16,7 +16,7 @@
     --secondary-foreground: 340 50% 48%;
     --muted: 356 67% 99%;
     --muted-foreground: 3 15% 45%; /* muted text from maroon */
-    --accent: 354 51% 43% / 0.05;
+    --accent: 354 51% 43% / 0.1;
     --accent-foreground: 354 51% 43%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
@@ -44,7 +44,7 @@
     --secondary-foreground: 356 100% 97%;
     --muted: 3 53% 15%;
     --muted-foreground: 356 20% 75%;
-    --accent: 354 51% 48% / 0.05;
+    --accent: 354 51% 48% / 0.1;
     --accent-foreground: 354 51% 48%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
