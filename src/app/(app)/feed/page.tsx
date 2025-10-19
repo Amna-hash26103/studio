@@ -18,7 +18,8 @@ import {
   Bookmark,
   Send,
   Loader2,
-  Image as ImageIcon,
+  ImageIcon,
+  X,
 } from 'lucide-react';
 import {
   useUser,
@@ -55,6 +56,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 // Types
 type UserProfileInfo = {
@@ -175,7 +177,10 @@ export default function FeedPage() {
 // --- Create Post Component ---
 const createPostSchema = z.object({
   content: z.string().min(1, 'Post cannot be empty').max(500),
+  imageUrl: z.string().url().optional(),
 });
+
+const postGalleryImages = PlaceHolderImages.filter(p => p.id.startsWith('post-gallery-'));
 
 function CreatePostCard({
   user,
@@ -185,9 +190,11 @@ function CreatePostCard({
   firestore: any;
 }) {
   const { toast } = useToast();
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | undefined>(undefined);
+  
   const form = useForm<z.infer<typeof createPostSchema>>({
     resolver: zodResolver(createPostSchema),
-    defaultValues: { content: '' },
+    defaultValues: { content: '', imageUrl: undefined },
   });
 
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
@@ -204,6 +211,7 @@ function CreatePostCard({
       await addDoc(collection(firestore, 'posts'), {
         userId: user.uid,
         content: values.content,
+        imageUrl: selectedImageUrl,
         createdAt: serverTimestamp(),
         likes: [],
         userProfile: {
@@ -212,6 +220,7 @@ function CreatePostCard({
         }
       });
       form.reset();
+      setSelectedImageUrl(undefined);
       toast({ title: 'Post created!' });
     } catch (error) {
       console.error('Error creating post:', error);
@@ -238,33 +247,76 @@ function CreatePostCard({
                   {user.displayName?.charAt(0) || 'U'}
                 </AvatarFallback>
               </Avatar>
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormControl>
-                      <Textarea
-                        placeholder="What's on your mind?"
-                        className="h-24 resize-none"
-                        {...field}
+              <div className="flex-1 space-y-4">
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Textarea
+                          placeholder="What's on your mind?"
+                          className="h-24 resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 {selectedImageUrl && (
+                    <div className="relative aspect-video w-full max-w-sm overflow-hidden rounded-xl">
+                      <Image
+                        src={selectedImageUrl}
+                        alt="Selected post image"
+                        fill
+                        className="object-cover"
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                       <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                        onClick={() => setSelectedImageUrl(undefined)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+              </div>
             </div>
             <div className="flex justify-between items-center">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                disabled
-                className="cursor-not-allowed"
-              >
-                <ImageIcon className="h-5 w-5" />
-              </Button>
+              <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                    >
+                      <ImageIcon className="h-5 w-5" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto">
+                      <div className="grid grid-cols-2 gap-2">
+                        {postGalleryImages.map(image => (
+                           <button
+                            type="button"
+                            key={image.id}
+                            onClick={() => {
+                                setSelectedImageUrl(image.imageUrl);
+                            }}
+                            className={cn(
+                                "relative aspect-square w-32 overflow-hidden rounded-md ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring",
+                                selectedImageUrl === image.imageUrl && "ring-2 ring-primary"
+                            )}
+                        >
+                            <Image src={image.imageUrl} alt={image.description} fill className="object-cover" data-ai-hint={image.imageHint} />
+                        </button>
+                        ))}
+                      </div>
+                  </PopoverContent>
+              </Popover>
+
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting}

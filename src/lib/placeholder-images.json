@@ -59,6 +59,30 @@
       "description": "Profile picture of a user.",
       "imageUrl": "https://i.postimg.cc/rpZB0rnG/cute-cartoon-kid-posing-portrait.jpg",
       "imageHint": "cartoon person"
+    },
+    {
+      "id": "post-gallery-1",
+      "description": "A woman writing in a journal in a cozy cafe.",
+      "imageUrl": "https://images.unsplash.com/photo-1517448931761-abc68a0ba3f7?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "woman journaling"
+    },
+    {
+      "id": "post-gallery-2",
+      "description": "A close-up of a potter's hands shaping clay on a wheel.",
+      "imageUrl": "https://images.unsplash.com/photo-1558214486-4445f19c6f2a?q=80&w=1968&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "pottery making"
+    },
+    {
+      "id": "post-gallery-3",
+      "description": "A woman smiling and tending to her lush green house plants.",
+      "imageUrl": "https://images.unsplash.com/photo-1601985705809-190a61191440?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "woman houseplants"
+    },
+    {
+      "id": "post-gallery-4",
+      "description": "A woman laughing with a friend on a city street.",
+      "imageUrl": "https://images.unsplash.com/photo-1525134479668-1bee5c7c6845?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "friends laughing"
     }
   ]
 }
