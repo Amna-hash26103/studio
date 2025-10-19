@@ -1,17 +1,15 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { FemmoraLogo } from '@/components/icons';
-import { ReadAloudButton } from '@/components/read-aloud-button';
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="container mx-auto flex h-20 items-center justify-between border-b px-4 md:px-6">
+      <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold tracking-tight">FEMMORA</span>
+          <span className="text-xl font-bold tracking-tight font-headline">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
           <Button variant="ghost" asChild>
@@ -27,18 +25,12 @@ export default function LandingPage() {
         <section className="w-full py-20 md:py-32 lg:py-40 text-center">
           <div className="container px-4 md:px-6">
             <div className="max-w-3xl mx-auto space-y-4">
-              <div className="flex items-center justify-center gap-2">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                  Empower Your Journey. Together.
-                </h1>
-                <ReadAloudButton textToRead='Empower Your Journey. Together.' />
-              </div>
-              <div className='flex items-center justify-center gap-2'>
-                <p className="text-lg text-muted-foreground md:text-xl">
-                  FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.
-                </p>
-                <ReadAloudButton textToRead="FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you." />
-              </div>
+              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl text-foreground">
+                Empower Your Journey. Together.
+              </h1>
+              <p className="text-lg text-muted-foreground md:text-xl">
+                FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.
+              </p>
               <div className="pt-6">
                 <Button size="lg" asChild>
                   <Link href="/signup">Join the Community</Link>
