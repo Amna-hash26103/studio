@@ -178,7 +178,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const headerContent = (
     <header className="flex h-16 shrink-0 items-center gap-4 border-b bg-background px-4 md:px-6">
       <Link href="/feed" className="flex items-center gap-2 md:hidden">
-          <FemmoraLogo className="h-8 w-8 text-primary" />
+          <FemmoraLogo className="h-5 w-5 text-primary" />
           <span className="sr-only">FEMMORA</span>
       </Link>
       <div className="md:hidden ml-auto">

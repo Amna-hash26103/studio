@@ -108,7 +108,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
            <Link href="/" className="mb-4 flex items-center justify-center">
-            <FemmoraLogo className="h-16 w-16" />
+            <FemmoraLogo className="h-5 w-5" />
           </Link>
           <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
           <CardDescription>
@@ -186,5 +186,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
-    
