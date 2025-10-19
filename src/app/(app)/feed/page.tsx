@@ -57,6 +57,7 @@ import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ReadAloudButton } from '@/components/read-aloud-button';
 
 // Types
 type UserProfileInfo = {
@@ -402,7 +403,10 @@ function PostCard({
         </div>
       </CardHeader>
       <CardContent>
-        <p className="whitespace-pre-wrap">{post.content}</p>
+        <div className="flex items-start gap-2">
+            <p className="whitespace-pre-wrap flex-1">{post.content}</p>
+            <ReadAloudButton textToRead={post.content} />
+        </div>
         {post.imageUrl && (
           <div className="mt-4 relative aspect-video w-full overflow-hidden rounded-xl">
             <Image
