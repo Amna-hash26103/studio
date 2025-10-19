@@ -116,7 +116,7 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-24 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-3">
-          <FemmoraLogo className="h-5 w-5 text-primary" />
+          <FemmoraLogo className="h-20 w-20 text-primary" />
           <span className="text-2xl font-bold tracking-tight">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-4">
@@ -183,7 +183,7 @@ export default function LandingPage() {
         </section>
         
         <section className="w-full py-16 md:py-24">
-            <div className="container px-4 md:px-6">
+            <div clah-5 w-5ssName="container px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
                      <div className="flex items-center justify-center gap-2">
                         <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{featuresHeading}</h2>
