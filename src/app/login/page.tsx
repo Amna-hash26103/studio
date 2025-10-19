@@ -89,7 +89,7 @@ export default function LoginPage() {
           </Link>
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Welcome back
           </CardDescription>
         </CardHeader>
         <CardContent className="px-10 pb-8">
@@ -139,7 +139,7 @@ export default function LoginPage() {
                   className="w-1/2"
                   disabled={form.formState.isSubmitting}
                 >
-                  {form.formState.isSubmitting ? "Logging In..." : "Welcome Back"}
+                  {form.formState.isSubmitting ? "Logging In..." : "Log In"}
                 </Button>
               </div>
             </form>
