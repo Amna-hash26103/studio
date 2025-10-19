@@ -54,6 +54,7 @@ const config = {
         },
       },
       borderRadius: {
+        xl: "calc(var(--radius) + 4px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
@@ -72,8 +73,9 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-       fontFamily: {
-        sans: ["var(--font-sans)", "sans-serif"],
+      fontFamily: {
+        headline: ["var(--font-headline)", "serif"],
+        body: ["var(--font-body)", "sans-serif"],
       },
     },
   },
@@ -81,3 +83,5 @@ const config = {
 } satisfies Config
 
 export default config
+
+    

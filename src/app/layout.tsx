@@ -1,15 +1,21 @@
 import type { Metadata, Viewport } from 'next';
+import { Alegreya, Inter } from 'next/font/google';
 import './globals.css';
-import { Inter as FontSans } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
 
-const fontSans = FontSans({
+const fontHeadline = Alegreya({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-headline',
+  weight: ['400', '700'],
+});
+
+const fontBody = Inter({
+  subsets: ['latin'],
+  variable: '--font-body',
 });
 
 export const metadata: Metadata = {
@@ -34,8 +40,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable
+          'min-h-screen bg-background font-body antialiased',
+          fontHeadline.variable,
+          fontBody.variable
         )}
       >
         <Suspense fallback={<div>Loading...</div>}>
@@ -55,3 +62,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

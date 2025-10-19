@@ -110,7 +110,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="text-sm font-semibold truncate">{welcomeText}</span>
                  <ReadAloudButton textToRead={welcomeText} />
             </div>
-            <span className="text-lg font-bold truncate font-headline">{user?.displayName?.split(' ')[0]}</span>
+            <span className="text-lg font-bold truncate">{user?.displayName?.split(' ')[0]}</span>
           </div>
         </div>
          <div className="hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
@@ -260,7 +260,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Sidebar collapsible="icon">{sidebarContent}</Sidebar>
         <div className="flex-1 flex flex-col min-h-0">
             {headerContent}
-            <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 lg:p-8 md:pb-8">
+            <main className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-10 pb-20 md:pb-8">
                 {children}
             </main>
         </div>
@@ -270,3 +270,5 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    

@@ -803,3 +803,5 @@ function PastCycleCard({ period, index, userId, firestore }: { period: Period, i
 }
 
 export default PeriodTrackerPage;
+
+    

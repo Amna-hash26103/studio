@@ -283,7 +283,7 @@ function MealHistory({ logs, isLoading }: { logs: any[], isLoading: boolean }) {
         </CardHeader>
         <CardContent className="space-y-4">
           {[...Array(3)].map((_, i) => (
-             <div key={i} className="p-4 rounded-lg border bg-muted animate-pulse">
+             <div key={i} className="p-4 rounded-xl border bg-muted animate-pulse">
                 <div className="h-4 bg-slate-200 rounded w-3/4 mb-2"></div>
                 <div className="h-4 bg-slate-200 rounded w-1/2"></div>
              </div>
@@ -354,3 +354,5 @@ function MealLogCard({ log }: { log: any }) {
     </Card>
   );
 }
+
+    

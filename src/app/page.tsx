@@ -67,7 +67,7 @@ export default function LandingPage() {
               )}
                <div className="absolute inset-0 bg-black/40" />
           </div>
-          <div className="relative z-10">
+          <div className="relative z-10 space-y-6">
             <div className="flex items-center justify-center">
                 <h1 className="text-4xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl">
                   Empower Your Journey. Together.
@@ -88,10 +88,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-background py-12 md:py-20">
+        <section className="bg-background py-16 md:py-24">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="mx-auto grid max-w-5xl items-center gap-6 lg:grid-cols-2 lg:gap-12">
-              <div className="relative h-64 w-full overflow-hidden rounded-lg md:h-96">
+            <div className="mx-auto grid max-w-5xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
+              <div className="relative h-80 w-full overflow-hidden rounded-xl md:h-[450px]">
                 {heroImage && (
                   <Image
                     src={heroImage.imageUrl}
@@ -102,7 +102,7 @@ export default function LandingPage() {
                   />
                 )}
               </div>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-4">
                     <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
                       A Space to Thrive.
@@ -120,7 +120,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-muted/40 py-12 md:py-20">
+        <section className="bg-muted/40 py-16 md:py-24">
           <div className="container mx-auto text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
@@ -152,7 +152,7 @@ export default function LandingPage() {
       </main>
 
       <footer className="bg-muted">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 md:flex-row md:px-6">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
@@ -184,3 +184,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    

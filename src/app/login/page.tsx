@@ -80,13 +80,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4 font-body">
+    <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <Link href="/" className="mb-4 flex items-center justify-center">
             <FemmoraLogo className="h-16 w-16" />
           </Link>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>
@@ -152,3 +152,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
