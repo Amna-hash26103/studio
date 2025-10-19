@@ -524,7 +524,10 @@ function CommentSection({
               <p className="text-sm font-semibold">
                 {comment.userProfile?.displayName}
               </p>
-              <p className="text-sm">{comment.text}</p>
+              <div className="flex items-start gap-2">
+                <p className="text-sm flex-1">{comment.text}</p>
+                <ReadAloudButton textToRead={comment.text} />
+              </div>
             </div>
           </div>
         ))}
@@ -585,3 +588,5 @@ function PostSkeleton() {
     </Card>
   );
 }
+
+    
