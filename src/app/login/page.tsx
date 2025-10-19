@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -91,7 +92,7 @@ export default function LoginPage() {
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-12">
            <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
