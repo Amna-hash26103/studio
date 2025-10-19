@@ -208,17 +208,23 @@ function CreatePostCard({
         return;
     }
     try {
-      await addDoc(collection(firestore, 'posts'), {
+      const postData: any = {
         userId: user.uid,
         content: values.content,
-        imageUrl: values.imageUrl,
         createdAt: serverTimestamp(),
         likes: [],
         userProfile: {
             displayName: user.displayName,
             photoURL: user.photoURL || '',
         }
-      });
+      };
+
+      if (values.imageUrl) {
+        postData.imageUrl = values.imageUrl;
+      }
+
+      await addDoc(collection(firestore, 'posts'), postData);
+
       form.reset();
       setSelectedImageUrl(undefined);
       toast({ title: 'Post created!' });
@@ -591,3 +597,5 @@ function PostSkeleton() {
     </Card>
   );
 }
+
+    
