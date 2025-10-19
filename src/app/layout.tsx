@@ -1,22 +1,15 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { Inter as FontSans } from 'next/font/google';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Alegreya, Inter } from 'next/font/google';
 
-const alegreya = Alegreya({
+const fontSans = FontSans({
   subsets: ['latin'],
-  variable: '--font-alegreya',
-  display: 'swap',
-});
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
@@ -38,20 +31,13 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn(inter.variable, alegreya.variable)}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400..900;1,400..900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={cn('font-body antialiased h-screen flex flex-col')}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          'min-h-screen bg-background font-sans antialiased',
+          fontSans.variable
+        )}
+      >
         <Suspense fallback={<div>Loading...</div>}>
           <ThemeProvider
             attribute="class"

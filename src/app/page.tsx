@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { HeartHandshake, Users, Globe, Smile, BrainCircuit, Activity, UtensilsCrossed } from 'lucide-react';
+import { HeartHandshake, Users, Globe } from 'lucide-react';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 
@@ -13,48 +13,35 @@ import { ReadAloudButton } from '@/components/read-aloud-button';
 const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
-
   const features = [
     {
-      icon: <Smile className="h-8 w-8 text-primary" />,
-      title: "SoulSpace: Emotional Wellness Companion",
-      description: "A safe digital haven where emotions are met with empathy. Whether you’re overwhelmed, reflective, or healing, SoulSpace listens — offering guided reflections, gentle prompts, and supportive AI companions who speak your heart’s language.",
-    },
-    {
       icon: <HeartHandshake className="h-8 w-8 text-primary" />,
-      title: "HerHealth: Smart Health Insights",
-      description: "Track your cycles, sleep, and stress in one serene space. HerHealth uses adaptive AI to understand you — recommending lifestyle tweaks, reminders, and supportive routines that honor your body’s rhythm.",
-    },
-    {
-      icon: <UtensilsCrossed className="h-8 w-8 text-primary" />,
-      title: "Nourish: Personalized Diet & Nutrition Guide",
-      description: "Built for every woman’s journey — from strength to self-care. Nourish curates meal suggestions that match your mood, health goals, and culture. Each recommendation comes from a place of love, not restriction.",
-    },
-    {
-      icon: <Activity className="h-8 w-8 text-primary" />,
-      title: "Evolve: Gentle Fitness & Energy Flow",
-      description: "Move at your pace — yoga, mindful movement, and women-focused workouts guided by your energy levels and emotional state. Every motion in Evolve celebrates what your body can do, not what it must.",
+      title: 'Supportive Community',
+      description:
+        'Connect with like-minded women in a safe and empowering space.',
     },
     {
       icon: <Users className="h-8 w-8 text-primary" />,
-      title: "Circle: The FEMMORA Community",
-      description: "A beautifully moderated space for women to connect, share stories, and lift one another. From daily check-ins to creative challenges, Circle celebrates unity without comparison — a digital sisterhood of strength.",
+      title: 'Expert-led Workshops',
+      description:
+        'Grow your skills with workshops on wellness, career, and creativity.',
     },
     {
-      icon: <BrainCircuit className="h-8 w-8 text-primary" />,
-      title: "FEMMind: Your AI-Guided Growth Partner",
-      description: "Three fine-tuned, empathetic LLMs — customized to support Health, Emotional Wellness, and Life Guidance. They don’t just respond — they understand, blending science with empathy to offer advice that uplifts, not instructs.",
+      icon: <Globe className="h-8 w-8 text-primary" />,
+      title: 'Global Connections',
+      description:
+        'Build a network of inspiring women from around the world.',
     },
   ];
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
+      <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
-          <FemmoraLogo className="h-14 w-14 text-primary" />
-          <span className="text-2xl font-bold tracking-tight leading-none font-headline">FEMMORA</span>
+          <FemmoraLogo className="h-8 w-8 text-primary" />
+          <span className="text-xl font-bold tracking-tight">FEMMORA</span>
         </Link>
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-4">
           <Button variant="ghost" asChild>
             <Link href="/login">Log In</Link>
           </Button>
@@ -66,21 +53,34 @@ export default function LandingPage() {
 
       <main className="flex-1">
         
-        <section className="relative px-4 pt-16 pb-20 text-center md:px-6">
-          <div className="container mx-auto text-center">
+        <section className="relative w-full h-[50vh] md:h-[70vh] flex items-center justify-center text-center px-4">
+          <div className="absolute inset-0 bg-primary/10">
+              {heroImage && (
+                  <Image
+                      src={heroImage.imageUrl}
+                      alt={heroImage.description}
+                      data-ai-hint={heroImage.imageHint}
+                      fill
+                      className="object-cover"
+                      priority
+                  />
+              )}
+               <div className="absolute inset-0 bg-black/40" />
+          </div>
+          <div className="relative z-10">
             <div className="flex items-center justify-center">
-                <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
+                <h1 className="text-4xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl">
                   Empower Your Journey. Together.
                 </h1>
                 <ReadAloudButton textToRead='Empower Your Journey. Together.' />
             </div>
             <div className='flex items-center justify-center'>
-                 <p className="mx-auto mt-6 max-w-[700px] text-lg text-muted-foreground md:text-xl">
+                 <p className="mx-auto mt-4 max-w-[700px] text-lg text-gray-200 md:text-xl">
                     FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.
                 </p>
                 <ReadAloudButton textToRead="FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you." />
             </div>
-            <div className="mt-10 flex justify-center">
+            <div className="mt-8 flex justify-center">
               <Button size="lg" asChild>
                 <Link href="/signup">Join the Community</Link>
               </Button>
@@ -90,27 +90,27 @@ export default function LandingPage() {
 
         <section className="bg-background py-12 md:py-20">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-24">
-              <div className="relative h-80 w-full overflow-hidden rounded-xl shadow-lg md:h-[450px]">
+            <div className="mx-auto grid max-w-5xl items-center gap-6 lg:grid-cols-2 lg:gap-12">
+              <div className="relative h-64 w-full overflow-hidden rounded-lg md:h-96">
                 {heroImage && (
                   <Image
                     src={heroImage.imageUrl}
                     alt={heroImage.description}
                     data-ai-hint={heroImage.imageHint}
                     fill
-                    className="object-cover rounded-xl"
+                    className="object-cover"
                   />
                 )}
               </div>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                    <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
+                    <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
                       A Space to Thrive.
                     </h2>
                     <ReadAloudButton textToRead='A Space to Thrive.' />
                 </div>
                 <div className='flex items-center'>
-                    <p className="text-muted-foreground md:text-lg leading-relaxed">
+                    <p className="text-muted-foreground md:text-lg">
                       At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.
                     </p>
                     <ReadAloudButton textToRead="At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success." />
@@ -120,28 +120,28 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative px-4 py-20 md:px-6 md:py-28">
-          <div className="container mx-auto mb-16 max-w-3xl text-center">
+        <section className="bg-muted/40 py-12 md:py-20">
+          <div className="container mx-auto text-center">
              <div className="flex items-center justify-center gap-4">
-                <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-                  Features Designed for You.
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+                  Features Designed for You
                 </h2>
-                <ReadAloudButton textToRead='Features Designed for You.' />
+                <ReadAloudButton textToRead='Features Designed for You' />
             </div>
             <div className='flex items-center justify-center'>
-                <p className="mt-4 text-muted-foreground md:text-lg">
+                <p className="mt-4 max-w-prose mx-auto text-muted-foreground md:text-lg">
                     Everything you need to support your personal and professional growth, all in one place.
                 </p>
                 <ReadAloudButton textToRead='Everything you need to support your personal and professional growth, all in one place.' />
             </div>
           </div>
-          <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="container mx-auto mt-12 grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
-              <Card key={index} className="bg-card shadow-md transition-shadow hover:shadow-lg border-0 bg-secondary/30">
-                <CardContent className="flex flex-col items-start gap-4 p-8">
+              <Card key={index} className="bg-card">
+                <CardContent className="flex flex-col items-center gap-4 p-6 text-center">
                   {feature.icon}
-                  <h3 className="text-xl font-bold font-headline">{feature.title}</h3>
-                  <p className="text-left text-muted-foreground">
+                  <h3 className="text-xl font-bold">{feature.title}</h3>
+                  <p className="text-muted-foreground">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -151,8 +151,8 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-background">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
+      <footer className="bg-muted">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-6 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
