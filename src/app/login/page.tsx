@@ -87,9 +87,9 @@ export default function LoginPage() {
           <Link href="/" className="mb-2 flex items-center justify-center">
             <FemmoraLogo className="h-10 w-10" />
           </Link>
-          <CardTitle className="text-2xl font-bold">Login</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
           <CardDescription>
-            Welcome back
+            Log in to your account to continue
           </CardDescription>
         </CardHeader>
         <CardContent className="px-10 pb-8">
