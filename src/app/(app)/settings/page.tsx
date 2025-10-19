@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -174,7 +175,7 @@ function ThemeSwitcher() {
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
-        <FormLabel>{themeLabel}</FormLabel>
+        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{themeLabel}</label>
         <ReadAloudButton textToRead={themeLabel} />
       </div>
       <div className="grid grid-cols-3 gap-2 rounded-lg border p-1">
