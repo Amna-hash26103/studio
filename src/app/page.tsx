@@ -172,7 +172,7 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature) => (
-                        <div key={feature.title} className="flex flex-col items-center text-center p-8 rounded-xl border bg-card shadow-sm hover:shadow-md transition-shadow">
+                        <div key={feature.title} className="flex flex-col items-center text-center p-8 rounded-xl border bg-secondary shadow-sm hover:shadow-md transition-shadow">
                             <div className="mb-4 text-primary">
                                 {feature.icon}
                             </div>
@@ -185,7 +185,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer>
+      <footer className="bg-secondary/50">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
