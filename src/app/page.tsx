@@ -196,7 +196,7 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature) => (
-                        <div key={feature.title} className="flex flex-col items-center text-center p-8 rounded-xl border bg-secondary shadow-sm hover:shadow-lg transition-shadow">
+                        <div key={feature.title} className="flex flex-col items-center text-center p-8 rounded-xl border bg-card shadow-xl transition-shadow">
                             <div className="mb-4 text-primary">
                                 {feature.icon}
                             </div>
@@ -261,3 +261,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
