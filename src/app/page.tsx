@@ -114,9 +114,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="w-full py-12 md:py-20 lg:py-28 text-center">
+        <section className="w-full py-12 md:py-16 lg:py-20 text-center">
           <div className="container px-4 md:px-6">
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-5xl mx-auto space-y-6">
                <div className="flex items-center justify-center gap-2">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-foreground">
                   {heroHeading}
@@ -138,7 +138,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-16">
+        <section className="w-full py-12">
             <div className="container px-4 md:px-6">
                 <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl">
@@ -185,7 +185,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-secondary/50">
+      <footer>
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
