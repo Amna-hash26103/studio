@@ -75,7 +75,7 @@ const config = {
       },
       fontFamily: {
         headline: ["var(--font-headline)", "serif"],
-        body: ["var(--font-body)", "sans-serif"],
+        body: ["var(--font-headline)", "serif"],
       },
     },
   },
