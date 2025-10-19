@@ -55,7 +55,7 @@ const CircleIcon = () => (
 const FEMMindIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M15 14C15 15.6569 13.6569 17 12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinejoin="round"/>
+        <path d="M15 14C15 15.6569 13.6569 17 12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14Z" stroke="hsl(var(--primary))" strokeWidth="1.s" strokeLinejoin="round"/>
         <path d="M12 11V8" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M12 8C12.8284 8 13.5 7.32843 13.5 6.5C13.5 5.67157 12.8284 5 12 5C11.1716 5 10.5 5.67157 10.5 6.5C10.5 7.32843 11.1716 8 12 8Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinejoin="round"/>
     </svg>
@@ -120,10 +120,10 @@ export default function LandingPage() {
           <span className="text-2xl font-bold tracking-tight">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-4">
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="hover:bg-primary/20">
             <Link href="/login">Log In</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="rounded-md">
             <Link href="/signup">Sign Up</Link>
           </Button>
         </nav>
@@ -261,5 +261,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
