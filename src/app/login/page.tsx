@@ -82,7 +82,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-3xl">
         <CardHeader className="space-y-1 text-center">
           <Link href="/" className="mb-4 flex items-center justify-center">
             <FemmoraLogo className="h-5 w-5" />
