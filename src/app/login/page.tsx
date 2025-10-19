@@ -83,7 +83,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4">
       <Card className="w-full max-w-xl">
-        <CardHeader className="space-y-1 text-center pt-10 pb-6">
+        <CardHeader className="space-y-1 text-center pt-8 pb-4">
           <Link href="/" className="mb-2 flex items-center justify-center">
             <FemmoraLogo className="h-10 w-10" />
           </Link>
@@ -92,9 +92,9 @@ export default function LoginPage() {
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-10 pb-10">
+        <CardContent className="px-10 pb-8">
            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -142,7 +142,7 @@ export default function LoginPage() {
               </Button>
             </form>
           </Form>
-          <div className="mt-6 text-center text-sm">
+          <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="underline">
               Sign up
