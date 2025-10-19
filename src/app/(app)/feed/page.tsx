@@ -156,7 +156,6 @@ export default function FeedPage() {
             <Card>
                 <CardContent className="p-6 text-center text-muted-foreground">
                     <p>No posts yet! Be the first to share something with the community.</p>
-                    <p className="text-xs mt-2">(Showing sample posts below)</p>
                 </CardContent>
             </Card>
         )}
