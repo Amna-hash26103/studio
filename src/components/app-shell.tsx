@@ -68,6 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   ];
   
   const accountNavItems = [
+    { href: `/profile`, icon: <User />, label: 'Profile' },
     { href: `/settings`, icon: <Settings />, label: 'Settings' },
   ];
 
