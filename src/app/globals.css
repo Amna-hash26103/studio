@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 19 100% 98%;
-    --sidebar: 19 100% 97%; /* 1 shade darker than background */
+    --sidebar: 19 100% 96%; /* 2 shades darker than background */
     --foreground: 3 53% 19%; /* --color-heading: #541E1B / deep maroon */
     --card: 19 100% 98%;
     --card-foreground: 3 53% 19%;
@@ -34,7 +34,7 @@
 
   .dark {
     --background: 3 53% 8%; /* Dark maroon bg */
-    --sidebar: 3 53% 7%; /* 1 shade darker than background */
+    --sidebar: 3 53% 6%; /* 2 shades darker than background */
     --foreground: 356 100% 97%; /* Light blush text */
     --card: 3 53% 10%;
     --card-foreground: 356 100% 97%;
