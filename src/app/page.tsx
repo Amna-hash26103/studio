@@ -2,12 +2,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { FemmoraLogo } from '@/components/icons';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { ReadAloudButton } from '@/components/read-aloud-button';
-
-const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   return (
