@@ -150,15 +150,15 @@ export function ChatInterface({ topic, agent, initialMessage }: ChatInterfacePro
               )}
               <div
                 className={cn(
-                  'max-w-xs rounded-lg px-4 py-2 md:max-w-md',
+                  'max-w-xs rounded-lg px-4 py-2 md:max-w-md flex items-center gap-2',
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground'
                     : 'bg-secondary'
                 )}
               >
                 <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                <ReadAloudButton textToRead={message.content} />
               </div>
-               <ReadAloudButton textToRead={message.content} />
               {message.role === 'user' && (
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={userAvatar?.imageUrl} />

@@ -127,9 +127,9 @@ export function ReadAloudButton({ textToRead, lang = 'en' }: ReadAloudButtonProp
       size="icon"
       onClick={handlePlay}
       disabled={isLoading}
-      className="shrink-0"
+      className="shrink-0 h-6 w-6"
     >
-      <Icon className={isLoading ? 'animate-spin' : ''} />
+      <Icon className={isLoading ? 'animate-spin h-4 w-4' : 'h-4 w-4'} />
       <span className="sr-only">Read aloud</span>
     </Button>
   );

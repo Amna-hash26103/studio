@@ -53,7 +53,7 @@ const CircleIcon = () => (
 );
 
 const FEMMindIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="24" height="24" viewBox="0_0_24_24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M15 14C15 15.6569 13.6569 17 12 17C10.3431 17 9 15.6569 9 14C9 12.3431 10.3431 11 12 11C13.6569 11 15 12.3431 15 14Z" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinejoin="round"/>
         <path d="M12 11V8" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -100,6 +100,17 @@ const thriveImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 export default function LandingPage() {
   const heroHeading = "Empower Your Journey. Together.";
   const heroSubtext = "FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.";
+  const thriveHeading = "A Space to Thrive";
+  const thriveSubtext = "We believe in the power of collective strength. FEMMORA is more than just an app—it's a movement dedicated to supporting every woman's unique journey. Share your story, find inspiration, and grow with us.";
+  const featuresHeading = "Features Designed for You";
+  const featuresSubtext = "Everything you need to support your personal and professional growth, all in one place.";
+  const footerAbout = "About";
+  const footerCommunity = "Community";
+  const footerContact = "Contact";
+  const footerPrivacy = "Privacy";
+  const footerTerms = "Terms";
+  const footerCopyright = `© ${new Date().getFullYear()} FEMMORA — Empowering women worldwide.`;
+
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -158,10 +169,14 @@ export default function LandingPage() {
                         )}
                     </div>
                     <div className="space-y-4 text-center lg:text-left">
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">A Space to Thrive</h2>
-                        <p className="text-muted-foreground md:text-lg">
-                            We believe in the power of collective strength. FEMMORA is more than just an app—it's a movement dedicated to supporting every woman's unique journey. Share your story, find inspiration, and grow with us.
-                        </p>
+                        <div className="flex items-center gap-2 justify-center lg:justify-start">
+                            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{thriveHeading}</h2>
+                            <ReadAloudButton textToRead={thriveHeading} />
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <p className="text-muted-foreground md:text-lg">{thriveSubtext}</p>
+                            <ReadAloudButton textToRead={thriveSubtext} />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -170,10 +185,14 @@ export default function LandingPage() {
         <section className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
-                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Features Designed for You</h2>
-                    <p className="text-muted-foreground md:text-lg">
-                        Everything you need to support your personal and professional growth, all in one place.
-                    </p>
+                     <div className="flex items-center justify-center gap-2">
+                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">{featuresHeading}</h2>
+                        <ReadAloudButton textToRead={featuresHeading} />
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                        <p className="text-muted-foreground md:text-lg">{featuresSubtext}</p>
+                        <ReadAloudButton textToRead={featuresSubtext} />
+                    </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {features.map((feature) => (
@@ -181,8 +200,14 @@ export default function LandingPage() {
                             <div className="mb-4 text-primary">
                                 {feature.icon}
                             </div>
-                            <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                            <div className="flex items-center gap-2 mb-2">
+                                <h3 className="text-xl font-bold">{feature.title}</h3>
+                                <ReadAloudButton textToRead={feature.title} />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <p className="text-muted-foreground text-sm leading-relaxed">{feature.description}</p>
+                                <ReadAloudButton textToRead={feature.description} />
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -195,39 +220,40 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} FEMMORA — Empowering women worldwide.
+              {footerCopyright}
             </span>
+            <ReadAloudButton textToRead={footerCopyright} />
           </div>
           <nav className="flex gap-4 sm:gap-6">
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              About
+              {footerAbout}
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Community
+              {footerCommunity}
             </Link>
              <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Contact
+              {footerContact}
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Privacy
+              {footerPrivacy}
             </Link>
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
-              Terms
+              {footerTerms}
             </Link>
           </nav>
         </div>
@@ -235,5 +261,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
