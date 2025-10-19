@@ -14,7 +14,6 @@ import Image from 'next/image';
 import { ReadAloudButton } from '@/components/read-aloud-button';
 
 type UserProfile = {
-  id: string;
   displayName: string;
   email: string;
   bio: string;
@@ -155,5 +154,3 @@ function ProfileSkeleton() {
     </Card>
   );
 }
-
-    
