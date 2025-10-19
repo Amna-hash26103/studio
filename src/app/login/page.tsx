@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -83,7 +82,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center pt-8 pb-4">
+        <CardHeader className="space-y-1 text-center pt-10 pb-6">
           <Link href="/" className="mb-2 flex items-center justify-center">
             <FemmoraLogo className="h-10 w-10" />
           </Link>
@@ -94,7 +93,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="px-10 pb-8">
            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="email"
