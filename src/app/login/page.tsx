@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -83,18 +82,18 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4">
       <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center pt-10 pb-6">
+        <CardHeader className="space-y-1 text-center">
           <Link href="/" className="mb-2 flex items-center justify-center">
-            <FemmoraLogo className="h-10 w-10" />
+            <FemmoraLogo className="h-30 w-35" />
           </Link>
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
           <CardDescription>
-            Log in to your account to continue
+            Log in to your account to continue.
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-10 pb-8">
+        <CardContent>
            <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="email"
@@ -133,15 +132,13 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <div className="flex justify-center">
-                <Button 
-                  type="submit" 
-                  className="w-1/2"
-                  disabled={form.formState.isSubmitting}
-                >
-                  {form.formState.isSubmitting ? "Logging In..." : "Log In"}
-                </Button>
-              </div>
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? "Logging In..." : "Log In"}
+              </Button>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
