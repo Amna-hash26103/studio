@@ -5,6 +5,19 @@ import { cn } from '@/lib/utils';
 import { FirebaseClientProvider } from '@/firebase';
 import { ReactNode, Suspense } from 'react';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Alegreya, Inter } from 'next/font/google';
+
+const alegreya = Alegreya({
+  subsets: ['latin'],
+  variable: '--font-alegreya',
+  display: 'swap',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "Femmora: Women's Wellness Hub",
@@ -25,7 +38,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={cn(inter.variable, alegreya.variable)}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link

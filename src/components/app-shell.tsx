@@ -110,7 +110,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="text-sm font-semibold truncate">{welcomeText}</span>
                  <ReadAloudButton textToRead={welcomeText} />
             </div>
-            <span className="text-lg font-bold truncate">{user?.displayName?.split(' ')[0]}</span>
+            <span className="text-lg font-bold truncate font-headline">{user?.displayName?.split(' ')[0]}</span>
           </div>
         </div>
          <div className="hidden group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">

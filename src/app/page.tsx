@@ -48,11 +48,11 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <header className="container mx-auto flex h-26 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-2">
           <FemmoraLogo className="h-14 w-14 text-primary" />
-          <span className="text-2xl font-bold tracking-tight leading-none">FEMMORA</span>
+          <span className="text-2xl font-bold tracking-tight leading-none font-headline">FEMMORA</span>
         </Link>
         <nav className="flex items-center gap-2">
           <Button variant="ghost" asChild>
@@ -66,7 +66,7 @@ export default function LandingPage() {
 
       <main className="flex-1">
         
-        <section className="relative px-4 pt-12 pb-12 text-center md:px-6">
+        <section className="relative px-4 pt-16 pb-20 text-center md:px-6">
           <div className="container mx-auto text-center">
             <div className="flex items-center justify-center">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
@@ -80,7 +80,7 @@ export default function LandingPage() {
                 </p>
                 <ReadAloudButton textToRead="FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you." />
             </div>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-10 flex justify-center">
               <Button size="lg" asChild>
                 <Link href="/signup">Join the Community</Link>
               </Button>
@@ -88,10 +88,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="bg-secondary py-8">
+        <section className="bg-background py-12 md:py-20">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-2 lg:gap-16">
-              <div className="relative h-64 w-full overflow-hidden rounded-xl shadow-xl md:h-96">
+            <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2 lg:gap-24">
+              <div className="relative h-80 w-full overflow-hidden rounded-xl shadow-lg md:h-[450px]">
                 {heroImage && (
                   <Image
                     src={heroImage.imageUrl}
@@ -102,7 +102,7 @@ export default function LandingPage() {
                   />
                 )}
               </div>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-4">
                     <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                       A Space to Thrive.
@@ -110,7 +110,7 @@ export default function LandingPage() {
                     <ReadAloudButton textToRead='A Space to Thrive.' />
                 </div>
                 <div className='flex items-center'>
-                    <p className="text-muted-foreground md:text-lg">
+                    <p className="text-muted-foreground md:text-lg leading-relaxed">
                       At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.
                     </p>
                     <ReadAloudButton textToRead="At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success." />
@@ -120,8 +120,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="relative px-4 py-16 md:px-6 md:py-20">
-          <div className="container mx-auto mb-12 max-w-2xl text-center">
+        <section className="relative px-4 py-20 md:px-6 md:py-28">
+          <div className="container mx-auto mb-16 max-w-3xl text-center">
              <div className="flex items-center justify-center gap-4">
                 <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
                   Features Designed for You.
@@ -137,11 +137,11 @@ export default function LandingPage() {
           </div>
           <div className="container mx-auto grid max-w-7xl gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((feature, index) => (
-              <Card key={index} className="bg-card shadow-md transition-shadow hover:shadow-lg">
-                <CardContent className="flex flex-col items-center justify-center gap-4 p-6 text-center">
+              <Card key={index} className="bg-card shadow-md transition-shadow hover:shadow-lg border-0 bg-secondary/30">
+                <CardContent className="flex flex-col items-start gap-4 p-8">
                   {feature.icon}
-                  <h3 className="text-xl font-bold">{feature.title}</h3>
-                  <p className="text-center text-muted-foreground">
+                  <h3 className="text-xl font-bold font-headline">{feature.title}</h3>
+                  <p className="text-left text-muted-foreground">
                     {feature.description}
                   </p>
                 </CardContent>
