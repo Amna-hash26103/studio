@@ -126,7 +126,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="w-full py-16 md:py-24 bg-secondary/50">
+        <section className="w-full py-16 md:py-24">
             <div className="container px-4 md:px-6">
                 <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl">
@@ -174,7 +174,7 @@ export default function LandingPage() {
 
       </main>
 
-      <footer className="bg-secondary/50">
+      <footer className="bg-background border-t">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
