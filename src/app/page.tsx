@@ -91,7 +91,7 @@ const thriveImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col">
       <header className="container mx-auto flex h-24 items-center justify-between px-4 md:px-6">
         <Link href="/" className="flex items-center gap-3">
           <FemmoraLogo className="h-10 w-10 text-primary" />
@@ -108,9 +108,9 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="w-full py-24 md:py-32 lg:py-48 text-center">
+        <section className="w-full py-16 md:py-24 lg:py-32 text-center">
           <div className="container px-4 md:px-6">
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl text-foreground">
                 Empower Your Journey. Together.
               </h1>
@@ -174,7 +174,7 @@ export default function LandingPage() {
 
       </main>
 
-      <footer className="bg-background border-t">
+      <footer>
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
