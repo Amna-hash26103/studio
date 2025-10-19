@@ -28,35 +28,35 @@ const HerHealthIcon = () => (
 
 const NourishIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 8L10.5 10L12 12L13.5 10L12 8Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16 12L14 13.5L12 12L14 10.5L16 12Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 16L13.5 14L12 12L10.5 14L12 16Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M8 12L10 10.5L12 12L10 13.5L8 12Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 8L10.5 10L12 12L13.5 10L12 8Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 12L14 13.5L12 12L14 10.5L16 12Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 16L13.5 14L12 12L10.5 14L12 16Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 12L10 10.5L12 12L10 13.5L8 12Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
 const EvolveIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 12H6L9 3L15 21L18 12H21" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 12H6L9 3L15 21L18 12H21" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
 const CircleIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10.5 10.5C11.8807 10.5 13 9.38071 13 8C13 6.61929 11.8807 5.5 10.5 5.5C9.11929 5.5 8 6.61929 8 8C8 9.38071 9.11929 10.5 10.5 10.5Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M16 18.5C16 16.567 13.9853 15 11.5 15C9.01472 15 7 16.567 7 18.5" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M17.5 12.5C18.8807 12.5 20 11.3807 20 10C20 8.61929 18.8807 7.5 17.5 7.5C16.1193 7.5 15 8.61929 15 10C15 11.3807 16.1193 12.5 17.5 12.5Z" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M21 18.5C21 17.567 20.3284 16.766 19.5 16.25" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M4 18.5C4 17.567 4.67157 16.766 5.5 16.25" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10.5 10.5C11.8807 10.5 13 9.38071 13 8C13 6.61929 11.8807 5.5 10.5 5.5C9.11929 5.5 8 6.61929 8 8C8 9.38071 9.11929 10.5 10.5 10.5Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 18.5C16 16.567 13.9853 15 11.5 15C9.01472 15 7 16.567 7 18.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17.5 12.5C18.8807 12.5 20 11.3807 20 10C20 8.61929 18.8807 7.5 17.5 7.5C16.1193 7.5 15 8.61929 15 10C15 11.3807 16.1193 12.5 17.5 12.5Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21 18.5C21 17.567 20.3284 16.766 19.5 16.25" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M4 18.5C4 17.567 4.67157 16.766 5.5 16.25" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
 const FEMMindIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 9.5L19 7.5L17 5.5" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M7 18.5L5 16.5L7 14.5" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M14 5.5H12C8.68629 5.5 6 8.18629 6 11.5C6 14.8137 8.68629 17.5 12 17.5H14" stroke="#E55A5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17 9.5L19 7.5L17 5.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 18.5L5 16.5L7 14.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M14 5.5H12C8.68629 5.5 6 8.18629 6 11.5C6 14.8137 8.68629 17.5 12 17.5H14" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
@@ -156,7 +156,7 @@ export default function LandingPage() {
                     </h2>
                     <ReadAloudButton textToRead='A Space to Thrive.' />
                 </div>
-                <div className='flex items-center gap-2'>
+                <div className='flex items-center justify-center gap-2'>
                     <p className="text-muted-foreground md:text-lg">
                       At FEMMORA, we believe in the power of collective strength. Our platform is more than just an app; it's a movement dedicated to celebrating and supporting every woman's unique path to wellness and success.
                     </p>
