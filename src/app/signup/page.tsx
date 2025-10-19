@@ -86,13 +86,13 @@ export default function SignupPage() {
         description: "Welcome to FEMMORA! We’re so glad to have you here 💜",
       });
 
-      router.push('/period-tracker');
+      router.push('/feed');
     } catch (error: any) {
       console.error('Error signing up:', error);
       if (error.code === 'auth/email-already-in-use') {
         form.setError('email', {
           type: 'manual',
-          message: "This email is already in use. Please log in instead.",
+          message: "This email is in use. Please log in instead.",
         });
       } else {
         toast({
@@ -109,7 +109,7 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
            <Link href="/" className="mb-4 flex items-center justify-center">
-            <FemmoraLogo className="h-5 w-5" />
+            <FemmoraLogo className="h-30 w-35" />
           </Link>
           <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
           <CardDescription>

@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -63,7 +64,7 @@ export default function LoginPage() {
         title: "Logged In!",
         description: "Welcome back!",
       });
-      router.push('/period-tracker');
+      router.push('/feed');
     } catch (error: any) {
       console.error('Error signing in:', error);
       let description = "An unexpected error occurred. Please try again.";
