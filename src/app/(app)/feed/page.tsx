@@ -306,11 +306,11 @@ function CreatePostCard({
                                 setSelectedImageUrl(image.imageUrl);
                             }}
                             className={cn(
-                                "relative aspect-square w-32 overflow-hidden rounded-md ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring",
+                                "relative aspect-square w-32 overflow-hidden rounded-md ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring bg-muted",
                                 selectedImageUrl === image.imageUrl && "ring-2 ring-primary"
                             )}
                         >
-                            <Image src={image.imageUrl} alt={image.description} fill className="object-cover" data-ai-hint={image.imageHint} />
+                            <Image src={image.imageUrl} alt="" fill className="object-cover" data-ai-hint={image.imageHint} />
                         </button>
                         ))}
                       </div>
