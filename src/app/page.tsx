@@ -118,7 +118,7 @@ export default function LandingPage() {
                 FEMMORA is a sanctuary for women to connect, share, and flourish. Explore wellness, creativity, and community in a space designed for you.
               </p>
               <div className="pt-6">
-                <Button size="lg" asChild>
+                <Button size="lg" className="text-lg px-10 py-6" asChild>
                   <Link href="/signup">Join the Community</Link>
                 </Button>
               </div>
@@ -126,7 +126,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="w-full py-16 md:py-24">
+        <section className="w-full py-12 md:py-16">
             <div className="container px-4 md:px-6">
                 <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
                     <div className="relative aspect-video w-full overflow-hidden rounded-xl">
