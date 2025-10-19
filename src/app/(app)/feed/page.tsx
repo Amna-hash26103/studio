@@ -178,7 +178,7 @@ export default function FeedPage() {
 // --- Create Post Component ---
 const createPostSchema = z.object({
   content: z.string().min(1, 'Post cannot be empty').max(500),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().url().optional().nullable(),
 });
 
 const postGalleryImages = PlaceHolderImages.filter(p => p.id.startsWith('post-gallery-'));
@@ -199,7 +199,6 @@ function CreatePostCard({
   });
 
   const onSubmit = async (values: z.infer<typeof createPostSchema>) => {
-    form.clearErrors();
     if (!user.displayName) {
         toast({
             variant: 'destructive',
@@ -212,7 +211,7 @@ function CreatePostCard({
       await addDoc(collection(firestore, 'posts'), {
         userId: user.uid,
         content: values.content,
-        imageUrl: selectedImageUrl,
+        imageUrl: values.imageUrl,
         createdAt: serverTimestamp(),
         likes: [],
         userProfile: {
@@ -278,7 +277,10 @@ function CreatePostCard({
                         variant="destructive"
                         size="icon"
                         className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                        onClick={() => setSelectedImageUrl(undefined)}
+                        onClick={() => {
+                          setSelectedImageUrl(undefined);
+                          form.setValue('imageUrl', undefined);
+                        }}
                       >
                         <X className="h-4 w-4" />
                       </Button>
@@ -305,6 +307,7 @@ function CreatePostCard({
                             key={image.id}
                             onClick={() => {
                                 setSelectedImageUrl(image.imageUrl);
+                                form.setValue('imageUrl', image.imageUrl);
                             }}
                             className={cn(
                                 "relative aspect-square w-32 overflow-hidden rounded-md ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring bg-muted",
@@ -588,5 +591,3 @@ function PostSkeleton() {
     </Card>
   );
 }
-
-    
