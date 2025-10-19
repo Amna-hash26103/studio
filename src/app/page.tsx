@@ -151,7 +151,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-muted">
+      <footer className="bg-background">
         <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 py-8 md:flex-row md:px-6">
           <div className="flex items-center gap-2">
             <FemmoraLogo className="h-6 w-6 text-muted-foreground" />
