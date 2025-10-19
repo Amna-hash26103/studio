@@ -82,17 +82,17 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/20 p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader className="space-y-1 text-center">
-          <Link href="/" className="mb-4 flex items-center justify-center">
-            <FemmoraLogo className="h-5 w-5" />
+      <Card className="w-full max-w-xl">
+        <CardHeader className="space-y-1 text-center pt-6 pb-4">
+          <Link href="/" className="mb-2 flex items-center justify-center">
+            <FemmoraLogo className="h-10 w-10" />
           </Link>
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-12">
+        <CardContent className="px-10 pb-6">
            <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
