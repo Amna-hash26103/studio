@@ -12,51 +12,51 @@ const heroImage = PlaceHolderImages.find((img) => img.id === 'hero-1');
 // Custom SVG Icons
 const SoulSpaceIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M8.25 10.5C8.25 9.80964 8.80964 9.25 9.5 9.25C10.1904 9.25 10.75 9.80964 10.75 10.5C10.75 11.1904 10.1904 11.75 9.5 11.75C8.80964 11.75 8.25 11.1904 8.25 10.5Z" fill="#E55A5A"/>
-    <path d="M13.25 10.5C13.25 9.80964 13.8096 9.25 14.5 9.25C15.1904 9.25 15.75 9.80964 15.75 10.5C15.75 11.1904 15.1904 11.75 14.5 11.75C13.8096 11.75 13.25 11.1904 13.25 10.5Z" fill="#E55A5A"/>
-    <path d="M16 14.5C15.3921 15.6531 13.7785 16.5 12 16.5C10.2215 16.5 8.60792 15.6531 8 14.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round"/>
+    <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M8.25 10.5C8.25 9.80964 8.80964 9.25 9.5 9.25C10.1904 9.25 10.75 9.80964 10.75 10.5C10.75 11.1904 10.1904 11.75 9.5 11.75C8.80964 11.75 8.25 11.1904 8.25 10.5Z" fill="#B63E64"/>
+    <path d="M13.25 10.5C13.25 9.80964 13.8096 9.25 14.5 9.25C15.1904 9.25 15.75 9.80964 15.75 10.5C15.75 11.1904 15.1904 11.75 14.5 11.75C13.8096 11.75 13.25 11.1904 13.25 10.5Z" fill="#B63E64"/>
+    <path d="M16 14.5C15.3921 15.6531 13.7785 16.5 12 16.5C10.2215 16.5 8.60792 15.6531 8 14.5" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round"/>
   </svg>
 );
 
 const HerHealthIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12.3395 3.39135C12.1236 3.16334 11.7801 3.15344 11.5521 3.36935L4.54226 9.94318C4.30154 10.1698 4.3828 10.5658 4.67389 10.686L8.4901 12.247C8.75168 12.3533 9.04944 12.2241 9.15575 11.9625L11.761 5.8443C11.8673 5.58272 11.7381 5.28496 11.4765 5.17865L12.3395 3.39135Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M20.6412 11.6739C19.011 10.1118 16.7371 10.2558 15.3409 11.8279L11.8596 15.6591C10.4634 17.2312 10.6074 19.5051 12.2376 21.0672C13.8678 22.6293 16.1417 22.4853 17.5379 20.9132L21.0192 17.082C22.4154 15.51 22.2714 13.236 20.6412 11.6739Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12.3395 3.39135C12.1236 3.16334 11.7801 3.15344 11.5521 3.36935L4.54226 9.94318C4.30154 10.1698 4.3828 10.5658 4.67389 10.686L8.4901 12.247C8.75168 12.3533 9.04944 12.2241 9.15575 11.9625L11.761 5.8443C11.8673 5.58272 11.7381 5.28496 11.4765 5.17865L12.3395 3.39135Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M20.6412 11.6739C19.011 10.1118 16.7371 10.2558 15.3409 11.8279L11.8596 15.6591C10.4634 17.2312 10.6074 19.5051 12.2376 21.0672C13.8678 22.6293 16.1417 22.4853 17.5379 20.9132L21.0192 17.082C22.4154 15.51 22.2714 13.236 20.6412 11.6739Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 const NourishIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 8L10.5 10L12 12L13.5 10L12 8Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16 12L14 13.5L12 12L14 10.5L16 12Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M12 16L13.5 14L12 12L10.5 14L12 16Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M8 12L10 10.5L12 12L10 13.5L8 12Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 21.5C17.2467 21.5 21.5 17.2467 21.5 12C21.5 6.75329 17.2467 2.5 12 2.5C6.75329 2.5 2.5 6.75329 2.5 12C2.5 17.2467 6.75329 21.5 12 21.5Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 8L10.5 10L12 12L13.5 10L12 8Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 12L14 13.5L12 12L14 10.5L16 12Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 16L13.5 14L12 12L10.5 14L12 16Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 12L10 10.5L12 12L10 13.5L8 12Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
 const EvolveIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 12H6L9 3L15 21L18 12H21" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M3 12H6L9 3L15 21L18 12H21" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
 const CircleIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10.5 10.5C11.8807 10.5 13 9.38071 13 8C13 6.61929 11.8807 5.5 10.5 5.5C9.11929 5.5 8 6.61929 8 8C8 9.38071 9.11929 10.5 10.5 10.5Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16 18.5C16 16.567 13.9853 15 11.5 15C9.01472 15 7 16.567 7 18.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17.5 12.5C18.8807 12.5 20 11.3807 20 10C20 8.61929 18.8807 7.5 17.5 7.5C16.1193 7.5 15 8.61929 15 10C15 11.3807 16.1193 12.5 17.5 12.5Z" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 18.5C21 17.567 20.3284 16.766 19.5 16.25" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M4 18.5C4 17.567 4.67157 16.766 5.5 16.25" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M10.5 10.5C11.8807 10.5 13 9.38071 13 8C13 6.61929 11.8807 5.5 10.5 5.5C9.11929 5.5 8 6.61929 8 8C8 9.38071 9.11929 10.5 10.5 10.5Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 18.5C16 16.567 13.9853 15 11.5 15C9.01472 15 7 16.567 7 18.5" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17.5 12.5C18.8807 12.5 20 11.3807 20 10C20 8.61929 18.8807 7.5 17.5 7.5C16.1193 7.5 15 8.61929 15 10C15 11.3807 16.1193 12.5 17.5 12.5Z" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21 18.5C21 17.567 20.3284 16.766 19.5 16.25" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M4 18.5C4 17.567 4.67157 16.766 5.5 16.25" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
 const FEMMindIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M17 9.5L19 7.5L17 5.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M7 18.5L5 16.5L7 14.5" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M14 5.5H12C8.68629 5.5 6 8.18629 6 11.5C6 14.8137 8.68629 17.5 12 17.5H14" stroke="#E55A5A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 9.5L19 7.5L17 5.5" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 18.5L5 16.5L7 14.5" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M14 5.5H12C8.68629 5.5 6 8.18629 6 11.5C6 14.8137 8.68629 17.5 12 17.5H14" stroke="#B63E64" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
 
